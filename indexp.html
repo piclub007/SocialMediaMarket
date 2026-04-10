@@ -9,15 +9,16 @@
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #fafafc; -webkit-tap-highlight-color: transparent; }
-        .glass-card { background: white; border: 1px solid #f0f0f0; transition: all 0.2s ease; cursor: pointer; border-radius: 20px; }
+        /* FULL SLEEK BLACK THEME */
+        body { background: #050505; -webkit-tap-highlight-color: transparent; }
+        .glass-card { background: #0f0f0f; border: 1px solid #222222; transition: all 0.2s ease; cursor: pointer; border-radius: 20px; }
         .glass-card:active { transform: scale(0.98); }
         .btn-sleek { transition: all 0.2s ease; }
         .btn-sleek:active { transform: scale(0.97); }
         .category-chip { transition: all 0.2s; cursor: pointer; }
-        .category-active { background: #111111; color: white; border-color: #111111; }
-        .category-inactive { background: transparent; color: #2c2c2e; border-color: #e4e4e7; }
-        .original-price { text-decoration: line-through; color: #9ca3af; font-size: 12px; }
+        .category-active { background: #ffffff; color: #000000; border-color: #ffffff; }
+        .category-inactive { background: transparent; color: #b0b0b0; border-color: #2a2a2a; }
+        .original-price { text-decoration: line-through; color: #6b6b6b; font-size: 12px; }
         .discount-badge { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; display: inline-block; margin-left: 6px; }
         .status-available { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         .status-sold { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
@@ -44,10 +45,10 @@
             flex: 0 0 auto;
             width: 270px;
             margin-right: 14px;
-            background: white;
+            background: #0f0f0f;
             border-radius: 16px;
             padding: 12px;
-            border: 1px solid #f0f0f0;
+            border: 1px solid #222222;
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -90,20 +91,147 @@
         html {
             scroll-behavior: smooth;
         }
+
+        /* Custom black theme overrides for inputs, selects, borders, text */
+        input, select, .bg-white, .border-gray-200, .border-gray-300 {
+            background-color: #0f0f0f !important;
+            border-color: #2a2a2a !important;
+            color: #e5e5e5 !important;
+        }
+        input::placeholder, select {
+            color: #6b6b6b !important;
+        }
+        .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600 {
+            color: #f0f0f0 !important;
+        }
+        .text-gray-500, .text-gray-400, .text-gray-300 {
+            color: #a0a0a0 !important;
+        }
+        .bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .bg-black.text-white, .bg-black .text-white {
+            color: #000000 !important;
+        }
+        button.bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .btn-sell.border.border-gray-300 {
+            border-color: #333333 !important;
+            background-color: #0f0f0f !important;
+            color: #e5e5e5 !important;
+        }
+        .btn-sell.border.border-gray-300:hover {
+            background-color: #1a1a1a !important;
+        }
+        .border-t.border-gray-200 {
+            border-top-color: #222222 !important;
+        }
+        .bg-gray-100 {
+            background-color: #1a1a1a !important;
+        }
+        .bg-white\/70 {
+            background-color: rgba(15, 15, 15, 0.7) !important;
+        }
+        .glass-card .border-t.border-gray-50 {
+            border-top-color: #1e1e1e !important;
+        }
+        .glass-card .text-gray-600 {
+            color: #c0c0c0 !important;
+        }
+        footer .text-gray-400, footer .text-gray-300 {
+            color: #6b6b6b !important;
+        }
+        footer a:hover {
+            color: #ffffff !important;
+        }
+        .bg-gradient-to-r.from-gray-900.to-gray-600 {
+            background-image: linear-gradient(to right, #ffffff, #aaaaaa) !important;
+        }
+        .bg-clip-text.text-transparent {
+            color: transparent !important;
+        }
+        .bg-white.rounded-xl.border.border-gray-200, .bg-white.rounded-xl {
+            background-color: #0f0f0f !important;
+            border-color: #2a2a2a !important;
+        }
+        select option {
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .glass-card .font-semibold.text-gray-800 {
+            color: #f0f0f0 !important;
+        }
+        .glass-card .text-gray-400, .glass-card .text-gray-500 {
+            color: #9a9a9a !important;
+        }
+        .text-amber-500 {
+            color: #fbbf24 !important;
+        }
+        .iconify-icon.text-gray-400, .iconify-icon.text-gray-500, .iconify-icon.text-gray-600 {
+            color: #8a8a8a !important;
+        }
+        .bg-black.rounded-xl {
+            background-color: #ffffff !important;
+        }
+        .bg-black.rounded-xl iconify-icon {
+            color: #000000 !important;
+        }
+        .btn-explore.bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        button#prevPageM, button#nextPageM {
+            background-color: #0f0f0f !important;
+            border-color: #2a2a2a !important;
+            color: #e5e5e5 !important;
+        }
+        button#prevPageM:disabled, button#nextPageM:disabled {
+            opacity: 0.4;
+        }
+        .bg-white.rounded-xl.border.border-gray-200.px-3.py-2 {
+            background-color: #0f0f0f !important;
+        }
+        input:focus, select:focus {
+            border-color: #ffffff !important;
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+        }
+        .w-10.h-10.bg-black.rounded-xl {
+            background-color: #ffffff !important;
+        }
+        .w-10.h-10.bg-black.rounded-xl iconify-icon {
+            color: #000000 !important;
+        }
+        .view-details-btn-m.bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .suggestion-item .font-semibold.text-sm {
+            color: #f0f0f0 !important;
+        }
+        .suggestion-item .text-xs.text-gray-400 {
+            color: #aaa !important;
+        }
+        .suggestion-item .font-bold.text-sm {
+            color: #ffffff !important;
+        }
     </style>
 </head>
-<body class="pb-20" style="overflow-x: hidden;">
+<body class="pb-20" style="overflow-x: hidden; background: #050505;">
 
 <div class="px-4 py-5 max-w-md mx-auto">
     <!-- HEADER -->
     <header class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center shadow-sm">
-                <iconify-icon icon="ri:exchange-dollar-line" width="22" class="text-white"></iconify-icon>
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <iconify-icon icon="ri:exchange-dollar-line" width="22" class="text-black"></iconify-icon>
             </div>
-            <div id="mobileGreeting" class="text-sm font-medium text-gray-600"></div>
+            <div id="mobileGreeting" class="text-sm font-medium text-gray-300"></div>
         </div>
-        <button id="startSellingBtnM" class="bg-black text-white px-5 py-2 rounded-full text-sm font-medium btn-sleek flex items-center gap-1 shadow-md">
+        <button id="startSellingBtnM" class="bg-white text-black px-5 py-2 rounded-full text-sm font-medium btn-sleek flex items-center gap-1 shadow-md">
             <iconify-icon icon="mdi:storefront-outline" width="16"></iconify-icon>
             Sell
         </button>
@@ -111,22 +239,22 @@
 
     <!-- HERO SECTION -->
     <div class="mb-7">
-        <div class="inline-flex items-center gap-1 bg-white/70 px-3 py-1 rounded-full border border-gray-200 mb-3">
-            <iconify-icon icon="solar:graph-new-up-linear" width="12" class="text-emerald-600"></iconify-icon>
-            <span class="text-[10px] font-medium text-gray-700">TRUSTED MARKETPLACE</span>
+        <div class="inline-flex items-center gap-1 bg-black/40 px-3 py-1 rounded-full border border-gray-700 mb-3">
+            <iconify-icon icon="solar:graph-new-up-linear" width="12" class="text-emerald-400"></iconify-icon>
+            <span class="text-[10px] font-medium text-gray-300">TRUSTED MARKETPLACE</span>
         </div>
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900 leading-tight">
+        <h1 class="text-3xl font-bold tracking-tight text-white leading-tight">
             Swap & scale<br>
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">social empires.</span>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">social empires.</span>
         </h1>
-        <p class="text-gray-500 text-sm mt-3 leading-relaxed">Buy or sell Instagram, TikTok, YouTube, LinkedIn & X accounts instantly.</p>
+        <p class="text-gray-400 text-sm mt-3 leading-relaxed">Buy or sell Instagram, TikTok, YouTube, LinkedIn & X accounts instantly.</p>
         
         <div class="flex gap-3 mt-6">
-            <button id="exploreBtnM" class="btn-explore bg-black text-white flex-1 py-3 rounded-full text-sm shadow-md">
+            <button id="exploreBtnM" class="btn-explore bg-white text-black flex-1 py-3 rounded-full text-sm shadow-md">
                 <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon>
                 Explore
             </button>
-            <button id="startSellingBtnM2" class="btn-sell border border-gray-300 bg-white text-gray-800 flex-1 py-3 rounded-full text-sm hover:bg-gray-50">
+            <button id="startSellingBtnM2" class="btn-sell border border-gray-700 bg-black/40 text-gray-200 flex-1 py-3 rounded-full text-sm hover:bg-gray-900">
                 <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
                 Sell
             </button>
@@ -135,18 +263,18 @@
 
     <!-- Social Icons -->
     <div class="flex justify-center items-center gap-6 mb-8">
-        <iconify-icon icon="skill-icons:instagram" width="24" class="text-gray-400"></iconify-icon>
-        <iconify-icon icon="logos:tiktok-icon" width="24" class="text-gray-400"></iconify-icon>
-        <iconify-icon icon="logos:twitter" width="24" class="text-gray-400"></iconify-icon>
-        <iconify-icon icon="logos:youtube-icon" width="24" class="text-gray-400"></iconify-icon>
-        <iconify-icon icon="logos:linkedin-icon" width="24" class="text-gray-400"></iconify-icon>
+        <iconify-icon icon="skill-icons:instagram" width="24" class="text-gray-500"></iconify-icon>
+        <iconify-icon icon="logos:tiktok-icon" width="24" class="text-gray-500"></iconify-icon>
+        <iconify-icon icon="logos:twitter" width="24" class="text-gray-500"></iconify-icon>
+        <iconify-icon icon="logos:youtube-icon" width="24" class="text-gray-500"></iconify-icon>
+        <iconify-icon icon="logos:linkedin-icon" width="24" class="text-gray-500"></iconify-icon>
     </div>
 
     <!-- Continuous Infinite Suggestions Carousel -->
     <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
-            <iconify-icon icon="mdi:lightbulb" width="16" class="text-amber-500"></iconify-icon>
-            <h3 class="text-sm font-semibold text-gray-700">Suggested for you</h3>
+            <iconify-icon icon="mdi:lightbulb" width="16" class="text-amber-400"></iconify-icon>
+            <h3 class="text-sm font-semibold text-gray-200">Suggested for you</h3>
         </div>
         <div class="suggestions-wrapper">
             <div id="suggestionsTrackM" class="suggestions-track"></div>
@@ -156,8 +284,8 @@
     <!-- Search Bar -->
     <div class="mb-5">
         <div class="relative">
-            <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon>
-            <input type="text" id="searchInputM" placeholder="Search by nickname or platform..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-black focus:outline-none text-sm bg-white">
+            <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" width="18"></iconify-icon>
+            <input type="text" id="searchInputM" placeholder="Search by nickname or platform..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-800 focus:border-white focus:outline-none text-sm bg-black/40 text-white">
         </div>
     </div>
 
@@ -175,16 +303,16 @@
 
     <!-- Price & Category Filters -->
     <div class="flex flex-wrap gap-3 mb-5">
-        <div class="flex items-center gap-2 flex-1 bg-white rounded-xl border border-gray-200 px-3 py-2">
-            <span class="text-xs text-gray-500 font-medium">$</span>
-            <input type="number" id="minPriceM" placeholder="Min" class="w-full text-sm bg-transparent focus:outline-none">
+        <div class="flex items-center gap-2 flex-1 bg-black/40 rounded-xl border border-gray-800 px-3 py-2">
+            <span class="text-xs text-gray-400 font-medium">$</span>
+            <input type="number" id="minPriceM" placeholder="Min" class="w-full text-sm bg-transparent focus:outline-none text-white">
         </div>
-        <div class="flex items-center gap-2 flex-1 bg-white rounded-xl border border-gray-200 px-3 py-2">
-            <span class="text-xs text-gray-500 font-medium">$</span>
-            <input type="number" id="maxPriceM" placeholder="Max" class="w-full text-sm bg-transparent focus:outline-none">
+        <div class="flex items-center gap-2 flex-1 bg-black/40 rounded-xl border border-gray-800 px-3 py-2">
+            <span class="text-xs text-gray-400 font-medium">$</span>
+            <input type="number" id="maxPriceM" placeholder="Max" class="w-full text-sm bg-transparent focus:outline-none text-white">
         </div>
-        <div class="flex-1 bg-white rounded-xl border border-gray-200 px-3 py-2">
-            <select id="categoryFilterM" class="w-full text-sm bg-transparent focus:outline-none">
+        <div class="flex-1 bg-black/40 rounded-xl border border-gray-800 px-3 py-2">
+            <select id="categoryFilterM" class="w-full text-sm bg-transparent focus:outline-none text-white">
                 <option value="all">All Categories</option>
             </select>
         </div>
@@ -192,26 +320,26 @@
 
     <!-- Pagination -->
     <div class="flex justify-between items-center mb-4">
-        <div id="paginationInfoM" class="text-xs text-gray-500"></div>
+        <div id="paginationInfoM" class="text-xs text-gray-400"></div>
         <div class="flex gap-2">
-            <button id="prevPageM" class="px-3 py-1.5 border border-gray-200 rounded-lg text-xs bg-white disabled:opacity-40">← Prev</button>
-            <button id="nextPageM" class="px-3 py-1.5 border border-gray-200 rounded-lg text-xs bg-white disabled:opacity-40">Next →</button>
+            <button id="prevPageM" class="px-3 py-1.5 border border-gray-700 rounded-lg text-xs bg-black/40 disabled:opacity-40 text-gray-200">← Prev</button>
+            <button id="nextPageM" class="px-3 py-1.5 border border-gray-700 rounded-lg text-xs bg-black/40 disabled:opacity-40 text-gray-200">Next →</button>
         </div>
     </div>
 
     <!-- Products Grid -->
     <div id="listings-grid-mobile" class="space-y-4 pb-16">
-        <div class="text-center py-10 text-gray-400 text-sm">Loading accounts...</div>
+        <div class="text-center py-10 text-gray-500 text-sm">Loading accounts...</div>
     </div>
 
     <!-- Footer -->
-    <footer class="pt-6 pb-4 border-t border-gray-200 mt-4">
-        <div class="flex flex-wrap justify-center gap-5 text-gray-400 text-xs">
-            <a href="#" id="trustLinkM" class="hover:text-gray-800 flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="14"></iconify-icon> Trust</a>
-            <a href="#" id="guidelinesLinkM" class="hover:text-gray-800 flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="14"></iconify-icon> Guidelines</a>
-            <a href="#" id="supportLinkM" class="hover:text-gray-800 flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="14"></iconify-icon> Support</a>
+    <footer class="pt-6 pb-4 border-t border-gray-800 mt-4">
+        <div class="flex flex-wrap justify-center gap-5 text-gray-500 text-xs">
+            <a href="#" id="trustLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="14"></iconify-icon> Trust</a>
+            <a href="#" id="guidelinesLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="14"></iconify-icon> Guidelines</a>
+            <a href="#" id="supportLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="14"></iconify-icon> Support</a>
         </div>
-        <div class="text-center text-gray-300 text-[10px] mt-4">
+        <div class="text-center text-gray-600 text-[10px] mt-4">
             <iconify-icon icon="ph:copyright" width="10" class="inline"></iconify-icon> 2026 Social Market
         </div>
     </footer>
@@ -330,11 +458,11 @@
             return `
                 <div class="suggestion-item" data-id="${acc.id}">
                     <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0">
                             <iconify-icon icon="${icon}" width="24"></iconify-icon>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname)}</p>
+                            <p class="font-semibold text-sm truncate text-white">${escapeHtml(acc.nickname)}</p>
                             <div class="flex items-center gap-1 flex-wrap">
                                 <p class="text-xs text-gray-400">${acc.socialMedia}</p>
                                 ${soldBadge}
@@ -342,10 +470,10 @@
                         </div>
                     </div>
                     <div class="mt-2 flex justify-between items-center">
-                        <span class="font-bold text-sm">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
+                        <span class="font-bold text-sm text-white">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
                         <div class="flex items-center gap-1">
-                            <iconify-icon icon="mdi:account-group-outline" width="12" class="text-gray-400"></iconify-icon>
-                            <span class="text-xs text-gray-500">${acc.followers?.toLocaleString() || 0}</span>
+                            <iconify-icon icon="mdi:account-group-outline" width="12" class="text-gray-500"></iconify-icon>
+                            <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0}</span>
                         </div>
                     </div>
                 </div>
@@ -390,7 +518,7 @@
             setInterval(() => { if (allAccounts.length) renderSuggestions(); }, 60000);
         } catch(e) {
             console.error("Error:", e);
-            document.getElementById('listings-grid-mobile').innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">Unable to load accounts. Please refresh.</div>';
+            document.getElementById('listings-grid-mobile').innerHTML = '<div class="text-center py-10 text-gray-500 text-sm">Unable to load accounts. Please refresh.</div>';
         }
     }
     
@@ -444,7 +572,7 @@
         
         const container = document.getElementById('listings-grid-mobile');
         if (!pageAccounts.length) {
-            container.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">No accounts match your filters</div>';
+            container.innerHTML = '<div class="text-center py-10 text-gray-500 text-sm">No accounts match your filters</div>';
             return;
         }
         
@@ -471,18 +599,18 @@
             else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
             
             const statusBadge = isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>';
-            const priceHtml = acc.bargaining ? '<span class="text-xs text-gray-500">Negotiable</span>' : `<span class="text-base font-bold">$${displayPrice?.toLocaleString()}</span> ${originalDisplay} ${discountBadge}`;
+            const priceHtml = acc.bargaining ? '<span class="text-xs text-gray-400">Negotiable</span>' : `<span class="text-base font-bold text-white">$${displayPrice?.toLocaleString()}</span> ${originalDisplay} ${discountBadge}`;
             
             return `
                 <div class="glass-card p-3 product-card-m" data-id="${acc.id}">
                     <div class="flex gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center flex-shrink-0">
                             <iconify-icon icon="${icon}" width="28"></iconify-icon>
                         </div>
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h3 class="font-semibold text-gray-800 text-sm">${escapeHtml(acc.nickname)}</h3>
+                                    <h3 class="font-semibold text-gray-100 text-sm">${escapeHtml(acc.nickname)}</h3>
                                     <div class="flex items-center gap-1 mt-0.5 flex-wrap">
                                         <span class="text-[10px] font-medium text-gray-400">${acc.socialMedia || ''}</span>
                                         ${statusBadge}
@@ -491,14 +619,14 @@
                             </div>
                             <div class="flex justify-between items-center mt-2">
                                 <div>${priceHtml}</div>
-                                <button class="view-details-btn-m bg-black text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1" data-id="${acc.id}">
+                                <button class="view-details-btn-m bg-white text-black px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1" data-id="${acc.id}">
                                     <iconify-icon icon="mdi:eye-outline" width="12"></iconify-icon> View
                                 </button>
                             </div>
-                            <div class="flex items-center gap-3 mt-2 pt-1 border-t border-gray-50">
+                            <div class="flex items-center gap-3 mt-2 pt-1 border-t border-gray-800">
                                 <div class="flex items-center gap-1">
-                                    <iconify-icon icon="mdi:account-group-outline" width="12" class="text-gray-400"></iconify-icon>
-                                    <span class="text-xs text-gray-600">${acc.followers?.toLocaleString() || 0} followers</span>
+                                    <iconify-icon icon="mdi:account-group-outline" width="12" class="text-gray-500"></iconify-icon>
+                                    <span class="text-xs text-gray-300">${acc.followers?.toLocaleString() || 0} followers</span>
                                 </div>
                             </div>
                         </div>
