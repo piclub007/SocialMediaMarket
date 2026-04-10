@@ -26,10 +26,35 @@
         .status-available { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
         .status-sold { background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
         .hero-image-container { background: transparent; box-shadow: none; border: none; }
-        @keyframes scrollSuggestions { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
-        .suggestions-track { display: flex; animation: scrollSuggestions 30s linear infinite; width: fit-content; }
-        .suggestions-track:hover { animation-play-state: paused; }
-        .suggestion-item { flex: 0 0 auto; width: 280px; margin-right: 20px; }
+        
+        /* Infinite scrolling carousel */
+        .suggestions-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .suggestions-track {
+            display: flex;
+            width: fit-content;
+            animation: scrollSuggestions 60s linear infinite;
+        }
+        .suggestions-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scrollSuggestions {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .suggestion-item {
+            flex: 0 0 auto;
+            width: 280px;
+            margin-right: 20px;
+            transition: all 0.2s;
+        }
+        .suggestion-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15);
+        }
         .pagination-btn { transition: all 0.2s; }
         .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
         .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -92,10 +117,10 @@
         </div>
     </section>
 
-    <!-- Suggestions Carousel -->
-    <div class="mb-10 overflow-hidden">
-        <h3 class="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you</h3>
-        <div class="relative overflow-hidden">
+    <!-- Infinite Suggestions Carousel -->
+    <div class="mb-10">
+        <h3 class="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you — never stops, always fresh</h3>
+        <div class="suggestions-container">
             <div id="suggestionsTrack" class="suggestions-track"></div>
         </div>
     </div>
@@ -190,8 +215,9 @@
     let allAccounts = [];
     let categoriesArray = [];
     let currentPage = 1;
-    const ITEMS_PER_PAGE = 24; // 4 columns x 6 rows
+    const ITEMS_PER_PAGE = 24;
     let filteredAccounts = [];
+    let suggestionsAnimationFrame = null;
     
     // AI Recommendation Engine using localStorage
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
@@ -200,6 +226,7 @@
         priceRange: { min: 0, max: Infinity },
         clickedAccounts: [],
         interestedPlatform: null,
+        interestedPrice: null,
         lastUpdated: Date.now()
     };
     
@@ -211,11 +238,11 @@
             if (price > 0) {
                 if (price < userProfile.priceRange.min || userProfile.priceRange.min === 0) userProfile.priceRange.min = price;
                 if (price > userProfile.priceRange.max) userProfile.priceRange.max = price;
+                userProfile.interestedPrice = price;
             }
             userProfile.clickedAccounts.push({ id: account.id, platform: account.socialMedia, price, timestamp: Date.now() });
             if (userProfile.clickedAccounts.length > 20) userProfile.clickedAccounts.shift();
             
-            // Determine interested platform
             let maxViews = 0;
             for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) {
                 if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
@@ -225,51 +252,68 @@
         }
     }
     
-    function getRecommendedAccounts(accounts, limit = 13) {
-        if (accounts.length === 0) return [];
-        
-        // Score each account based on user profile
-        const scored = accounts.map(acc => {
-            let score = 0;
-            // Platform match
-            if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 50;
-            else if (userProfile.viewedPlatforms[acc.socialMedia]) score += userProfile.viewedPlatforms[acc.socialMedia] * 10;
-            // Category match
-            if (acc.category && userProfile.viewedCategories[acc.category]) score += userProfile.viewedCategories[acc.category] * 8;
-            // Price preference
-            const price = acc.finalPrice || acc.originalPrice || 0;
-            if (price >= userProfile.priceRange.min && price <= userProfile.priceRange.max) score += 15;
-            // Recently added bonus (fresh accounts)
-            if (acc.createdAt) {
-                const daysOld = (Date.now() - new Date(acc.createdAt).getTime()) / (1000 * 3600 * 24);
-                if (daysOld < 7) score += 5;
-            }
-            // Random factor to avoid always same (5% randomness)
-            score += Math.random() * 3;
-            return { acc, score };
-        });
-        
-        scored.sort((a, b) => b.score - a.score);
-        let recommended = scored.slice(0, limit).map(s => s.acc);
-        
-        // If not enough recommendations, fill with random recent accounts
-        if (recommended.length < limit) {
-            const remaining = accounts.filter(a => !recommended.includes(a));
-            const randomFill = remaining.sort(() => 0.5 - Math.random()).slice(0, limit - recommended.length);
-            recommended = [...recommended, ...randomFill];
+    function getWeightedRandomAccount(accounts, weights) {
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+        let random = Math.random() * totalWeight;
+        for (let i = 0; i < accounts.length; i++) {
+            if (random < weights[i]) return accounts[i];
+            random -= weights[i];
         }
-        
-        return recommended;
+        return accounts[0];
     }
     
-    // Render suggestions carousel
-    function renderSuggestions() {
-        const availableAccounts = allAccounts.filter(a => a.status !== 'sold');
-        const recommended = getRecommendedAccounts(availableAccounts, 13);
-        const track = document.getElementById('suggestionsTrack');
-        if (!track || recommended.length === 0) return;
+    function generateInfiniteSuggestions(accounts, count = 50) {
+        if (accounts.length === 0) return [];
         
-        const suggestionItems = recommended.map(acc => {
+        const suggestions = [];
+        const availableAccounts = accounts.filter(a => a.status !== 'sold');
+        const soldAccounts = accounts.filter(a => a.status === 'sold');
+        
+        // Mix: 70% available, 30% sold for variety
+        const pool = [...availableAccounts, ...soldAccounts];
+        if (pool.length === 0) return [];
+        
+        for (let i = 0; i < count; i++) {
+            let selected = null;
+            
+            // 60% chance to use AI algorithm, 40% random (for discovery)
+            if (Math.random() < 0.6 && userProfile.clickedAccounts.length > 0) {
+                // AI-weighted selection
+                const scores = pool.map(acc => {
+                    let score = 0;
+                    if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 40;
+                    else if (userProfile.viewedPlatforms[acc.socialMedia]) score += userProfile.viewedPlatforms[acc.socialMedia] * 8;
+                    if (acc.category && userProfile.viewedCategories[acc.category]) score += userProfile.viewedCategories[acc.category] * 6;
+                    const price = acc.finalPrice || acc.originalPrice || 0;
+                    if (userProfile.interestedPrice && Math.abs(price - userProfile.interestedPrice) < 500) score += 15;
+                    if (price >= userProfile.priceRange.min && price <= userProfile.priceRange.max) score += 10;
+                    if (acc.status === 'available') score += 5;
+                    score += Math.random() * 5;
+                    return score;
+                });
+                selected = getWeightedRandomAccount(pool, scores);
+            } else {
+                // Random selection for discovery
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                selected = pool[randomIndex];
+            }
+            
+            suggestions.push(selected);
+        }
+        
+        return suggestions;
+    }
+    
+    function renderInfiniteSuggestions() {
+        const availableAccounts = allAccounts.filter(a => a.status !== 'sold');
+        if (allAccounts.length === 0) return;
+        
+        // Generate a large batch of suggestions (infinite feel)
+        const suggestionBatch = generateInfiniteSuggestions(allAccounts, 40);
+        const track = document.getElementById('suggestionsTrack');
+        if (!track) return;
+        
+        const suggestionItems = suggestionBatch.map(acc => {
             let platformIcon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
             else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
@@ -277,25 +321,49 @@
             else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
             else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
             
+            const isSold = acc.status === 'sold';
+            const statusBadge = isSold ? '<span class="status-sold text-[8px] px-1.5 py-0.5 ml-1">SOLD</span>' : '<span class="status-available text-[8px] px-1.5 py-0.5 ml-1">AVAIL</span>';
+            
             return `
-                <div class="suggestion-item bg-white rounded-xl p-3 border border-gray-100 cursor-pointer hover:shadow-md transition" data-id="${acc.id}">
+                <div class="suggestion-item bg-white rounded-xl p-3 border border-gray-100 cursor-pointer hover:shadow-lg transition" data-id="${acc.id}">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32"></iconify-icon></div>
-                        <div><p class="font-semibold text-sm">${escapeHtml(acc.nickname)}</p><p class="text-xs text-gray-400">${acc.socialMedia} • ${acc.followers?.toLocaleString() || 0} followers</p></div>
+                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0"><iconify-icon icon="${platformIcon}" width="32"></iconify-icon></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname)}</p>
+                            <div class="flex items-center flex-wrap gap-1">
+                                <p class="text-xs text-gray-400">${acc.socialMedia}</p>
+                                ${statusBadge}
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-2 text-right"><span class="font-bold">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span></div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="font-bold text-sm">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
+                        <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span>
+                    </div>
                 </div>
             `;
         }).join('');
         
-        // Duplicate for seamless loop
+        // Double the items for seamless infinite loop
         track.innerHTML = suggestionItems + suggestionItems;
+        
+        // Add click handlers
         track.querySelectorAll('.suggestion-item').forEach(el => {
-            el.addEventListener('click', () => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const id = el.getAttribute('data-id');
-                if (id) window.location.href = `view.html?id=${id}`;
+                if (id) {
+                    const account = allAccounts.find(a => a.id === id);
+                    if (account) updateUserProfile(account, 'view');
+                    window.location.href = `view.html?id=${id}`;
+                }
             });
         });
+        
+        // Reset animation
+        track.style.animation = 'none';
+        track.offsetHeight; // force reflow
+        track.style.animation = 'scrollSuggestions 60s linear infinite';
     }
     
     async function loadAccounts() {
@@ -308,7 +376,12 @@
             });
             await loadCategories();
             applyFiltersAndRender();
-            renderSuggestions();
+            renderInfiniteSuggestions();
+            
+            // Refresh suggestions every 30 seconds to keep them fresh
+            setInterval(() => {
+                if (allAccounts.length > 0) renderInfiniteSuggestions();
+            }, 30000);
         } catch(e) {
             console.error("Firebase error:", e);
             document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Unable to load accounts. Please try again later.</div>';
@@ -338,11 +411,9 @@
         const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
         const category = document.getElementById('categoryFilter')?.value || 'all';
         
-        // Separate available and sold accounts
         const available = allAccounts.filter(a => a.status !== 'sold');
         const sold = allAccounts.filter(a => a.status === 'sold');
         
-        // Filter both
         const filterFn = (acc) => {
             const matchesSearch = !searchTerm || acc.nickname?.toLowerCase().includes(searchTerm) || acc.socialMedia?.toLowerCase().includes(searchTerm);
             const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
@@ -355,7 +426,6 @@
         let filteredAvailable = available.filter(filterFn);
         let filteredSold = sold.filter(filterFn);
         
-        // Mix sold accounts (1-2 per page, but don't duplicate)
         const soldToShow = [];
         const soldPerPage = Math.min(2, filteredSold.length);
         for (let i = 0; i < soldPerPage && filteredSold.length > 0; i++) {
@@ -364,9 +434,7 @@
             filteredSold.splice(randomIndex, 1);
         }
         
-        // Combine: show available first, then mix sold
         let combined = [...filteredAvailable, ...soldToShow];
-        // Shuffle slightly to mix sold within
         for (let i = combined.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [combined[i], combined[j]] = [combined[j], combined[i]];
