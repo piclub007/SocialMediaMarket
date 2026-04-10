@@ -9,25 +9,63 @@
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
-        body { background: #fafafc; scroll-behavior: smooth; }
+        body { background: #050505; scroll-behavior: smooth; }
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #f0f0f2; }
-        ::-webkit-scrollbar-thumb { background: #c7c9ce; border-radius: 10px; }
-        .glass-card { background: rgba(255, 255, 255, 0.96); border: 1px solid rgba(0, 0, 0, 0.04); transition: all 0.2s ease; cursor: pointer; }
-        .glass-card:hover { border-color: rgba(0, 0, 0, 0.08); box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.05); transform: translateY(-2px); }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        
+        /* Dark theme overrides */
+        .glass-card { background: #0f0f0f; border: 1px solid #222; transition: all 0.2s ease; cursor: pointer; }
+        .glass-card:hover { border-color: #444; box-shadow: 0 20px 30px -12px rgba(0,0,0,0.3); transform: translateY(-2px); }
         .btn-sleek { transition: all 0.2s ease; }
         .btn-sleek:active { transform: scale(0.97); }
         .category-chip { transition: all 0.2s; cursor: pointer; }
-        .category-active { background: #111111; color: white; border-color: #111111; }
-        .category-inactive { background: transparent; color: #2c2c2e; border-color: #e4e4e7; }
-        .category-inactive:hover { background: #f4f4f6; border-color: #c7c9ce; }
-        .original-price { text-decoration: line-through; color: #9ca3af; font-size: 13px; }
+        .category-active { background: #ffffff; color: #000000; border-color: #ffffff; }
+        .category-inactive { background: transparent; color: #b0b0b0; border-color: #333; }
+        .category-inactive:hover { background: #1a1a1a; border-color: #555; }
+        .original-price { text-decoration: line-through; color: #6b6b6b; font-size: 13px; }
         .discount-badge { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-left: 8px; }
         .status-available { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
         .status-sold { background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
-        .hero-image-container { background: transparent; box-shadow: none; border: none; }
         
-        /* Infinite scrolling carousel - slower speed */
+        /* Featured Carousel (3:5 portrait) */
+        .featured-carousel {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .featured-track {
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+        }
+        .featured-item {
+            flex: 0 0 100%;
+            padding: 0;
+            cursor: pointer;
+        }
+        .featured-image {
+            width: 100%;
+            aspect-ratio: 3 / 5;
+            object-fit: cover;
+            background: #1a1a1a;
+        }
+        .featured-followers {
+            text-align: center;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #e5e5e5;
+        }
+        
+        /* Suggestions carousel */
         .suggestions-container {
             overflow: hidden;
             position: relative;
@@ -50,82 +88,201 @@
             width: 280px;
             margin-right: 20px;
             transition: all 0.2s;
+            background: #0f0f0f;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid #222;
         }
         .suggestion-item:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.5);
         }
+        
         .pagination-btn { transition: all 0.2s; }
-        .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
+        .pagination-btn:hover:not(:disabled) { background: #ffffff; color: #000000; }
         .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .greeting-text { background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        input, select, .bg-white, .border-gray-200, .border-gray-300 {
+            background-color: #0f0f0f !important;
+            border-color: #333 !important;
+            color: #e5e5e5 !important;
+        }
+        input::placeholder, select {
+            color: #6b6b6b !important;
+        }
+        .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600 {
+            color: #f0f0f0 !important;
+        }
+        .text-gray-500, .text-gray-400, .text-gray-300 {
+            color: #a0a0a0 !important;
+        }
+        .bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .bg-black.text-white, .bg-black .text-white {
+            color: #000000 !important;
+        }
+        button.bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .border-t.border-gray-200 {
+            border-top-color: #222 !important;
+        }
+        .bg-gray-100 {
+            background-color: #1a1a1a !important;
+        }
+        .bg-white\/70 {
+            background-color: rgba(15, 15, 15, 0.7) !important;
+        }
+        .glass-card .border-t.border-gray-50 {
+            border-top-color: #1e1e1e !important;
+        }
+        .glass-card .text-gray-600 {
+            color: #c0c0c0 !important;
+        }
+        footer .text-gray-400, footer .text-gray-300 {
+            color: #6b6b6b !important;
+        }
+        footer a:hover {
+            color: #ffffff !important;
+        }
+        .bg-gradient-to-r.from-gray-900.to-gray-500 {
+            background-image: linear-gradient(to right, #ffffff, #aaaaaa) !important;
+        }
+        .bg-clip-text.text-transparent {
+            color: transparent !important;
+        }
+        .bg-white.rounded-xl.border.border-gray-200, .bg-white.rounded-xl {
+            background-color: #0f0f0f !important;
+            border-color: #333 !important;
+        }
+        select option {
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .glass-card .font-semibold.text-gray-800 {
+            color: #f0f0f0 !important;
+        }
+        .glass-card .text-gray-400, .glass-card .text-gray-500 {
+            color: #9a9a9a !important;
+        }
+        .text-amber-500 {
+            color: #fbbf24 !important;
+        }
+        .iconify-icon.text-gray-400, .iconify-icon.text-gray-500, .iconify-icon.text-gray-600 {
+            color: #8a8a8a !important;
+        }
+        .bg-black.rounded-xl {
+            background-color: #ffffff !important;
+        }
+        .bg-black.rounded-xl iconify-icon {
+            color: #000000 !important;
+        }
+        .view-details-btn.bg-black {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .pagination-btn {
+            background-color: #0f0f0f !important;
+            border-color: #333 !important;
+            color: #e5e5e5 !important;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        input:focus, select:focus {
+            border-color: #ffffff !important;
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+        }
+        .w-10.h-10.bg-black.rounded-xl {
+            background-color: #ffffff !important;
+        }
+        .w-10.h-10.bg-black.rounded-xl iconify-icon {
+            color: #000000 !important;
+        }
+        .suggestion-item .font-semibold.text-sm {
+            color: #f0f0f0 !important;
+        }
+        .suggestion-item .text-xs.text-gray-400 {
+            color: #aaa !important;
+        }
+        .suggestion-item .font-bold.text-sm {
+            color: #ffffff !important;
+        }
+        .bg-gray-50 {
+            background-color: #111 !important;
+        }
+        .border-gray-100 {
+            border-color: #222 !important;
+        }
+        .bg-gray-50\/30 {
+            background-color: rgba(17,17,17,0.3) !important;
+        }
     </style>
 </head>
 <body>
 
 <div class="max-w-7xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
-    <!-- HEADER with Greeting on left side -->
-    <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+    <!-- HEADER -->
+    <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-800">
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center shadow-sm">
-                    <iconify-icon icon="ri:exchange-dollar-line" width="24" height="24" class="text-white"></iconify-icon>
+                <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                    <iconify-icon icon="ri:exchange-dollar-line" width="24" class="text-black"></iconify-icon>
                 </div>
                 <div class="flex items-baseline">
-                    <span class="w-6 h-0.5 bg-gray-300 rounded-full block ml-1"></span>
-                    <span class="w-2 h-2 bg-gray-400 rounded-full ml-1"></span>
+                    <span class="w-6 h-0.5 bg-gray-600 rounded-full block ml-1"></span>
+                    <span class="w-2 h-2 bg-gray-500 rounded-full ml-1"></span>
                 </div>
             </div>
-            <div id="headerGreeting" class="text-sm font-medium text-gray-500 hidden md:block">
-                <!-- Greeting will be inserted here -->
-            </div>
+            <div id="headerGreeting" class="text-sm font-medium text-gray-400 hidden md:block"></div>
         </div>
-        <button id="startSellingBtn" class="bg-black text-white px-6 py-2.5 rounded-full font-medium text-sm shadow-md shadow-black/10 btn-sleek flex items-center gap-2">
-            <iconify-icon icon="mdi:storefront-outline" width="18" height="18"></iconify-icon>
+        <button id="startSellingBtn" class="bg-white text-black px-6 py-2.5 rounded-full font-medium text-sm shadow-md btn-sleek flex items-center gap-2">
+            <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
             Start selling
         </button>
     </header>
 
-    <!-- HERO SECTION -->
+    <!-- HERO SECTION: text left, carousel right -->
     <section class="mb-16 flex flex-col md:flex-row md:justify-between md:items-center gap-10">
         <div class="max-w-2xl">
-            <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mb-5">
-                <iconify-icon icon="solar:graph-new-up-linear" width="16" height="16" class="text-emerald-600"></iconify-icon>
-                <span class="text-xs font-medium text-gray-700 tracking-wide">TRUSTED MARKETPLACE</span>
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-700 shadow-sm mb-5">
+                <iconify-icon icon="solar:graph-new-up-linear" width="16" class="text-emerald-400"></iconify-icon>
+                <span class="text-xs font-medium text-gray-300 tracking-wide">TRUSTED MARKETPLACE</span>
             </div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2]">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.2]">
                 Swap & scale<br>
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500">social empires.</span>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">social empires.</span>
             </h1>
-            <p class="text-gray-500 text-lg mt-5 max-w-lg leading-relaxed">
+            <p class="text-gray-400 text-lg mt-5 max-w-lg leading-relaxed">
                 Seamless exchange. Verified accounts. Zero friction — buy or sell Instagram, TikTok, X, and more.
             </p>
             <div class="flex flex-wrap gap-4 mt-8">
-                <button id="exploreBtn" class="bg-black text-white px-7 py-3 rounded-full font-medium text-sm shadow-md shadow-black/5 btn-sleek flex items-center gap-2">
-                    <iconify-icon icon="mdi:cart-outline" width="18" height="18"></iconify-icon>
+                <button id="exploreBtn" class="bg-white text-black px-7 py-3 rounded-full font-medium text-sm shadow-md btn-sleek flex items-center gap-2">
+                    <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon>
                     Explore listings
                 </button>
-                <button id="startSellingBtn2" class="border border-gray-300 bg-white text-gray-800 px-7 py-3 rounded-full font-medium text-sm btn-sleek flex items-center gap-2">
-                    <iconify-icon icon="mdi:storefront-outline" width="18" height="18"></iconify-icon>
+                <button id="startSellingBtn2" class="border border-gray-700 bg-black/40 text-gray-200 px-7 py-3 rounded-full font-medium text-sm btn-sleek flex items-center gap-2">
+                    <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
                     SELL YOUR ACCOUNT
                 </button>
             </div>
         </div>
-        <div class="hero-image-container flex-shrink-0">
-            <img src="Image/hero.png" alt="Social Market" class="w-full max-w-md mx-auto md:max-w-lg" onerror="this.src='https://placehold.co/500x400/f0f0f0/333?text=Social+Market'">
-            <div class="flex justify-center items-center gap-5 mt-5">
-                <iconify-icon icon="skill-icons:instagram" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
-                <iconify-icon icon="logos:tiktok-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
-                <iconify-icon icon="logos:twitter" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
-                <iconify-icon icon="logos:youtube-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
-                <iconify-icon icon="logos:linkedin-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+        <!-- Featured Accounts Carousel (right side, 3:5) -->
+        <div class="flex-shrink-0 w-full md:w-auto flex justify-center">
+            <div class="featured-carousel">
+                <div id="featuredTrack" class="featured-track"></div>
             </div>
         </div>
     </section>
 
     <!-- Infinite Suggestions Carousel -->
     <div class="mb-10">
-        <h3 class="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you</h3>
+        <h3 class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you</h3>
         <div class="suggestions-container">
             <div id="suggestionsTrack" class="suggestions-track"></div>
         </div>
@@ -134,15 +291,15 @@
     <!-- Search Bar -->
     <div class="mb-6">
         <div class="relative max-w-md">
-            <iconify-icon icon="mdi:magnify" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="20"></iconify-icon>
-            <input type="text" id="searchInput" placeholder="Search by nickname or platform..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-black focus:outline-none transition">
+            <iconify-icon icon="mdi:magnify" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" width="20"></iconify-icon>
+            <input type="text" id="searchInput" placeholder="Search by nickname or platform..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-700 focus:border-white focus:outline-none transition bg-black/40 text-white">
         </div>
     </div>
 
     <!-- Filter Bar -->
-    <div class="flex flex-wrap items-center gap-4 mb-4 pb-3 border-b border-gray-100">
+    <div class="flex flex-wrap items-center gap-4 mb-4 pb-3 border-b border-gray-800">
         <div class="flex flex-wrap gap-2 items-center">
-            <span class="text-xs text-gray-400 font-medium mr-1">Platform:</span>
+            <span class="text-xs text-gray-500 font-medium mr-1">Platform:</span>
             <button data-platform="all" class="platform-chip category-active px-4 py-1.5 rounded-full text-sm font-medium border transition-all">All</button>
             <button data-platform="Instagram" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border transition-all">Instagram</button>
             <button data-platform="Tiktok" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border transition-all">TikTok</button>
@@ -151,14 +308,14 @@
             <button data-platform="X" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border transition-all">X (Twitter)</button>
         </div>
         <div class="flex items-center gap-3">
-            <span class="text-xs text-gray-400 font-medium">Price:</span>
-            <input type="number" id="minPrice" placeholder="Min $" class="w-28 px-3 py-1.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
-            <span class="text-gray-400">-</span>
-            <input type="number" id="maxPrice" placeholder="Max $" class="w-28 px-3 py-1.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+            <span class="text-xs text-gray-500 font-medium">Price:</span>
+            <input type="number" id="minPrice" placeholder="Min $" class="w-28 px-3 py-1.5 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-white bg-black/40 text-white">
+            <span class="text-gray-500">-</span>
+            <input type="number" id="maxPrice" placeholder="Max $" class="w-28 px-3 py-1.5 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-white bg-black/40 text-white">
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-400 font-medium">Category:</span>
-            <select id="categoryFilter" class="px-3 py-1.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-black">
+            <span class="text-xs text-gray-500 font-medium">Category:</span>
+            <select id="categoryFilter" class="px-3 py-1.5 border border-gray-700 rounded-xl text-sm bg-black/40 focus:outline-none focus:border-white text-white">
                 <option value="all">All Categories</option>
             </select>
         </div>
@@ -168,31 +325,31 @@
     <div class="flex justify-between items-center mb-5">
         <div id="paginationInfo" class="text-sm text-gray-500"></div>
         <div class="flex gap-2">
-            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm disabled:opacity-40">← Previous</button>
-            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm">Next →</button>
+            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-700 rounded-xl text-sm disabled:opacity-40">← Previous</button>
+            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-700 rounded-xl text-sm">Next →</button>
         </div>
     </div>
 
-    <!-- Products Grid (4 columns, 6 rows = 24 per page) -->
+    <!-- Products Grid -->
     <div id="listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
-        <div class="col-span-full text-center py-12 text-gray-400">Loading accounts...</div>
+        <div class="col-span-full text-center py-12 text-gray-500">Loading accounts...</div>
     </div>
 </div>
 
 <!-- Footer -->
-<footer class="max-w-7xl mx-auto px-5 sm:px-8 pt-16 pb-8 border-t border-gray-200 mt-10">
+<footer class="max-w-7xl mx-auto px-5 sm:px-8 pt-16 pb-8 border-t border-gray-800 mt-10">
     <div class="flex flex-col md:flex-row justify-between items-center gap-5">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
-                <iconify-icon icon="ri:exchange-dollar-line" width="16" height="16" class="text-white"></iconify-icon>
+            <div class="w-8 h-8 bg-white rounded-xl flex items-center justify-center">
+                <iconify-icon icon="ri:exchange-dollar-line" width="16" class="text-black"></iconify-icon>
             </div>
         </div>
-        <div class="flex gap-7 text-gray-400 text-sm">
-            <a href="#" id="trustLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18"></iconify-icon> Trust</a>
-            <a href="#" id="guidelinesLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18"></iconify-icon> Guidelines</a>
-            <a href="#" id="supportLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18"></iconify-icon> Support</a>
+        <div class="flex gap-7 text-gray-500 text-sm">
+            <a href="#" id="trustLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18"></iconify-icon> Trust</a>
+            <a href="#" id="guidelinesLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18"></iconify-icon> Guidelines</a>
+            <a href="#" id="supportLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18"></iconify-icon> Support</a>
         </div>
-        <div class="text-gray-300 text-xs flex items-center gap-2">
+        <div class="text-gray-600 text-xs flex items-center gap-2">
             <iconify-icon icon="ph:copyright" width="12"></iconify-icon> 2026 — all digital rights<br>© Made by PIReactive
         </div>
     </div>
@@ -221,10 +378,13 @@
     let allAccounts = [];
     let categoriesArray = [];
     let currentPage = 1;
-    const ITEMS_PER_PAGE = 24;
     let filteredAccounts = [];
+    let featuredAccounts = [];
+    let featuredInterval = null;
+    let currentFeaturedIndex = 0;
+    const ITEMS_PER_PAGE = 24;
     
-    // Get greeting based on time of day
+    // Greeting
     function getTimeBasedGreeting() {
         const hour = new Date().getHours();
         if (hour >= 5 && hour < 12) return "Good Morning!";
@@ -232,83 +392,114 @@
         if (hour >= 17 && hour < 22) return "Good Evening!";
         return "Good Night!";
     }
-    
     const greeting = getTimeBasedGreeting();
     const headerGreeting = document.getElementById('headerGreeting');
-    if (headerGreeting) {
-        headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
-    }
+    if (headerGreeting) headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
     
-    // AI Recommendation Engine using localStorage with safe defaults
+    // AI user profile
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
-        viewedPlatforms: {},
-        viewedCategories: {},
-        priceRange: { min: 0, max: Infinity },
-        clickedAccounts: [],
-        interestedPlatform: null,
-        interestedPrice: null,
-        lastUpdated: Date.now()
+        viewedPlatforms: {}, viewedCategories: {}, priceRange: { min: 0, max: Infinity },
+        clickedAccounts: [], interestedPlatform: null, interestedPrice: null, lastUpdated: Date.now()
     };
+    if (!userProfile.priceRange) userProfile.priceRange = { min: 0, max: Infinity };
     
-    // Ensure priceRange exists
-    if (!userProfile.priceRange) {
-        userProfile.priceRange = { min: 0, max: Infinity };
-    }
-    
-    function updateUserProfile(account, action = 'view') {
-        if (action === 'view' && account) {
-            userProfile.viewedPlatforms[account.socialMedia] = (userProfile.viewedPlatforms[account.socialMedia] || 0) + 1;
-            if (account.category) userProfile.viewedCategories[account.category] = (userProfile.viewedCategories[account.category] || 0) + 1;
-            const price = account.finalPrice || account.originalPrice || 0;
-            if (price > 0) {
-                if (price < userProfile.priceRange.min || userProfile.priceRange.min === 0) userProfile.priceRange.min = price;
-                if (price > userProfile.priceRange.max) userProfile.priceRange.max = price;
-                userProfile.interestedPrice = price;
-            }
-            userProfile.clickedAccounts.push({ id: account.id, platform: account.socialMedia, price, timestamp: Date.now() });
-            if (userProfile.clickedAccounts.length > 20) userProfile.clickedAccounts.shift();
-            
-            let maxViews = 0;
-            for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) {
-                if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
-            }
-            userProfile.lastUpdated = Date.now();
-            localStorage.setItem('socialMarketProfile', JSON.stringify(userProfile));
+    function updateUserProfile(account) {
+        if (!account) return;
+        userProfile.viewedPlatforms[account.socialMedia] = (userProfile.viewedPlatforms[account.socialMedia] || 0) + 1;
+        if (account.category) userProfile.viewedCategories[account.category] = (userProfile.viewedCategories[account.category] || 0) + 1;
+        const price = account.finalPrice || account.originalPrice || 0;
+        if (price > 0) {
+            if (price < userProfile.priceRange.min || userProfile.priceRange.min === 0) userProfile.priceRange.min = price;
+            if (price > userProfile.priceRange.max) userProfile.priceRange.max = price;
+            userProfile.interestedPrice = price;
         }
+        userProfile.clickedAccounts.push({ id: account.id, platform: account.socialMedia, price, timestamp: Date.now() });
+        if (userProfile.clickedAccounts.length > 20) userProfile.clickedAccounts.shift();
+        let maxViews = 0;
+        for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
+        userProfile.lastUpdated = Date.now();
+        localStorage.setItem('socialMarketProfile', JSON.stringify(userProfile));
     }
     
     function getWeightedRandomAccount(accounts, weights) {
         if (!accounts.length) return null;
-        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-        let random = Math.random() * totalWeight;
-        for (let i = 0; i < accounts.length; i++) {
-            if (random < weights[i]) return accounts[i];
-            random -= weights[i];
-        }
+        const total = weights.reduce((a,b)=>a+b,0);
+        let r = Math.random() * total;
+        for (let i=0; i<accounts.length; i++) { if (r < weights[i]) return accounts[i]; r -= weights[i]; }
         return accounts[0];
     }
     
+    // Featured selection: only available, recent, random (NO algorithm)
+    function getFeaturedAccounts(accounts, count = 12) {
+        if (!accounts.length) return [];
+        let eligible = accounts.filter(a => a.status !== 'sold' && a.images?.front);
+        if (!eligible.length) return [];
+        eligible.sort((a,b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+        });
+        const topRecent = eligible.slice(0, 30);
+        for (let i=topRecent.length-1; i>0; i--) {
+            const j = Math.floor(Math.random()*(i+1));
+            [topRecent[i], topRecent[j]] = [topRecent[j], topRecent[i]];
+        }
+        return topRecent.slice(0, count);
+    }
+    
+    function renderFeatured() {
+        if (!allAccounts.length) return;
+        featuredAccounts = getFeaturedAccounts(allAccounts, 12);
+        const track = document.getElementById('featuredTrack');
+        if (!track) return;
+        track.innerHTML = featuredAccounts.map(acc => `
+            <div class="featured-item" data-id="${acc.id}">
+                <img src="${acc.images?.front || 'https://placehold.co/300x500/1a1a1a/666?text=No+Image'}" class="featured-image" onerror="this.src='https://placehold.co/300x500/1a1a1a/666?text=Image+Error'">
+                <div class="featured-followers">
+                    <iconify-icon icon="mdi:account-group-outline" width="14"></iconify-icon>
+                    ${acc.followers?.toLocaleString() || 0}
+                </div>
+            </div>
+        `).join('');
+        track.querySelectorAll('.featured-item').forEach(el => {
+            el.addEventListener('click', () => { const id = el.dataset.id; if (id) window.location.href = `view.html?id=${id}`; });
+        });
+        currentFeaturedIndex = 0;
+        updateFeaturedPosition();
+        if (featuredInterval) clearInterval(featuredInterval);
+        featuredInterval = setInterval(() => {
+            if (featuredAccounts.length > 1) {
+                currentFeaturedIndex = (currentFeaturedIndex + 1) % featuredAccounts.length;
+                updateFeaturedPosition();
+            }
+        }, 2000);
+    }
+    
+    function updateFeaturedPosition() {
+        const track = document.getElementById('featuredTrack');
+        if (!track || featuredAccounts.length === 0) return;
+        const slideWidth = track.children[0]?.offsetWidth || 0;
+        if (slideWidth) track.style.transform = `translateX(-${currentFeaturedIndex * slideWidth}px)`;
+    }
+    
+    // Suggestions (AI algorithm)
     function generateInfiniteSuggestions(accounts, count = 50) {
-        if (!accounts || accounts.length === 0) return [];
+        if (!accounts.length) return [];
+        const available = accounts.filter(a => a.status !== 'sold');
+        const sold = accounts.filter(a => a.status === 'sold');
+        const pool = [...available, ...sold];
+        if (!pool.length) return [];
         const suggestions = [];
-        const availableAccounts = accounts.filter(a => a && a.status !== 'sold');
-        const soldAccounts = accounts.filter(a => a && a.status === 'sold');
-        const pool = [...availableAccounts, ...soldAccounts];
-        if (pool.length === 0) return [];
-        
-        // Safely get price range with fallbacks
         const minPriceRange = userProfile.priceRange?.min || 0;
         const maxPriceRange = userProfile.priceRange?.max || Infinity;
         const interestedPrice = userProfile.interestedPrice || 0;
         const interestedPlatform = userProfile.interestedPlatform || null;
         const viewedPlatforms = userProfile.viewedPlatforms || {};
         const viewedCategories = userProfile.viewedCategories || {};
-        
-        for (let i = 0; i < count; i++) {
+        for (let i=0; i<count; i++) {
             let selected = null;
-            if (Math.random() < 0.6 && userProfile.clickedAccounts && userProfile.clickedAccounts.length > 0) {
+            if (Math.random() < 0.6 && userProfile.clickedAccounts && userProfile.clickedAccounts.length) {
                 const scores = pool.map(acc => {
-                    if (!acc) return 0;
                     let score = 10;
                     if (interestedPlatform && acc.socialMedia === interestedPlatform) score += 40;
                     else if (viewedPlatforms[acc.socialMedia]) score += viewedPlatforms[acc.socialMedia] * 8;
@@ -331,56 +522,46 @@
     }
     
     function renderInfiniteSuggestions() {
-        if (allAccounts.length === 0) return;
-        const suggestionBatch = generateInfiniteSuggestions(allAccounts, 40);
+        if (!allAccounts.length) return;
+        const batch = generateInfiniteSuggestions(allAccounts, 40);
         const track = document.getElementById('suggestionsTrack');
         if (!track) return;
-        
-        const suggestionItems = suggestionBatch.map(acc => {
-            if (!acc) return '';
-            let platformIcon = "skill-icons:instagram";
-            if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
-            else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
-            
-            const isSold = acc.status === 'sold';
-            const statusBadge = isSold ? '<span class="status-sold text-[8px] px-1.5 py-0.5 ml-1">SOLD</span>' : '<span class="status-available text-[8px] px-1.5 py-0.5 ml-1">AVAIL</span>';
-            
+        const items = batch.map(acc => {
+            let icon = "skill-icons:instagram";
+            if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
+            else if (acc.socialMedia?.toLowerCase() === 'tiktok') icon = "logos:tiktok-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'youtube') icon = "logos:youtube-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'linkedin') icon = "logos:linkedin-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
+            const soldBadge = acc.status === 'sold' ? '<span class="status-sold text-[8px] px-1.5 py-0.5 ml-1">SOLD</span>' : '<span class="status-available text-[8px] px-1.5 py-0.5 ml-1">AVAIL</span>';
             return `
-                <div class="suggestion-item bg-white rounded-xl p-3 border border-gray-100 cursor-pointer hover:shadow-lg transition" data-id="${acc.id}">
+                <div class="suggestion-item" data-id="${acc.id}">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0"><iconify-icon icon="${platformIcon}" width="32"></iconify-icon></div>
+                        <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0"><iconify-icon icon="${icon}" width="32"></iconify-icon></div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname || 'Unknown')}</p>
+                            <p class="font-semibold text-sm truncate text-white">${escapeHtml(acc.nickname || 'Unknown')}</p>
                             <div class="flex items-center flex-wrap gap-1">
                                 <p class="text-xs text-gray-400">${acc.socialMedia || 'Unknown'}</p>
-                                ${statusBadge}
+                                ${soldBadge}
                             </div>
                         </div>
                     </div>
                     <div class="mt-2 flex justify-between items-center">
-                        <span class="font-bold text-sm">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
+                        <span class="font-bold text-sm text-white">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
                         <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span>
                     </div>
                 </div>
             `;
         }).join('');
-        
-        track.innerHTML = suggestionItems + suggestionItems;
+        track.innerHTML = items + items;
         track.querySelectorAll('.suggestion-item').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = el.getAttribute('data-id');
-                if (id) {
-                    const account = allAccounts.find(a => a && a.id === id);
-                    if (account) updateUserProfile(account, 'view');
-                    window.location.href = `view.html?id=${id}`;
-                }
+            el.addEventListener('click', () => {
+                const id = el.dataset.id;
+                const acc = allAccounts.find(a => a.id === id);
+                if (acc) updateUserProfile(acc);
+                window.location.href = `view.html?id=${id}`;
             });
         });
-        
         track.style.animation = 'none';
         track.offsetHeight;
         track.style.animation = 'scrollSuggestions 120s linear infinite';
@@ -390,38 +571,19 @@
         try {
             const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
             allAccounts = [];
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                if (data) {
-                    allAccounts.push({ id: doc.id, ...data });
-                }
-            });
-            await loadCategories();
+            querySnapshot.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
+            const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
+            categoriesArray = settingsDoc.exists() ? (settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle']) : ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
+            const categorySelect = document.getElementById('categoryFilter');
+            if (categorySelect) categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+            renderFeatured();
             applyFiltersAndRender();
             renderInfiniteSuggestions();
-            setInterval(() => { if (allAccounts.length > 0) renderInfiniteSuggestions(); }, 30000);
+            setInterval(() => { if (allAccounts.length) { renderFeatured(); renderInfiniteSuggestions(); } }, 45000);
         } catch(e) {
             console.error("Firebase error:", e);
-            document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Unable to load accounts. Please try again later.</div>';
+            document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">Unable to load accounts. Please try again later.</div>';
         }
-    }
-    
-    async function loadCategories() {
-        try {
-            const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
-            if (settingsDoc.exists()) {
-                categoriesArray = settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            } else {
-                categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            }
-            const categorySelect = document.getElementById('categoryFilter');
-            if (categorySelect) {
-                categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
-            }
-        } catch(e) {
-            categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-        }
-        applyFiltersAndRender();
     }
     
     function applyFiltersAndRender() {
@@ -430,12 +592,9 @@
         const minPrice = parseFloat(document.getElementById('minPrice')?.value) || 0;
         const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
         const category = document.getElementById('categoryFilter')?.value || 'all';
-        
-        const available = allAccounts.filter(a => a && a.status !== 'sold');
-        const sold = allAccounts.filter(a => a && a.status === 'sold');
-        
+        const available = allAccounts.filter(a => a.status !== 'sold');
+        const sold = allAccounts.filter(a => a.status === 'sold');
         const filterFn = (acc) => {
-            if (!acc) return false;
             const matchesSearch = !searchTerm || (acc.nickname && acc.nickname.toLowerCase().includes(searchTerm)) || (acc.socialMedia && acc.socialMedia.toLowerCase().includes(searchTerm));
             const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
             const price = acc.finalPrice || acc.originalPrice || 0;
@@ -443,119 +602,90 @@
             const matchesCategory = category === 'all' || acc.category === category;
             return matchesSearch && matchesPlatform && matchesPrice && matchesCategory;
         };
-        
         let filteredAvailable = available.filter(filterFn);
         let filteredSold = sold.filter(filterFn);
-        
         const soldToShow = [];
-        const soldPerPage = Math.min(2, filteredSold.length);
-        for (let i = 0; i < soldPerPage && filteredSold.length > 0; i++) {
-            const randomIndex = Math.floor(Math.random() * filteredSold.length);
-            soldToShow.push(filteredSold[randomIndex]);
-            filteredSold.splice(randomIndex, 1);
+        for (let i=0; i<Math.min(2, filteredSold.length); i++) {
+            const idx = Math.floor(Math.random() * filteredSold.length);
+            soldToShow.push(filteredSold[idx]);
+            filteredSold.splice(idx,1);
         }
-        
         let combined = [...filteredAvailable, ...soldToShow];
-        for (let i = combined.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+        for (let i=combined.length-1; i>0; i--) {
+            const j = Math.floor(Math.random()*(i+1));
             [combined[i], combined[j]] = [combined[j], combined[i]];
         }
-        
         filteredAccounts = combined;
         currentPage = 1;
         renderAccounts();
     }
     
     function renderAccounts() {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE;
+        const start = (currentPage-1)*ITEMS_PER_PAGE;
+        const end = start+ITEMS_PER_PAGE;
         const pageAccounts = filteredAccounts.slice(start, end);
-        const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
-        
-        const paginationInfo = document.getElementById('paginationInfo');
-        if (paginationInfo) {
-            paginationInfo.innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
-        }
-        const prevBtn = document.getElementById('prevPage');
-        const nextBtn = document.getElementById('nextPage');
-        if (prevBtn) prevBtn.disabled = currentPage === 1;
-        if (nextBtn) nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-        
+        const totalPages = Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE);
+        document.getElementById('paginationInfo').innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
         const container = document.getElementById('listings-grid');
-        if (!container) return;
-        if (pageAccounts.length === 0) {
-            container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">No accounts match your filters</div>';
-            return;
-        }
-        
+        if (!pageAccounts.length) { container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-500">No accounts match your filters</div>'; return; }
         container.innerHTML = pageAccounts.map(acc => {
-            if (!acc) return '';
             const displayPrice = acc.finalPrice || acc.originalPrice;
             const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
-            const acceptDiscountChecked = acc.acceptDiscount === true;
+            const acceptDiscount = acc.acceptDiscount === true;
             const isSold = acc.status === 'sold';
-            
-            let originalPriceDisplay = '';
-            let discountBadge = '';
-            if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) {
-                originalPriceDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
-            }
-            if (acceptDiscountChecked && !isSold) {
-                discountBadge = `<span class="discount-badge">✔ Discount</span>`;
-            }
-            
+            let originalDisplay = '', discountBadge = '';
+            if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) originalDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
+            if (acceptDiscount && !isSold) discountBadge = '<span class="discount-badge">✔ Discount</span>';
+            let icon = "skill-icons:instagram";
+            if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
+            else if (acc.socialMedia?.toLowerCase() === 'tiktok') icon = "logos:tiktok-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'youtube') icon = "logos:youtube-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'linkedin') icon = "logos:linkedin-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
             const statusBadge = isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>';
-            const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-500">Negotiable</span>' : `<span class="text-xl font-bold">$${displayPrice?.toLocaleString()}</span> ${originalPriceDisplay} ${discountBadge}`;
-            
-            let platformIcon = "skill-icons:instagram";
-            if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
-            else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
-            
+            const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-400">Negotiable</span>' : `<span class="text-xl font-bold text-white">$${displayPrice?.toLocaleString()}</span> ${originalDisplay} ${discountBadge}`;
             const profileImg = acc.images?.profile || null;
-            
             return `
                 <div class="glass-card rounded-2xl overflow-hidden cursor-pointer product-card" data-id="${acc.id}">
                     <div class="p-4 pb-3 flex items-start gap-3">
-                        ${profileImg && !isSold ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32" height="32"></iconify-icon></div>`}
+                        ${profileImg && !isSold ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center"><iconify-icon icon="${icon}" width="32"></iconify-icon></div>`}
                         <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800 text-base tracking-tight">${escapeHtml(acc.nickname || 'Unknown')}</h3>
+                            <h3 class="font-semibold text-gray-100 text-base">${escapeHtml(acc.nickname || 'Unknown')}</h3>
                             <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                 <span class="text-[11px] font-medium uppercase tracking-wider text-gray-400">${acc.socialMedia || ''}</span>
                                 ${statusBadge}
                             </div>
                         </div>
                     </div>
-                    <div class="px-4 py-2 flex justify-between items-center border-y border-gray-50 bg-gray-50/30">
-                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:account-group-outline" width="14" class="text-gray-400"></iconify-icon><span class="text-sm font-medium text-gray-700">${acc.followers?.toLocaleString() || 0}</span></div>
-                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:trending-up" width="14" class="text-emerald-500"></iconify-icon><span class="text-sm font-medium text-gray-700">${acc.engagement || 'N/A'}</span></div>
+                    <div class="px-4 py-2 flex justify-between items-center border-y border-gray-800 bg-gray-900/30">
+                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:account-group-outline" width="14" class="text-gray-500"></iconify-icon><span class="text-sm font-medium text-gray-300">${acc.followers?.toLocaleString() || 0}</span></div>
+                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:trending-up" width="14" class="text-emerald-500"></iconify-icon><span class="text-sm font-medium text-gray-300">${acc.engagement || 'N/A'}</span></div>
                     </div>
                     <div class="p-4 pt-3 flex items-center justify-between">
                         <div>${priceHtml}</div>
-                        <button class="view-details-btn bg-black text-white px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1 shadow-sm btn-sleek" data-id="${acc.id}">
+                        <button class="view-details-btn bg-white text-black px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1 shadow-sm btn-sleek" data-id="${acc.id}">
                             <iconify-icon icon="mdi:eye-outline" width="14"></iconify-icon> View
                         </button>
                     </div>
                 </div>
             `;
         }).join('');
-        
         document.querySelectorAll('.product-card, .view-details-btn').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const id = el.getAttribute('data-id');
                 if (id) {
-                    const account = allAccounts.find(a => a && a.id === id);
-                    if (account) updateUserProfile(account, 'view');
+                    const acc = allAccounts.find(a => a.id === id);
+                    if (acc) updateUserProfile(acc);
                     window.location.href = `view.html?id=${id}`;
                 }
             });
         });
     }
     
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => { if (m==='&') return '&amp;'; if (m==='<') return '&lt;'; if (m==='>') return '&gt;'; return m; }); }
     
     // Event listeners
     document.getElementById('searchInput')?.addEventListener('input', () => applyFiltersAndRender());
@@ -564,28 +694,20 @@
     document.getElementById('categoryFilter')?.addEventListener('change', () => applyFiltersAndRender());
     document.getElementById('prevPage')?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
     document.getElementById('nextPage')?.addEventListener('click', () => { const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE); if (currentPage < totalPages) { currentPage++; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
-    
     document.querySelectorAll('.platform-chip').forEach(chip => {
         chip.addEventListener('click', () => {
-            document.querySelectorAll('.platform-chip').forEach(c => {
-                c.classList.remove('category-active');
-                c.classList.add('category-inactive');
-            });
-            chip.classList.remove('category-inactive');
-            chip.classList.add('category-active');
+            document.querySelectorAll('.platform-chip').forEach(c => { c.classList.remove('category-active'); c.classList.add('category-inactive'); });
+            chip.classList.remove('category-inactive'); chip.classList.add('category-active');
             applyFiltersAndRender();
         });
     });
-    
     document.getElementById('exploreBtn')?.addEventListener('click', () => { document.getElementById('listings-grid').scrollIntoView({ behavior: 'smooth' }); });
     const startSellingBtns = [document.getElementById('startSellingBtn'), document.getElementById('startSellingBtn2')];
-    startSellingBtns.forEach(btn => { btn?.addEventListener('click', () => { window.location.href = 'sell.html'; }); });
-    
+    startSellingBtns.forEach(btn => btn?.addEventListener('click', () => { window.location.href = 'sell.html'; }));
     document.getElementById('trustLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
-    
-    // Load everything immediately
+    window.addEventListener('resize', () => updateFeaturedPosition());
     loadAccounts();
 </script>
 </body>
