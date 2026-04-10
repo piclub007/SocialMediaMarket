@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
         body { background: #f7f7f9; }
@@ -32,9 +33,13 @@
         .search-result-item:hover { background: #fafafa; transform: translateX(2px); }
         .image-preview-sm { width: 48px; height: 48px; object-fit: cover; border-radius: 12px; }
         .stat-card { background: white; border-radius: 24px; border: 1px solid #f0f0f0; transition: all 0.2s; }
-        .stat-card:hover { border-color: #e0e0e0; }
+        .stat-card:hover { border-color: #e0e0e0; transform: translateY(-2px); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.2s ease-out; }
+        .chart-container { max-height: 280px; }
+        .metric-value { font-size: 28px; font-weight: 700; }
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
     </style>
 </head>
 <body>
@@ -78,15 +83,33 @@
                 <button id="menuToggle" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100"><iconify-icon icon="mdi:menu" width="26"></iconify-icon></button>
             </div>
 
-            <!-- DASHBOARD PANEL -->
-            <div id="dashboardPanel" class="max-w-6xl mx-auto fade-in">
-                <div class="form-card p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold tracking-tight mb-6">Dashboard Overview</h2>
-                    <div class="grid md:grid-cols-3 gap-5">
-                        <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:account-group" width="32" class="text-black"></iconify-icon><div><p class="text-gray-500 text-sm">Total Accounts</p><p id="totalAccounts" class="text-3xl font-bold">0</p></div></div></div>
-                        <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:sale" width="32" class="text-green-600"></iconify-icon><div><p class="text-gray-500 text-sm">Sold Accounts</p><p id="soldAccounts" class="text-3xl font-bold">0</p></div></div></div>
-                        <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:currency-usd" width="32" class="text-amber-600"></iconify-icon><div><p class="text-gray-500 text-sm">Active Listings</p><p id="activeAccounts" class="text-3xl font-bold">0</p></div></div></div>
-                    </div>
+            <!-- DASHBOARD PANEL with Advanced Analytics -->
+            <div id="dashboardPanel" class="max-w-7xl mx-auto fade-in">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:account-group" width="28" class="text-black"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Accounts</p><p id="totalAccounts" class="text-2xl font-bold">0</p></div></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:sale" width="28" class="text-green-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Sold</p><p id="soldAccounts" class="text-2xl font-bold">0</p></div></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:currency-usd" width="28" class="text-amber-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Active Listings</p><p id="activeAccounts" class="text-2xl font-bold">0</p></div></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:trending-up" width="28" class="text-blue-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Value</p><p id="totalValue" class="text-2xl font-bold">$0</p></div></div></div>
+                </div>
+
+                <!-- Advanced Metrics Row -->
+                <div class="grid md:grid-cols-3 gap-5 mb-6">
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Avg. Price</p><p id="avgPrice" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:chart-line" width="32" class="text-gray-400"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Across all active accounts</span></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Conversion Rate</p><p id="conversionRate" class="text-2xl font-bold">0%</p></div><iconify-icon icon="mdi:percent" width="32" class="text-gray-400"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Sold / Total accounts</span></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Platforms</p><p id="platformCount" class="text-2xl font-bold">0</p></div><iconify-icon icon="mdi:apps" width="32" class="text-gray-400"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Different social media</span></div></div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid lg:grid-cols-2 gap-6 mb-6">
+                    <div class="form-card p-5"><h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:chart-pie" width="20"></iconify-icon> Accounts by Platform</h3><canvas id="platformChart" class="chart-container w-full" style="max-height: 260px;"></canvas></div>
+                    <div class="form-card p-5"><h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:chart-bar" width="20"></iconify-icon> Price Distribution</h3><canvas id="priceChart" class="chart-container w-full" style="max-height: 260px;"></canvas></div>
+                </div>
+
+                <!-- Top Accounts & Recent Activity -->
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div class="form-card p-5"><h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:crown" width="20"></iconify-icon> Top 5 Most Valuable Accounts</h3><div id="topAccountsList" class="space-y-2"></div></div>
+                    <div class="form-card p-5"><h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:clock-outline" width="20"></iconify-icon> Recent Activity</h3><div id="recentActivityList" class="space-y-2 text-sm"></div></div>
                 </div>
             </div>
 
@@ -101,7 +124,7 @@
                 </div>
             </div>
 
-            <!-- ADD ACCOUNT PANEL (Redirect) -->
+            <!-- ADD ACCOUNT PANEL (Redirect only) -->
             <div id="addAccountPanel" class="max-w-4xl mx-auto hidden fade-in">
                 <div class="form-card p-8 text-center">
                     <iconify-icon icon="mdi:plus-circle-outline" width="64" class="text-gray-300 mx-auto mb-4"></iconify-icon>
@@ -111,7 +134,7 @@
                 </div>
             </div>
 
-            <!-- ACCOUNT ID / SOLD PANEL (Live search by ID or Name) -->
+            <!-- ACCOUNT ID / SOLD PANEL -->
             <div id="accountIdPanel" class="max-w-3xl mx-auto hidden fade-in">
                 <div class="form-card p-6 md:p-8">
                     <h2 class="text-2xl font-semibold mb-2">Quick Search & Mark as Sold</h2>
@@ -136,7 +159,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, deleteDoc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -153,12 +176,14 @@
     let searchTimeout = null;
     let quickSearchTimeout = null;
     let categoriesArray = [], countriesArray = [], premadeFeaturesArray = [];
+    let platformChart = null, priceChart = null;
 
     async function loadAccounts() {
         const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
         allAccounts = [];
         querySnapshot.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
         updateDashboardStats();
+        updateAnalytics();
         renderAccountsGrid();
     }
 
@@ -166,9 +191,51 @@
         const total = allAccounts.length;
         const sold = allAccounts.filter(a => a.status === 'sold').length;
         const active = allAccounts.filter(a => a.status !== 'sold').length;
+        const totalValue = allAccounts.filter(a => a.status !== 'sold').reduce((sum, a) => sum + (a.finalPrice || a.originalPrice || 0), 0);
         document.getElementById('totalAccounts').innerText = total;
         document.getElementById('soldAccounts').innerText = sold;
         document.getElementById('activeAccounts').innerText = active;
+        document.getElementById('totalValue').innerText = '$' + totalValue.toLocaleString();
+        
+        const activeAccounts = allAccounts.filter(a => a.status !== 'sold');
+        const avgPrice = activeAccounts.length ? activeAccounts.reduce((s, a) => s + (a.finalPrice || a.originalPrice || 0), 0) / activeAccounts.length : 0;
+        document.getElementById('avgPrice').innerText = '$' + Math.round(avgPrice).toLocaleString();
+        
+        const conversionRate = total ? ((sold / total) * 100).toFixed(1) : 0;
+        document.getElementById('conversionRate').innerText = conversionRate + '%';
+        
+        const uniquePlatforms = new Set(allAccounts.map(a => a.socialMedia).filter(Boolean));
+        document.getElementById('platformCount').innerText = uniquePlatforms.size;
+    }
+
+    function updateAnalytics() {
+        // Platform distribution
+        const platformMap = new Map();
+        allAccounts.forEach(acc => { const platform = acc.socialMedia || 'Other'; platformMap.set(platform, (platformMap.get(platform) || 0) + 1); });
+        const platforms = Array.from(platformMap.keys());
+        const platformCounts = Array.from(platformMap.values());
+        
+        if(platformChart) platformChart.destroy();
+        const platformCtx = document.getElementById('platformChart').getContext('2d');
+        platformChart = new Chart(platformCtx, { type: 'doughnut', data: { labels: platforms, datasets: [{ data: platformCounts, backgroundColor: ['#000000', '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } } });
+        
+        // Price distribution (buckets)
+        const activeAccounts = allAccounts.filter(a => a.status !== 'sold');
+        const priceRanges = [{ min: 0, max: 500, label: '$0-500' }, { min: 500, max: 1000, label: '$500-1k' }, { min: 1000, max: 2000, label: '$1k-2k' }, { min: 2000, max: 5000, label: '$2k-5k' }, { min: 5000, max: Infinity, label: '$5k+' }];
+        const rangeCounts = priceRanges.map(range => activeAccounts.filter(a => { const price = a.finalPrice || a.originalPrice || 0; return price >= range.min && price < range.max; }).length);
+        if(priceChart) priceChart.destroy();
+        const priceCtx = document.getElementById('priceChart').getContext('2d');
+        priceChart = new Chart(priceCtx, { type: 'bar', data: { labels: priceRanges.map(r => r.label), datasets: [{ label: 'Number of Accounts', data: rangeCounts, backgroundColor: '#000000', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
+        
+        // Top 5 most valuable accounts
+        const topAccounts = [...activeAccounts].sort((a,b) => (b.finalPrice || b.originalPrice || 0) - (a.finalPrice || a.originalPrice || 0)).slice(0,5);
+        const topList = document.getElementById('topAccountsList');
+        if(topList) topList.innerHTML = topAccounts.map((acc, idx) => `<div class="flex justify-between items-center p-2 bg-gray-50 rounded-xl"><div class="flex items-center gap-2"><span class="font-bold text-gray-400 w-6">${idx+1}</span><span class="font-medium">${escapeHtml(acc.nickname)}</span><span class="text-xs text-gray-400">${acc.socialMedia || ''}</span></div><span class="font-bold">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span></div>`).join('') || '<div class="text-gray-400 text-center py-4">No active accounts</div>';
+        
+        // Recent activity (last 5 created)
+        const recent = [...allAccounts].sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0,5);
+        const recentList = document.getElementById('recentActivityList');
+        if(recentList) recentList.innerHTML = recent.map(acc => `<div class="flex justify-between items-center p-2 border-b border-gray-50"><div><span class="font-medium text-sm">${escapeHtml(acc.nickname)}</span><p class="text-xs text-gray-400">${acc.createdAt ? new Date(acc.createdAt).toLocaleDateString() : 'Recently'}</p></div><span class="text-xs ${acc.status === 'sold' ? 'text-red-500' : 'text-green-500'}">${acc.status === 'sold' ? 'SOLD' : 'Active'}</span></div>`).join('') || '<div class="text-gray-400 text-center py-4">No recent activity</div>';
     }
 
     function renderAccountsGrid(searchTerm = '') {
@@ -180,20 +247,18 @@
         container.innerHTML = filtered.map(acc => `
             <div class="account-card p-4 cursor-pointer" data-id="${acc.id}">
                 <div class="flex justify-between items-start mb-2"><div><h3 class="font-semibold text-gray-800">${escapeHtml(acc.nickname)}</h3><p class="text-xs text-gray-400 mt-0.5">${acc.socialMedia || 'Social'} • ${acc.followers?.toLocaleString() || 0} followers</p></div>${acc.status === 'sold' ? '<span class="sold-badge">SOLD</span>' : '<span class="active-badge">Active</span>'}</div>
-                <div class="flex justify-between items-center mt-3"><span class="text-xl font-bold">$${acc.finalPrice || acc.originalPrice || 0}</span><button class="edit-account-btn text-gray-500 hover:text-black transition" data-id="${acc.id}"><iconify-icon icon="mdi:eye-edit" width="20"></iconify-icon></button></div>
+                <div class="flex justify-between items-center mt-3"><span class="text-xl font-bold">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span><button class="edit-account-btn text-gray-500 hover:text-black transition" data-id="${acc.id}"><iconify-icon icon="mdi:eye-edit" width="20"></iconify-icon></button></div>
             </div>
         `).join('');
         document.querySelectorAll('.edit-account-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); window.location.href = `edit.html?id=${btn.getAttribute('data-id')}`; }); });
         document.querySelectorAll('.account-card').forEach(card => { card.addEventListener('click', (e) => { if(!e.target.closest('.edit-account-btn')) { window.location.href = `edit.html?id=${card.getAttribute('data-id')}`; } }); });
     }
 
-    // Live search with debounce (under 300ms)
     document.getElementById('searchAccountsInput')?.addEventListener('input', (e) => {
         if(searchTimeout) clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => { renderAccountsGrid(e.target.value); }, 200);
     });
 
-    // QUICK SEARCH (ID or Name) with ultra-fast response
     async function performQuickSearch(searchValue) {
         const resultsContainer = document.getElementById('quickSearchResults');
         if(!searchValue.trim()) { resultsContainer.innerHTML = '<div class="text-center text-gray-400 py-8"><iconify-icon icon="mdi:search-web" width="32" class="mx-auto mb-2"></iconify-icon><p>Start typing to search by ID or nickname</p></div>'; return; }
@@ -204,7 +269,7 @@
             <div class="search-result-item p-4 rounded-xl bg-white border border-gray-100" data-id="${acc.id}">
                 <div class="flex gap-3">
                     ${acc.images?.front ? `<img src="${acc.images.front}" class="image-preview-sm object-cover" onerror="this.style.display='none'">` : `<div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center"><iconify-icon icon="mdi:account" width="24" class="text-gray-400"></iconify-icon></div>`}
-                    <div class="flex-1"><div class="flex justify-between items-start"><div><p class="font-semibold text-gray-800">${escapeHtml(acc.nickname)}</p><p class="text-xs text-gray-400 font-mono">ID: ${acc.id.substring(0,12)}...</p><p class="text-xs mt-1">${acc.socialMedia || ''} • ${acc.followers?.toLocaleString() || 0} followers</p></div><div class="text-right"><p class="font-bold text-lg">$${acc.finalPrice || acc.originalPrice || 0}</p>${acc.status === 'sold' ? '<span class="sold-badge text-xs">SOLD</span>' : '<span class="active-badge text-xs">Active</span>'}</div></div></div>
+                    <div class="flex-1"><div class="flex justify-between items-start"><div><p class="font-semibold text-gray-800">${escapeHtml(acc.nickname)}</p><p class="text-xs text-gray-400 font-mono">ID: ${acc.id.substring(0,12)}...</p><p class="text-xs mt-1">${acc.socialMedia || ''} • ${acc.followers?.toLocaleString() || 0} followers</p></div><div class="text-right"><p class="font-bold text-lg">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</p>${acc.status === 'sold' ? '<span class="sold-badge text-xs">SOLD</span>' : '<span class="active-badge text-xs">Active</span>'}</div></div></div>
                 </div>
                 ${acc.status !== 'sold' ? `<div class="mt-3 flex justify-end"><button class="mark-sold-btn bg-red-50 text-red-600 px-4 py-1.5 rounded-xl text-xs font-medium hover:bg-red-100 transition" data-id="${acc.id}"><iconify-icon icon="mdi:sale" width="14" class="inline mr-1"></iconify-icon> Mark as SOLD</button></div>` : '<div class="mt-2 text-right text-xs text-green-600">✓ Already sold</div>'}
             </div>
@@ -232,7 +297,6 @@
         };
     }
 
-    // SETTINGS LOGIC
     async function fetchSettings() { 
         try { 
             const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
@@ -249,9 +313,9 @@
         } catch(e) { console.error(e); } 
     }
     function renderSettingsUI() {
-        const countriesDiv = document.getElementById('countriesList'); if(countriesDiv) countriesDiv.innerHTML = countriesArray.map(c => `<div class="chip-feature bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(c)} <button onclick="window.removeSetting('country','${c}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No countries</span>';
-        const catsDiv = document.getElementById('categoriesList'); if(catsDiv) catsDiv.innerHTML = categoriesArray.map(c => `<div class="chip-feature bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(c)} <button onclick="window.removeSetting('category','${c}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No categories</span>';
-        const featDiv = document.getElementById('premadeFeaturesManage'); if(featDiv) featDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(f)} <button onclick="window.removeSetting('feature','${f}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No features</span>';
+        const countriesDiv = document.getElementById('countriesList'); if(countriesDiv) countriesDiv.innerHTML = countriesArray.map(c => `<div class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(c)} <button onclick="window.removeSetting('country','${c}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No countries</span>';
+        const catsDiv = document.getElementById('categoriesList'); if(catsDiv) catsDiv.innerHTML = categoriesArray.map(c => `<div class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(c)} <button onclick="window.removeSetting('category','${c}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No categories</span>';
+        const featDiv = document.getElementById('premadeFeaturesManage'); if(featDiv) featDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(f)} <button onclick="window.removeSetting('feature','${f}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No features</span>';
     }
     window.removeSetting = async (type, val) => { 
         if(type === 'country') countriesArray = countriesArray.filter(c=>c!==val); 
@@ -266,9 +330,8 @@
 
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
-    // TAB MANAGEMENT
-    const tabs = { dashboard: 'dashboardPanel', accounts: 'accountsPanel', addAccount: 'addAccountPanel', accountId: 'accountIdPanel', settings: 'settingsPanel' };
     function switchTab(tabId) {
+        const tabs = { dashboard: 'dashboardPanel', accounts: 'accountsPanel', addAccount: 'addAccountPanel', accountId: 'accountIdPanel', settings: 'settingsPanel' };
         Object.values(tabs).forEach(pid => { const el = document.getElementById(pid); if(el) el.classList.add('hidden'); });
         document.getElementById(tabs[tabId]).classList.remove('hidden');
         document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
@@ -287,7 +350,6 @@
     document.getElementById('tab-settings')?.addEventListener('click', () => { switchTab('settings'); fetchSettings(); });
     document.getElementById('redirectAddBtn')?.addEventListener('click', () => { window.location.href = 'add.html'; });
 
-    // MOBILE SIDEBAR
     const menuToggle = document.getElementById('menuToggle'), mobileSidebar = document.getElementById('mobileSidebar'), overlayBg = document.getElementById('overlayBg'), closeSidebar = document.getElementById('closeSidebarBtn');
     function openSidebar() { mobileSidebar.classList.add('open'); overlayBg.classList.add('active'); }
     function closeSidebarFunc() { mobileSidebar.classList.remove('open'); overlayBg.classList.remove('active'); }
