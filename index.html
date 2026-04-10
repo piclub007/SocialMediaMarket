@@ -222,6 +222,73 @@
         .bg-gray-50\/30 {
             background-color: rgba(17,17,17,0.3) !important;
         }
+
+        /* Movie-poster style cards - 5 columns on large screens */
+        .movie-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0f0f0f;
+            aspect-ratio: 2 / 3;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #1a1a1a;
+        }
+        .movie-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            pointer-events: none;
+        }
+        .movie-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .movie-followers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            margin-bottom: 4px;
+        }
+        .movie-platform {
+            font-size: 11px;
+            color: #ccc;
+            font-weight: 400;
+        }
+        /* Responsive grid: 1 -> 2 -> 3 -> 5 columns */
+        .grid-movie {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(1, 1fr);
+        }
+        @media (min-width: 640px) {
+            .grid-movie { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 768px) {
+            .grid-movie { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1280px) {
+            .grid-movie { grid-template-columns: repeat(5, 1fr); }
+        }
     </style>
 </head>
 <body>
@@ -330,8 +397,8 @@
         </div>
     </div>
 
-    <!-- Products Grid -->
-    <div id="listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
+    <!-- Products Grid (Movie-poster style, responsive 5 columns) -->
+    <div id="listings-grid" class="grid-movie pb-20">
         <div class="col-span-full text-center py-12 text-gray-500">Loading accounts...</div>
     </div>
 </div>
@@ -382,7 +449,7 @@
     let featuredAccounts = [];
     let featuredInterval = null;
     let currentFeaturedIndex = 0;
-    const ITEMS_PER_PAGE = 24;
+    const ITEMS_PER_PAGE = 20; // 5 columns * 4 rows = 20 items per page
     
     // Greeting
     function getTimeBasedGreeting() {
@@ -629,58 +696,37 @@
         document.getElementById('prevPage').disabled = currentPage === 1;
         document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
         const container = document.getElementById('listings-grid');
-        if (!pageAccounts.length) { container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-500">No accounts match your filters</div>'; return; }
+        if (!pageAccounts.length) {
+            container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-500">No accounts match your filters</div>';
+            return;
+        }
         container.innerHTML = pageAccounts.map(acc => {
-            const displayPrice = acc.finalPrice || acc.originalPrice;
-            const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
-            const acceptDiscount = acc.acceptDiscount === true;
+            const frontImg = acc.images?.front || 'https://placehold.co/400x600/1a1a1a/666?text=No+Image';
             const isSold = acc.status === 'sold';
-            let originalDisplay = '', discountBadge = '';
-            if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) originalDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
-            if (acceptDiscount && !isSold) discountBadge = '<span class="discount-badge">✔ Discount</span>';
-            let icon = "skill-icons:instagram";
-            if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
-            else if (acc.socialMedia?.toLowerCase() === 'tiktok') icon = "logos:tiktok-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'youtube') icon = "logos:youtube-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'linkedin') icon = "logos:linkedin-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
-            const statusBadge = isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>';
-            const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-400">Negotiable</span>' : `<span class="text-xl font-bold text-white">$${displayPrice?.toLocaleString()}</span> ${originalDisplay} ${discountBadge}`;
-            const profileImg = acc.images?.profile || null;
+            const statusText = isSold ? 'SOLD' : 'AVAILABLE';
+            const statusClass = isSold ? 'status-sold' : 'status-available';
             return `
-                <div class="glass-card rounded-2xl overflow-hidden cursor-pointer product-card" data-id="${acc.id}">
-                    <div class="p-4 pb-3 flex items-start gap-3">
-                        ${profileImg && !isSold ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center"><iconify-icon icon="${icon}" width="32"></iconify-icon></div>`}
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-100 text-base">${escapeHtml(acc.nickname || 'Unknown')}</h3>
-                            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                <span class="text-[11px] font-medium uppercase tracking-wider text-gray-400">${acc.socialMedia || ''}</span>
-                                ${statusBadge}
-                            </div>
+                <div class="movie-card" data-id="${acc.id}">
+                    <div class="movie-status">
+                        <span class="${statusClass} text-[10px] px-2 py-0.5">${statusText}</span>
+                    </div>
+                    <img src="${frontImg}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1a1a/666?text=No+Image'">
+                    <div class="movie-overlay">
+                        <div class="movie-followers">
+                            <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
+                            <span>${acc.followers?.toLocaleString() || 0}</span>
                         </div>
-                    </div>
-                    <div class="px-4 py-2 flex justify-between items-center border-y border-gray-800 bg-gray-900/30">
-                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:account-group-outline" width="14" class="text-gray-500"></iconify-icon><span class="text-sm font-medium text-gray-300">${acc.followers?.toLocaleString() || 0}</span></div>
-                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:trending-up" width="14" class="text-emerald-500"></iconify-icon><span class="text-sm font-medium text-gray-300">${acc.engagement || 'N/A'}</span></div>
-                    </div>
-                    <div class="p-4 pt-3 flex items-center justify-between">
-                        <div>${priceHtml}</div>
-                        <button class="view-details-btn bg-white text-black px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1 shadow-sm btn-sleek" data-id="${acc.id}">
-                            <iconify-icon icon="mdi:eye-outline" width="14"></iconify-icon> View
-                        </button>
+                        <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
                     </div>
                 </div>
             `;
         }).join('');
-        document.querySelectorAll('.product-card, .view-details-btn').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = el.getAttribute('data-id');
-                if (id) {
-                    const acc = allAccounts.find(a => a.id === id);
-                    if (acc) updateUserProfile(acc);
-                    window.location.href = `view.html?id=${id}`;
-                }
+        document.querySelectorAll('.movie-card').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.dataset.id;
+                const acc = allAccounts.find(a => a.id === id);
+                if (acc) updateUserProfile(acc);
+                window.location.href = `view.html?id=${id}`;
             });
         });
     }
