@@ -23,6 +23,8 @@
         .category-inactive:hover { background: #f4f4f6; border-color: #c7c9ce; }
         .price-badge { background: #f8f9fc; border-radius: 12px; padding: 2px 8px; font-size: 12px; }
         .original-price { text-decoration: line-through; color: #9ca3af; font-size: 13px; }
+        .discount-badge { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-left: 8px; }
+        .hero-image-container { background: transparent; box-shadow: none; border: none; }
     </style>
 </head>
 <body class="antialiased">
@@ -45,7 +47,7 @@
         </button>
     </header>
 
-    <!-- HERO SECTION with image -->
+    <!-- HERO SECTION with image (no shadows/borders) + social logos at bottom -->
     <section class="mb-16 flex flex-col md:flex-row md:justify-between md:items-center gap-10">
         <div class="max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mb-5">
@@ -70,8 +72,16 @@
                 </button>
             </div>
         </div>
-        <div class="flex-shrink-0">
-            <img src="Image/hero.png" alt="Social Market" class="w-full max-w-md mx-auto md:max-w-lg rounded-2xl shadow-xl" onerror="this.src='https://placehold.co/500x400/f0f0f0/333?text=Social+Market'">
+        <div class="hero-image-container flex-shrink-0">
+            <img src="Image/hero.png" alt="Social Market" class="w-full max-w-md mx-auto md:max-w-lg" onerror="this.src='https://placehold.co/500x400/f0f0f0/333?text=Social+Market'">
+            <!-- Social Media Logos at bottom of image -->
+            <div class="flex justify-center items-center gap-5 mt-5">
+                <iconify-icon icon="skill-icons:instagram" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:tiktok-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:twitter" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:youtube-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:linkedin-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+            </div>
         </div>
     </section>
 
@@ -230,8 +240,20 @@
         container.innerHTML = filtered.map(acc => {
             const displayPrice = acc.finalPrice || acc.originalPrice;
             const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
-            const originalPriceDisplay = hasDiscount ? `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>` : '';
-            const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-500">Negotiable</span>' : `<span class="text-xl font-bold">$${displayPrice?.toLocaleString()}</span> ${originalPriceDisplay}`;
+            const acceptDiscountChecked = acc.acceptDiscount === true;
+            
+            let originalPriceDisplay = '';
+            let discountBadge = '';
+            
+            if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) {
+                originalPriceDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
+            }
+            
+            if (acceptDiscountChecked) {
+                discountBadge = `<span class="discount-badge">✔ Discount</span>`;
+            }
+            
+            const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-500">Negotiable</span>' : `<span class="text-xl font-bold">$${displayPrice?.toLocaleString()}</span> ${originalPriceDisplay} ${discountBadge}`;
             
             let platformIcon = "mdi:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
@@ -307,9 +329,19 @@
         btn?.addEventListener('click', () => { window.location.href = 'sell.html'; });
     });
     
-    document.getElementById('trustLink')?.addEventListener('click', (e) => { e.preventDefault(); alert('Trust & Safety: All accounts are verified. Escrow protection available.'); });
-    document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); alert('Guidelines: No fake followers, no bots. Transparent transactions only.'); });
-    document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); alert('Support: Contact us at support@socialmarket.com'); });
+    // Trust, Guidelines, Support - open info.html
+    document.getElementById('trustLink')?.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        window.location.href = 'info.html'; 
+    });
+    document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        window.location.href = 'info.html'; 
+    });
+    document.getElementById('supportLink')?.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        window.location.href = 'info.html'; 
+    });
     
     loadAccounts();
 </script>
