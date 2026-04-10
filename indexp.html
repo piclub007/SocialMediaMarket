@@ -9,7 +9,6 @@
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-        /* FULL SLEEK BLACK THEME */
         body { background: #050505; -webkit-tap-highlight-color: transparent; }
         .glass-card { background: #0f0f0f; border: 1px solid #222222; transition: all 0.2s ease; cursor: pointer; border-radius: 20px; }
         .glass-card:active { transform: scale(0.98); }
@@ -23,7 +22,41 @@
         .status-available { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         .status-sold { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         
-        /* Continuous infinite scrolling carousel - very slow */
+        /* Featured Carousel - 1 item at a time, sharp edges, smooth slide */
+        .featured-carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .featured-track {
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+        }
+        .featured-item {
+            flex: 0 0 100%;
+            padding: 0 8px;
+            cursor: pointer;
+        }
+        .featured-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: #1a1a1a;
+            border-radius: 0;
+        }
+        .featured-followers {
+            text-align: center;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #e5e5e5;
+        }
+        
+        /* Suggestions carousel - 1.7x speed (60s loop) */
         .suggestions-wrapper {
             overflow: hidden;
             position: relative;
@@ -32,12 +65,12 @@
         .suggestions-track {
             display: flex;
             width: fit-content;
-            animation: scrollSuggestionsSlow 280s linear infinite;
+            animation: scrollSuggestions 60s linear infinite;
         }
         .suggestions-track:hover {
             animation-play-state: paused;
         }
-        @keyframes scrollSuggestionsSlow {
+        @keyframes scrollSuggestions {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
@@ -87,12 +120,11 @@
             -moz-appearance: textfield;
         }
         
-        /* Smooth scrolling */
         html {
             scroll-behavior: smooth;
         }
 
-        /* Custom black theme overrides for inputs, selects, borders, text */
+        /* Custom black theme overrides */
         input, select, .bg-white, .border-gray-200, .border-gray-300 {
             background-color: #0f0f0f !important;
             border-color: #2a2a2a !important;
@@ -270,7 +302,18 @@
         <iconify-icon icon="logos:linkedin-icon" width="24" class="text-gray-500"></iconify-icon>
     </div>
 
-    <!-- Continuous Infinite Suggestions Carousel -->
+    <!-- Featured Accounts Carousel (1 image at a time, smooth sliding) -->
+    <div class="mb-6">
+        <div class="flex items-center gap-2 mb-3">
+            <iconify-icon icon="mdi:star-four-points" width="16" class="text-yellow-400"></iconify-icon>
+            <h3 class="text-sm font-semibold text-gray-200">Featured Accounts</h3>
+        </div>
+        <div class="featured-carousel">
+            <div id="featuredTrack" class="featured-track"></div>
+        </div>
+    </div>
+
+    <!-- Suggested for you Carousel (1.7x Speed) -->
     <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
             <iconify-icon icon="mdi:lightbulb" width="16" class="text-amber-400"></iconify-icon>
@@ -349,6 +392,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
+    // Auto-redirect to index.html on big screens (width > 768px)
+    function checkScreenSizeAndRedirect() {
+        if (window.innerWidth > 768) {
+            window.location.href = "index.html";
+        }
+    }
+    checkScreenSizeAndRedirect();
+    window.addEventListener('resize', checkScreenSizeAndRedirect);
+    
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
         authDomain: "project-k21n.firebaseapp.com",
@@ -365,9 +417,11 @@
     let categoriesArray = [];
     let currentPage = 1;
     let filteredAccounts = [];
+    let featuredAccounts = [];
+    let featuredInterval = null;
+    let currentFeaturedIndex = 0;
     const ITEMS_PER_PAGE = 10;
     
-    // Time-based greeting
     function getTimeBasedGreeting() {
         const hour = new Date().getHours();
         if (hour >= 5 && hour < 12) return "Good Morning!";
@@ -377,7 +431,6 @@
     }
     document.getElementById('mobileGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="14" class="inline mr-1"></iconify-icon> ${getTimeBasedGreeting()}`;
     
-    // User profile for recommendations
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile_mobile')) || {
         viewedPlatforms: {},
         viewedCategories: {},
@@ -413,6 +466,83 @@
             random -= weights[i];
         }
         return accounts[0];
+    }
+    
+    // Algorithm-based featured selection
+    function getFeaturedAccounts(accounts, count = 12) {
+        if (!accounts.length) return [];
+        const available = accounts.filter(a => a.status !== 'sold' && a.images?.front);
+        if (!available.length) return [];
+        
+        const scored = available.map(acc => {
+            let score = 0;
+            if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 40;
+            else if (userProfile.viewedPlatforms[acc.socialMedia]) score += userProfile.viewedPlatforms[acc.socialMedia] * 8;
+            if (acc.category && userProfile.viewedCategories[acc.category]) score += userProfile.viewedCategories[acc.category] * 6;
+            const price = acc.finalPrice || acc.originalPrice || 0;
+            if (price >= userProfile.priceRange.min && price <= userProfile.priceRange.max) score += 15;
+            if (acc.followers) score += Math.min(acc.followers / 10000, 20);
+            score += Math.random() * 10;
+            return { acc, score };
+        });
+        
+        scored.sort((a, b) => b.score - a.score);
+        let selected = scored.slice(0, count).map(s => s.acc);
+        if (selected.length < count) {
+            const remaining = available.filter(a => !selected.includes(a));
+            const randomFill = remaining.sort(() => 0.5 - Math.random()).slice(0, count - selected.length);
+            selected = [...selected, ...randomFill];
+        }
+        return selected;
+    }
+    
+    function renderFeatured() {
+        if (!allAccounts.length) return;
+        featuredAccounts = getFeaturedAccounts(allAccounts, 12);
+        const track = document.getElementById('featuredTrack');
+        if (!track) return;
+        
+        // Create items (each takes 100% width)
+        track.innerHTML = featuredAccounts.map(acc => `
+            <div class="featured-item" data-id="${acc.id}">
+                <img src="${acc.images?.front || 'https://placehold.co/400x225/1a1a1a/666?text=No+Image'}" class="featured-image" onerror="this.src='https://placehold.co/400x225/1a1a1a/666?text=Image+Error'">
+                <div class="featured-followers">
+                    <iconify-icon icon="mdi:account-group-outline" width="14"></iconify-icon>
+                    ${acc.followers?.toLocaleString() || 0}
+                </div>
+            </div>
+        `).join('');
+        
+        // Add click handlers
+        track.querySelectorAll('.featured-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.dataset.id;
+                if (id) window.location.href = `view.html?id=${id}`;
+            });
+        });
+        
+        // Reset carousel position
+        currentFeaturedIndex = 0;
+        updateFeaturedPosition();
+        
+        // Clear old interval and start new one (2 seconds per slide)
+        if (featuredInterval) clearInterval(featuredInterval);
+        featuredInterval = setInterval(() => {
+            if (featuredAccounts.length > 1) {
+                currentFeaturedIndex = (currentFeaturedIndex + 1) % featuredAccounts.length;
+                updateFeaturedPosition();
+            }
+        }, 2000);
+    }
+    
+    function updateFeaturedPosition() {
+        const track = document.getElementById('featuredTrack');
+        if (!track || featuredAccounts.length === 0) return;
+        // Each item takes 100% of container width
+        const slideWidth = track.children[0]?.offsetWidth || 0;
+        if (slideWidth) {
+            track.style.transform = `translateX(-${currentFeaturedIndex * slideWidth}px)`;
+        }
     }
     
     function generateSuggestions(accounts, count = 25) {
@@ -497,7 +627,7 @@
         
         track.style.animation = 'none';
         track.offsetHeight;
-        track.style.animation = 'scrollSuggestionsSlow 280s linear infinite';
+        track.style.animation = 'scrollSuggestions 60s linear infinite';
     }
     
     async function loadAccounts() {
@@ -513,9 +643,10 @@
             categoriesArray = settingsDoc.exists() ? (settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle']) : ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
             document.getElementById('categoryFilterM').innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
             
+            renderFeatured();
             applyFilters();
             renderSuggestions();
-            setInterval(() => { if (allAccounts.length) renderSuggestions(); }, 60000);
+            setInterval(() => { if (allAccounts.length) { renderFeatured(); renderSuggestions(); } }, 45000);
         } catch(e) {
             console.error("Error:", e);
             document.getElementById('listings-grid-mobile').innerHTML = '<div class="text-center py-10 text-gray-500 text-sm">Unable to load accounts. Please refresh.</div>';
@@ -701,6 +832,9 @@
     document.getElementById('trustLinkM')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('guidelinesLinkM')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('supportLinkM')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    
+    // Handle window resize to reposition carousel
+    window.addEventListener('resize', () => updateFeaturedPosition());
     
     loadAccounts();
 </script>
