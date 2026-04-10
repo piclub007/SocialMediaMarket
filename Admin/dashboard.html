@@ -40,24 +40,12 @@
         .metric-value { font-size: 28px; font-weight: 700; }
         .trend-up { color: #10b981; }
         .trend-down { color: #ef4444; }
+        .payout-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
     </style>
 </head>
 <body>
 
-<div id="passwordOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[200] flex items-center justify-center">
-    <div class="bg-white rounded-3xl p-8 w-96 max-w-[90%] shadow-2xl text-center">
-        <div class="w-14 h-14 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <iconify-icon icon="ri:exchange-dollar-line" width="28" class="text-white"></iconify-icon>
-        </div>
-        <h3 class="text-xl font-semibold text-gray-800">Admin Access</h3>
-        <p class="text-gray-400 text-sm mt-1">Enter credentials to continue</p>
-        <input type="password" id="passwordInput" placeholder="Password" class="input-modern w-full mt-6 px-4 py-3 text-center text-lg tracking-wider">
-        <button id="unlockBtn" class="btn-primary w-full mt-5 py-3 text-white font-medium">Unlock Dashboard</button>
-        <p id="passwordError" class="text-red-500 text-xs mt-3 hidden">Access denied</p>
-    </div>
-</div>
-
-<div id="mainApp" style="display: none;">
+<div id="mainApp">
     <div class="flex min-h-screen relative">
         <div id="overlayBg" class="overlay-blur"></div>
         <div id="mobileSidebar" class="mobile-sidebar p-5 flex flex-col gap-1 bg-white">
@@ -74,8 +62,9 @@
             <div id="tab-accounts" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:storefront" width="20"></iconify-icon><span>Accounts</span></div>
             <div id="tab-add-account" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:plus-circle-outline" width="20"></iconify-icon><span>Add Account</span></div>
             <div id="tab-account-id" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:identifier" width="20"></iconify-icon><span>Account ID / Sold</span></div>
+            <div id="tab-requests" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:message-processing" width="20"></iconify-icon><span>Requests</span></div>
             <div id="tab-settings" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:tune" width="20"></iconify-icon><span>Settings</span></div>
-            <div class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-400 opacity-60 cursor-default"><iconify-icon icon="mdi:message-processing" width="20"></iconify-icon><span>Requests (Coming soon)</span></div>
+            <div id="tab-payout" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon><span>Payout</span></div>
         </div>
 
         <main class="flex-1 p-4 md:p-7 w-full">
@@ -93,11 +82,12 @@
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:trending-up" width="28" class="text-blue-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Value</p><p id="totalValue" class="text-2xl font-bold">$0</p></div></div></div>
                 </div>
 
-                <!-- Advanced Metrics Row -->
-                <div class="grid md:grid-cols-3 gap-5 mb-6">
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Avg. Price</p><p id="avgPrice" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:chart-line" width="32" class="text-gray-400"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Across all active accounts</span></div></div>
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Conversion Rate</p><p id="conversionRate" class="text-2xl font-bold">0%</p></div><iconify-icon icon="mdi:percent" width="32" class="text-gray-400"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Sold / Total accounts</span></div></div>
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Platforms</p><p id="platformCount" class="text-2xl font-bold">0</p></div><iconify-icon icon="mdi:apps" width="32" class="text-gray-400"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Different social media</span></div></div>
+                <!-- Money Analytics Row -->
+                <div class="grid md:grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Total Revenue</p><p id="totalRevenue" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:cash" width="28" class="text-emerald-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">From all sold accounts</span></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Avg. Sold Price</p><p id="avgSoldPrice" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:chart-line" width="28" class="text-purple-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Per sold account</span></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Highest Sale</p><p id="highestSale" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:trophy" width="28" class="text-yellow-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Most expensive sold</span></div></div>
+                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Est. Platform Fee</p><p id="platformFee" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:percent-box" width="28" class="text-orange-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">10% of total revenue</span></div></div>
                 </div>
 
                 <!-- Charts Row -->
@@ -144,6 +134,16 @@
                 </div>
             </div>
 
+            <!-- REQUESTS PANEL (Redirect) -->
+            <div id="requestsPanel" class="max-w-4xl mx-auto hidden fade-in">
+                <div class="form-card p-8 text-center">
+                    <iconify-icon icon="mdi:message-processing" width="64" class="text-gray-300 mx-auto mb-4"></iconify-icon>
+                    <h3 class="text-xl font-semibold mb-2">Customer Requests</h3>
+                    <p class="text-gray-500 mb-6">Manage all buyer inquiries and bargaining requests</p>
+                    <button id="redirectRequestsBtn" class="btn-primary px-8 py-3 text-white font-medium">Open Requests Dashboard →</button>
+                </div>
+            </div>
+
             <!-- SETTINGS PANEL -->
             <div id="settingsPanel" class="max-w-4xl mx-auto hidden fade-in">
                 <div class="form-card p-6 md:p-8 space-y-8">
@@ -151,6 +151,39 @@
                     <div><h3 class="font-medium mb-2">Countries</h3><div class="flex gap-2 mb-3 flex-wrap"><input type="text" id="newCountry" class="input-modern px-3 py-1.5 text-sm flex-1"><button id="addCountryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="countriesList" class="flex flex-wrap gap-2"></div></div>
                     <div><h3 class="font-medium mb-2">Categories</h3><div class="flex gap-2 mb-3 flex-wrap"><input type="text" id="newCategory" class="input-modern px-3 py-1.5 text-sm flex-1"><button id="addCategoryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="categoriesList" class="flex flex-wrap gap-2"></div></div>
                     <div><h3 class="font-medium mb-2">Pre-made Features</h3><div class="flex gap-2 mb-3 flex-wrap"><input type="text" id="newFeature" class="input-modern px-3 py-1.5 text-sm flex-1"><button id="addFeatureBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="premadeFeaturesManage" class="flex flex-wrap gap-2"></div></div>
+                </div>
+            </div>
+
+            <!-- PAYOUT PANEL -->
+            <div id="payoutPanel" class="max-w-5xl mx-auto hidden fade-in">
+                <div class="form-card p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold mb-2 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="28"></iconify-icon> Payout & Earnings</h2>
+                    <p class="text-gray-400 text-sm mb-6">Financial overview of all sold accounts and revenue calculation</p>
+                    
+                    <!-- Main Payout Cards -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="payout-card rounded-2xl p-6 text-white">
+                            <p class="text-gray-300 text-sm mb-1">Total Earnings</p>
+                            <p id="payoutTotalEarnings" class="text-4xl font-bold mb-2">$0</p>
+                            <p class="text-gray-300 text-xs">From all completed sales</p>
+                        </div>
+                        <div class="bg-emerald-50 rounded-2xl p-6 border border-emerald-100">
+                            <p class="text-emerald-700 text-sm mb-1">Available for Withdrawal</p>
+                            <p id="payoutAvailable" class="text-3xl font-bold text-emerald-700 mb-2">$0</p>
+                            <p class="text-emerald-600 text-xs">After platform fees (10%)</p>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Money Analytics -->
+                    <div class="grid md:grid-cols-3 gap-5 mb-6">
+                        <div class="stat-card p-4"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs">Total Sold Value</p><p id="payoutSoldValue" class="text-xl font-bold">$0</p></div><iconify-icon icon="mdi:cart-check" width="24" class="text-green-600"></iconify-icon></div></div>
+                        <div class="stat-card p-4"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs">Platform Fee (10%)</p><p id="payoutFeeAmount" class="text-xl font-bold">$0</p></div><iconify-icon icon="mdi:bank" width="24" class="text-orange-600"></iconify-icon></div></div>
+                        <div class="stat-card p-4"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs">Number of Sold</p><p id="payoutSoldCount" class="text-xl font-bold">0</p></div><iconify-icon icon="mdi:sale" width="24" class="text-purple-600"></iconify-icon></div></div>
+                    </div>
+
+                    <!-- Sold Accounts List -->
+                    <h3 class="font-semibold text-gray-800 mb-3 mt-4 flex items-center gap-2"><iconify-icon icon="mdi:history" width="20"></iconify-icon> Sold Accounts History</h3>
+                    <div id="soldAccountsList" class="space-y-2 max-h-96 overflow-y-auto"></div>
                 </div>
             </div>
         </main>
@@ -184,6 +217,7 @@
         querySnapshot.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
         updateDashboardStats();
         updateAnalytics();
+        updatePayoutAnalytics();
         renderAccountsGrid();
     }
 
@@ -199,13 +233,48 @@
         
         const activeAccounts = allAccounts.filter(a => a.status !== 'sold');
         const avgPrice = activeAccounts.length ? activeAccounts.reduce((s, a) => s + (a.finalPrice || a.originalPrice || 0), 0) / activeAccounts.length : 0;
-        document.getElementById('avgPrice').innerText = '$' + Math.round(avgPrice).toLocaleString();
         
         const conversionRate = total ? ((sold / total) * 100).toFixed(1) : 0;
-        document.getElementById('conversionRate').innerText = conversionRate + '%';
         
         const uniquePlatforms = new Set(allAccounts.map(a => a.socialMedia).filter(Boolean));
-        document.getElementById('platformCount').innerText = uniquePlatforms.size;
+    }
+
+    function updatePayoutAnalytics() {
+        const soldAccounts = allAccounts.filter(a => a.status === 'sold');
+        const totalSoldValue = soldAccounts.reduce((sum, a) => sum + (a.finalPrice || a.originalPrice || 0), 0);
+        const platformFee = totalSoldValue * 0.10;
+        const netEarnings = totalSoldValue - platformFee;
+        
+        document.getElementById('payoutTotalEarnings').innerText = '$' + totalSoldValue.toLocaleString();
+        document.getElementById('payoutAvailable').innerText = '$' + netEarnings.toLocaleString();
+        document.getElementById('payoutSoldValue').innerText = '$' + totalSoldValue.toLocaleString();
+        document.getElementById('payoutFeeAmount').innerText = '$' + platformFee.toLocaleString();
+        document.getElementById('payoutSoldCount').innerText = soldAccounts.length;
+        
+        // Additional money metrics for dashboard
+        const totalRevenue = totalSoldValue;
+        const avgSoldPrice = soldAccounts.length ? totalSoldValue / soldAccounts.length : 0;
+        const highestSale = soldAccounts.length ? Math.max(...soldAccounts.map(a => a.finalPrice || a.originalPrice || 0)) : 0;
+        
+        document.getElementById('totalRevenue').innerText = '$' + totalRevenue.toLocaleString();
+        document.getElementById('avgSoldPrice').innerText = '$' + Math.round(avgSoldPrice).toLocaleString();
+        document.getElementById('highestSale').innerText = '$' + highestSale.toLocaleString();
+        document.getElementById('platformFee').innerText = '$' + (totalRevenue * 0.10).toLocaleString();
+        
+        // Render sold accounts list
+        const soldList = document.getElementById('soldAccountsList');
+        if(soldList) {
+            if(soldAccounts.length === 0) {
+                soldList.innerHTML = '<div class="text-center text-gray-400 py-8">No sold accounts yet</div>';
+            } else {
+                soldList.innerHTML = soldAccounts.map(acc => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                        <div><p class="font-medium">${escapeHtml(acc.nickname)}</p><p class="text-xs text-gray-400">${acc.socialMedia || ''} • Sold: ${acc.soldAt ? new Date(acc.soldAt).toLocaleDateString() : 'Recently'}</p></div>
+                        <div class="text-right"><p class="font-bold text-emerald-600">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</p><p class="text-xs text-gray-400">Fee: $${((acc.finalPrice || acc.originalPrice || 0) * 0.10).toLocaleString()}</p></div>
+                    </div>
+                `).join('');
+            }
+        }
     }
 
     function updateAnalytics() {
@@ -331,7 +400,7 @@
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     function switchTab(tabId) {
-        const tabs = { dashboard: 'dashboardPanel', accounts: 'accountsPanel', addAccount: 'addAccountPanel', accountId: 'accountIdPanel', settings: 'settingsPanel' };
+        const tabs = { dashboard: 'dashboardPanel', accounts: 'accountsPanel', addAccount: 'addAccountPanel', accountId: 'accountIdPanel', requests: 'requestsPanel', settings: 'settingsPanel', payout: 'payoutPanel' };
         Object.values(tabs).forEach(pid => { const el = document.getElementById(pid); if(el) el.classList.add('hidden'); });
         document.getElementById(tabs[tabId]).classList.remove('hidden');
         document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
@@ -339,25 +408,31 @@
         if(tabId === 'accounts') document.getElementById('tab-accounts').classList.add('active');
         if(tabId === 'addAccount') document.getElementById('tab-add-account').classList.add('active');
         if(tabId === 'accountId') document.getElementById('tab-account-id').classList.add('active');
+        if(tabId === 'requests') document.getElementById('tab-requests').classList.add('active');
         if(tabId === 'settings') document.getElementById('tab-settings').classList.add('active');
+        if(tabId === 'payout') document.getElementById('tab-payout').classList.add('active');
         if(tabId === 'accounts') renderAccountsGrid();
         if(tabId === 'accountId') document.getElementById('quickSearchInput').value = '';
+        if(tabId === 'payout') updatePayoutAnalytics();
     }
     document.getElementById('tab-dashboard')?.addEventListener('click', () => switchTab('dashboard'));
     document.getElementById('tab-accounts')?.addEventListener('click', () => switchTab('accounts'));
     document.getElementById('tab-add-account')?.addEventListener('click', () => switchTab('addAccount'));
     document.getElementById('tab-account-id')?.addEventListener('click', () => switchTab('accountId'));
+    document.getElementById('tab-requests')?.addEventListener('click', () => switchTab('requests'));
     document.getElementById('tab-settings')?.addEventListener('click', () => { switchTab('settings'); fetchSettings(); });
+    document.getElementById('tab-payout')?.addEventListener('click', () => { switchTab('payout'); updatePayoutAnalytics(); });
     document.getElementById('redirectAddBtn')?.addEventListener('click', () => { window.location.href = 'add.html'; });
+    document.getElementById('redirectRequestsBtn')?.addEventListener('click', () => { window.location.href = 'request.html'; });
 
     const menuToggle = document.getElementById('menuToggle'), mobileSidebar = document.getElementById('mobileSidebar'), overlayBg = document.getElementById('overlayBg'), closeSidebar = document.getElementById('closeSidebarBtn');
     function openSidebar() { mobileSidebar.classList.add('open'); overlayBg.classList.add('active'); }
     function closeSidebarFunc() { mobileSidebar.classList.remove('open'); overlayBg.classList.remove('active'); }
     menuToggle?.addEventListener('click', openSidebar); closeSidebar?.addEventListener('click', closeSidebarFunc); overlayBg?.addEventListener('click', closeSidebarFunc);
 
-    const correctPasswordHash = btoa("MRkidda@12");
-    document.getElementById('unlockBtn')?.addEventListener('click', () => { if(btoa(document.getElementById('passwordInput').value) === correctPasswordHash) { document.getElementById('passwordOverlay').style.display='none'; document.getElementById('mainApp').style.display='block'; loadAccounts(); fetchSettings(); switchTab('dashboard'); } else { document.getElementById('passwordError').classList.remove('hidden'); } });
-    document.getElementById('passwordInput')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('unlockBtn').click(); });
+    loadAccounts(); 
+    fetchSettings(); 
+    switchTab('dashboard');
 </script>
 </body>
 </html>
