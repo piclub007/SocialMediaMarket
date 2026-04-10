@@ -132,7 +132,7 @@ document.getElementById("loginBtn").addEventListener("click", () => {
 
     if (input === hiddenPassword) {
         sessionStorage.setItem("auth", "true");
-        window.location.href = "dashboard.html";
+        window.location.href = "admin.html";
     } else {
         document.getElementById("errorMsg").classList.remove("hidden");
     }
