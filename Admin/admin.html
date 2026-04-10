@@ -14,22 +14,27 @@
         .sidebar-item.active { background: #111111; color: white; }
         .sidebar-item.active iconify-icon { color: white; }
         .sidebar-item:not(.active):hover { background: #f0f0f2; }
-        .form-card { background: white; border-radius: 28px; border: 1px solid #efeff1; }
-        .input-modern { transition: all 0.2s; border: 1px solid #eaeaef; background: #ffffff; border-radius: 14px; }
-        .input-modern:focus { border-color: #9ca3af; outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.02); }
+        .form-card { background: white; border-radius: 28px; border: 1px solid #efeff1; box-shadow: 0 8px 30px rgba(0,0,0,0.02); }
+        .input-modern { transition: all 0.2s; border: 1px solid #eaeaef; background: #ffffff; border-radius: 14px; outline: none; }
+        .input-modern:focus { border-color: #9ca3af; box-shadow: 0 0 0 3px rgba(0,0,0,0.02); }
         .btn-primary { background: #000000; transition: 0.2s; border-radius: 40px; }
         .btn-primary:hover { background: #2c2c2e; transform: translateY(-1px); }
-        .account-card { transition: all 0.2s ease; cursor: pointer; }
-        .account-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15); }
-        .sold-badge { background: #ef4444; color: white; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
-        .mobile-sidebar { transform: translateX(-100%); transition: transform 0.25s ease; position: fixed; top: 0; left: 0; bottom: 0; z-index: 60; width: 280px; background: white; border-right: 1px solid #efeff1; }
+        .account-card { transition: all 0.2s ease; cursor: pointer; background: white; border-radius: 20px; border: 1px solid #f0f0f0; }
+        .account-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px -12px rgba(0,0,0,0.12); border-color: #e0e0e0; }
+        .sold-badge { background: #ef4444; color: white; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+        .active-badge { background: #10b981; color: white; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+        .mobile-sidebar { transform: translateX(-100%); transition: transform 0.25s ease; position: fixed; top: 0; left: 0; bottom: 0; z-index: 60; width: 280px; background: white; border-right: 1px solid #efeff1; overflow-y: auto; }
         .mobile-sidebar.open { transform: translateX(0); }
         .overlay-blur { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 50; display: none; }
         .overlay-blur.active { display: block; }
         @media (min-width: 768px) { .mobile-sidebar { transform: none !important; position: relative; width: 280px; display: block; } .overlay-blur { display: none !important; } .menu-toggle { display: none; } }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; }
-        .modal-content { background: white; border-radius: 32px; max-width: 450px; width: 90%; padding: 28px; }
-        .image-preview-rect { width: 60px; height: 60px; object-fit: cover; border-radius: 12px; }
+        .search-result-item { transition: all 0.15s ease; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+        .search-result-item:hover { background: #fafafa; transform: translateX(2px); }
+        .image-preview-sm { width: 48px; height: 48px; object-fit: cover; border-radius: 12px; }
+        .stat-card { background: white; border-radius: 24px; border: 1px solid #f0f0f0; transition: all 0.2s; }
+        .stat-card:hover { border-color: #e0e0e0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.2s ease-out; }
     </style>
 </head>
 <body>
@@ -40,8 +45,9 @@
             <iconify-icon icon="ri:exchange-dollar-line" width="28" class="text-white"></iconify-icon>
         </div>
         <h3 class="text-xl font-semibold text-gray-800">Admin Access</h3>
-        <input type="password" id="passwordInput" placeholder="Password" class="input-modern w-full mt-6 px-4 py-3 text-center">
-        <button id="unlockBtn" class="btn-primary w-full mt-5 py-3 text-white font-medium">Unlock</button>
+        <p class="text-gray-400 text-sm mt-1">Enter credentials to continue</p>
+        <input type="password" id="passwordInput" placeholder="Password" class="input-modern w-full mt-6 px-4 py-3 text-center text-lg tracking-wider">
+        <button id="unlockBtn" class="btn-primary w-full mt-5 py-3 text-white font-medium">Unlock Dashboard</button>
         <p id="passwordError" class="text-red-500 text-xs mt-3 hidden">Access denied</p>
     </div>
 </div>
@@ -49,12 +55,13 @@
 <div id="mainApp" style="display: none;">
     <div class="flex min-h-screen relative">
         <div id="overlayBg" class="overlay-blur"></div>
-        <div id="mobileSidebar" class="mobile-sidebar overflow-y-auto p-5 flex flex-col gap-1 bg-white">
+        <div id="mobileSidebar" class="mobile-sidebar p-5 flex flex-col gap-1 bg-white">
             <div class="flex items-center justify-between mb-6 pb-3 border-b border-gray-100">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
                         <iconify-icon icon="ri:exchange-dollar-line" width="18" class="text-white"></iconify-icon>
                     </div>
+                    <span class="font-semibold text-sm">Social Market</span>
                 </div>
                 <button id="closeSidebarBtn" class="md:hidden text-gray-500"><iconify-icon icon="mdi:close" width="24"></iconify-icon></button>
             </div>
@@ -63,83 +70,96 @@
             <div id="tab-add-account" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:plus-circle-outline" width="20"></iconify-icon><span>Add Account</span></div>
             <div id="tab-account-id" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:identifier" width="20"></iconify-icon><span>Account ID / Sold</span></div>
             <div id="tab-settings" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-800 font-medium"><iconify-icon icon="mdi:tune" width="20"></iconify-icon><span>Settings</span></div>
-            <div id="tab-requests" class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-400 font-medium opacity-60"><iconify-icon icon="mdi:message-processing" width="20"></iconify-icon><span>Requests (Coming soon...)</span></div>
+            <div class="sidebar-item px-4 py-2.5 flex items-center gap-3 text-gray-400 opacity-60 cursor-default"><iconify-icon icon="mdi:message-processing" width="20"></iconify-icon><span>Requests (Coming soon)</span></div>
         </div>
 
         <main class="flex-1 p-4 md:p-7 w-full">
             <div class="flex items-center gap-3 mb-5 md:hidden">
-                <button id="menuToggle" class="bg-white p-2 rounded-xl shadow-sm border"><iconify-icon icon="mdi:menu" width="26"></iconify-icon></button>
+                <button id="menuToggle" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100"><iconify-icon icon="mdi:menu" width="26"></iconify-icon></button>
             </div>
 
             <!-- DASHBOARD PANEL -->
-            <div id="dashboardPanel" class="max-w-6xl mx-auto">
+            <div id="dashboardPanel" class="max-w-6xl mx-auto fade-in">
                 <div class="form-card p-6 md:p-8">
                     <h2 class="text-2xl font-semibold tracking-tight mb-6">Dashboard Overview</h2>
                     <div class="grid md:grid-cols-3 gap-5">
-                        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100"><div class="flex items-center gap-3"><iconify-icon icon="mdi:account-group" width="32" class="text-black"></iconify-icon><div><p class="text-gray-500 text-sm">Total Accounts</p><p id="totalAccounts" class="text-3xl font-bold">0</p></div></div></div>
-                        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100"><div class="flex items-center gap-3"><iconify-icon icon="mdi:sale" width="32" class="text-green-600"></iconify-icon><div><p class="text-gray-500 text-sm">Sold Accounts</p><p id="soldAccounts" class="text-3xl font-bold">0</p></div></div></div>
-                        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100"><div class="flex items-center gap-3"><iconify-icon icon="mdi:currency-usd" width="32" class="text-amber-600"></iconify-icon><div><p class="text-gray-500 text-sm">Active Listings</p><p id="activeAccounts" class="text-3xl font-bold">0</p></div></div></div>
+                        <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:account-group" width="32" class="text-black"></iconify-icon><div><p class="text-gray-500 text-sm">Total Accounts</p><p id="totalAccounts" class="text-3xl font-bold">0</p></div></div></div>
+                        <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:sale" width="32" class="text-green-600"></iconify-icon><div><p class="text-gray-500 text-sm">Sold Accounts</p><p id="soldAccounts" class="text-3xl font-bold">0</p></div></div></div>
+                        <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:currency-usd" width="32" class="text-amber-600"></iconify-icon><div><p class="text-gray-500 text-sm">Active Listings</p><p id="activeAccounts" class="text-3xl font-bold">0</p></div></div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ACCOUNTS PANEL (Grid + Search) -->
-            <div id="accountsPanel" class="max-w-7xl mx-auto hidden">
+            <!-- ACCOUNTS PANEL (Grid + Live Search) -->
+            <div id="accountsPanel" class="max-w-7xl mx-auto hidden fade-in">
                 <div class="form-card p-6 md:p-8">
-                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6"><h2 class="text-2xl font-semibold">All Accounts</h2><div class="relative"><iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon><input type="text" id="searchAccountsInput" placeholder="Search by nickname or ID..." class="input-modern pl-10 pr-4 py-2 w-64 text-sm"></div></div>
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                        <h2 class="text-2xl font-semibold">All Accounts</h2>
+                        <div class="relative w-full md:w-80"><iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon><input type="text" id="searchAccountsInput" placeholder="Search by nickname or ID..." class="input-modern w-full pl-10 pr-4 py-2.5 text-sm"></div>
+                    </div>
                     <div id="accountsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
                 </div>
             </div>
 
-            <!-- ADD ACCOUNT PANEL (same as before, simplified) -->
-            <div id="addAccountPanel" class="max-w-4xl mx-auto hidden"><div class="form-card p-6 md:p-8"><h2 class="text-2xl font-semibold mb-4">Add New Account</h2><form id="accountForm" class="space-y-5">... (form fields)</form></div></div>
+            <!-- ADD ACCOUNT PANEL (Redirect) -->
+            <div id="addAccountPanel" class="max-w-4xl mx-auto hidden fade-in">
+                <div class="form-card p-8 text-center">
+                    <iconify-icon icon="mdi:plus-circle-outline" width="64" class="text-gray-300 mx-auto mb-4"></iconify-icon>
+                    <h3 class="text-xl font-semibold mb-2">Create New Account</h3>
+                    <p class="text-gray-500 mb-6">You will be redirected to the add account page</p>
+                    <button id="redirectAddBtn" class="btn-primary px-8 py-3 text-white font-medium">Go to Add Account →</button>
+                </div>
+            </div>
 
-            <!-- ACCOUNT ID / SOLD PANEL -->
-            <div id="accountIdPanel" class="max-w-2xl mx-auto hidden">
+            <!-- ACCOUNT ID / SOLD PANEL (Live search by ID or Name) -->
+            <div id="accountIdPanel" class="max-w-3xl mx-auto hidden fade-in">
                 <div class="form-card p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold mb-2">Account ID Lookup</h2>
-                    <p class="text-gray-400 text-sm mb-5">Enter Firebase document ID to find account and mark as sold</p>
-                    <div class="flex gap-3"><input type="text" id="lookupDocId" placeholder="Document ID (e.g., -Nxyz...)" class="input-modern flex-1 px-4 py-3"><button id="lookupAccountBtn" class="btn-primary px-6 py-3 text-white">Search</button></div>
-                    <div id="lookupResult" class="mt-6 hidden"></div>
+                    <h2 class="text-2xl font-semibold mb-2">Quick Search & Mark as Sold</h2>
+                    <p class="text-gray-400 text-sm mb-5">Search by Firestore ID or Account Name — results appear instantly</p>
+                    <div class="relative"><iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon><input type="text" id="quickSearchInput" placeholder="Type account ID or nickname..." class="input-modern w-full pl-10 pr-4 py-3 text-base"></div>
+                    <div id="quickSearchResults" class="mt-6 space-y-2 max-h-[500px] overflow-y-auto"></div>
                 </div>
             </div>
 
             <!-- SETTINGS PANEL -->
-            <div id="settingsPanel" class="max-w-4xl mx-auto hidden"><div class="form-card p-6 md:p-8 space-y-8"><h2 class="text-2xl font-semibold">Settings</h2><div><h3 class="font-medium mb-2">Countries</h3><div class="flex gap-2 mb-3"><input type="text" id="newCountry" class="input-modern px-3 py-1.5 text-sm"><button id="addCountryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="countriesList" class="flex flex-wrap gap-2"></div></div><div><h3 class="font-medium mb-2">Categories</h3><div class="flex gap-2 mb-3"><input type="text" id="newCategory" class="input-modern px-3 py-1.5 text-sm"><button id="addCategoryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="categoriesList" class="flex flex-wrap gap-2"></div></div><div><h3 class="font-medium mb-2">Pre-made Features</h3><div class="flex gap-2 mb-3"><input type="text" id="newFeature" class="input-modern px-3 py-1.5 text-sm"><button id="addFeatureBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="premadeFeaturesManage" class="flex flex-wrap gap-2"></div></div></div></div>
+            <div id="settingsPanel" class="max-w-4xl mx-auto hidden fade-in">
+                <div class="form-card p-6 md:p-8 space-y-8">
+                    <h2 class="text-2xl font-semibold">Settings</h2>
+                    <div><h3 class="font-medium mb-2">Countries</h3><div class="flex gap-2 mb-3 flex-wrap"><input type="text" id="newCountry" class="input-modern px-3 py-1.5 text-sm flex-1"><button id="addCountryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="countriesList" class="flex flex-wrap gap-2"></div></div>
+                    <div><h3 class="font-medium mb-2">Categories</h3><div class="flex gap-2 mb-3 flex-wrap"><input type="text" id="newCategory" class="input-modern px-3 py-1.5 text-sm flex-1"><button id="addCategoryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="categoriesList" class="flex flex-wrap gap-2"></div></div>
+                    <div><h3 class="font-medium mb-2">Pre-made Features</h3><div class="flex gap-2 mb-3 flex-wrap"><input type="text" id="newFeature" class="input-modern px-3 py-1.5 text-sm flex-1"><button id="addFeatureBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div><div id="premadeFeaturesManage" class="flex flex-wrap gap-2"></div></div>
+                </div>
+            </div>
         </main>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, set, push, get, child, update, remove, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, deleteDoc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
         authDomain: "project-k21n.firebaseapp.com",
-        databaseURL: "https://project-k21n-default-rtdb.firebaseio.com",
         projectId: "project-k21n",
         storageBucket: "project-k21n.firebasestorage.app",
         messagingSenderId: "266081318769",
         appId: "1:266081318769:web:a7893c55b5b30a8dd768d0"
     };
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
+    const db = getFirestore(app);
 
     let allAccounts = [];
-    let countriesArray = [], categoriesArray = [], premadeFeaturesArray = [];
+    let searchTimeout = null;
+    let quickSearchTimeout = null;
+    let categoriesArray = [], countriesArray = [], premadeFeaturesArray = [];
 
-    async function uploadToImgBB(file) { if(!file) return null; const fd = new FormData(); fd.append("image", file); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd }); const data = await res.json(); return data.success ? data.data.url : null; }
-
-    function loadAccounts() {
-        const accountsRef = ref(db, 'marketplaceAccounts');
-        onValue(accountsRef, (snapshot) => {
-            if(snapshot.exists()) { allAccounts = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data })); }
-            else { allAccounts = []; }
-            updateDashboardStats();
-            renderAccountsGrid();
-        });
+    async function loadAccounts() {
+        const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
+        allAccounts = [];
+        querySnapshot.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
+        updateDashboardStats();
+        renderAccountsGrid();
     }
 
     function updateDashboardStats() {
@@ -158,45 +178,93 @@
         if(searchTerm) { filtered = filtered.filter(a => a.nickname?.toLowerCase().includes(searchTerm.toLowerCase()) || a.id?.toLowerCase().includes(searchTerm.toLowerCase())); }
         if(filtered.length === 0) { container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">No accounts found</div>'; return; }
         container.innerHTML = filtered.map(acc => `
-            <div class="account-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all" data-id="${acc.id}">
-                <div class="p-4 border-b border-gray-50 flex justify-between items-start"><div><h3 class="font-semibold text-gray-800">${escapeHtml(acc.nickname)}</h3><p class="text-xs text-gray-400 mt-0.5">${acc.socialMedia} • ${acc.followers} followers</p></div>${acc.status === 'sold' ? '<span class="sold-badge">SOLD</span>' : '<span class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">Active</span>'}</div>
-                <div class="p-4"><div class="flex justify-between items-center"><span class="text-xl font-bold">$${acc.finalPrice || acc.originalPrice}</span><button class="edit-account-btn text-gray-500 hover:text-black" data-id="${acc.id}"><iconify-icon icon="mdi:eye-edit" width="20"></iconify-icon></button></div></div>
+            <div class="account-card p-4 cursor-pointer" data-id="${acc.id}">
+                <div class="flex justify-between items-start mb-2"><div><h3 class="font-semibold text-gray-800">${escapeHtml(acc.nickname)}</h3><p class="text-xs text-gray-400 mt-0.5">${acc.socialMedia || 'Social'} • ${acc.followers?.toLocaleString() || 0} followers</p></div>${acc.status === 'sold' ? '<span class="sold-badge">SOLD</span>' : '<span class="active-badge">Active</span>'}</div>
+                <div class="flex justify-between items-center mt-3"><span class="text-xl font-bold">$${acc.finalPrice || acc.originalPrice || 0}</span><button class="edit-account-btn text-gray-500 hover:text-black transition" data-id="${acc.id}"><iconify-icon icon="mdi:eye-edit" width="20"></iconify-icon></button></div>
             </div>
         `).join('');
-        document.querySelectorAll('.edit-account-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); window.location.href = `edit.html?id=${id}`; }); });
-        document.querySelectorAll('.account-card').forEach(card => { card.addEventListener('click', (e) => { if(!e.target.closest('.edit-account-btn')) { const id = card.getAttribute('data-id'); window.location.href = `edit.html?id=${id}`; } }); });
+        document.querySelectorAll('.edit-account-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); window.location.href = `edit.html?id=${btn.getAttribute('data-id')}`; }); });
+        document.querySelectorAll('.account-card').forEach(card => { card.addEventListener('click', (e) => { if(!e.target.closest('.edit-account-btn')) { window.location.href = `edit.html?id=${card.getAttribute('data-id')}`; } }); });
     }
 
-    document.getElementById('searchAccountsInput')?.addEventListener('input', (e) => renderAccountsGrid(e.target.value));
+    // Live search with debounce (under 300ms)
+    document.getElementById('searchAccountsInput')?.addEventListener('input', (e) => {
+        if(searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => { renderAccountsGrid(e.target.value); }, 200);
+    });
 
-    // ACCOUNT ID LOOKUP & SOLD LOGIC
-    document.getElementById('lookupAccountBtn')?.addEventListener('click', async () => {
-        const docId = document.getElementById('lookupDocId').value.trim();
-        if(!docId) { alert('Enter document ID'); return; }
-        const accountRef = ref(db, `marketplaceAccounts/${docId}`);
-        const snapshot = await get(accountRef);
-        const resultDiv = document.getElementById('lookupResult');
-        if(!snapshot.exists()) { resultDiv.innerHTML = '<div class="bg-red-50 p-4 rounded-xl text-red-600">❌ Account not found</div>'; resultDiv.classList.remove('hidden'); return; }
-        const acc = snapshot.val();
-        resultDiv.classList.remove('hidden');
-        resultDiv.innerHTML = `
-            <div class="bg-gray-50 rounded-xl p-4 space-y-2"><p><strong>Nickname:</strong> ${escapeHtml(acc.nickname)}</p><p><strong>ID:</strong> <code class="text-xs bg-gray-200 px-1">${docId}</code></p><p><strong>Status:</strong> ${acc.status === 'sold' ? '<span class="text-red-600 font-semibold">SOLD</span>' : '<span class="text-green-600">Active</span>'}</p>${acc.status !== 'sold' ? '<button id="confirmSoldBtn" class="mt-3 bg-red-600 text-white px-5 py-2 rounded-xl text-sm font-medium">Mark as SOLD OUT</button>' : ''}</div>
-        `;
-        const soldBtn = document.getElementById('confirmSoldBtn');
-        if(soldBtn) soldBtn.onclick = () => showSoldModal(docId);
+    // QUICK SEARCH (ID or Name) with ultra-fast response
+    async function performQuickSearch(searchValue) {
+        const resultsContainer = document.getElementById('quickSearchResults');
+        if(!searchValue.trim()) { resultsContainer.innerHTML = '<div class="text-center text-gray-400 py-8"><iconify-icon icon="mdi:search-web" width="32" class="mx-auto mb-2"></iconify-icon><p>Start typing to search by ID or nickname</p></div>'; return; }
+        const lowerSearch = searchValue.toLowerCase();
+        const matches = allAccounts.filter(acc => acc.id.toLowerCase().includes(lowerSearch) || (acc.nickname && acc.nickname.toLowerCase().includes(lowerSearch)));
+        if(matches.length === 0) { resultsContainer.innerHTML = '<div class="text-center text-gray-400 py-8"><iconify-icon icon="mdi:alert-circle-outline" width="32" class="mx-auto mb-2"></iconify-icon><p>No matching accounts found</p></div>'; return; }
+        resultsContainer.innerHTML = matches.map(acc => `
+            <div class="search-result-item p-4 rounded-xl bg-white border border-gray-100" data-id="${acc.id}">
+                <div class="flex gap-3">
+                    ${acc.images?.front ? `<img src="${acc.images.front}" class="image-preview-sm object-cover" onerror="this.style.display='none'">` : `<div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center"><iconify-icon icon="mdi:account" width="24" class="text-gray-400"></iconify-icon></div>`}
+                    <div class="flex-1"><div class="flex justify-between items-start"><div><p class="font-semibold text-gray-800">${escapeHtml(acc.nickname)}</p><p class="text-xs text-gray-400 font-mono">ID: ${acc.id.substring(0,12)}...</p><p class="text-xs mt-1">${acc.socialMedia || ''} • ${acc.followers?.toLocaleString() || 0} followers</p></div><div class="text-right"><p class="font-bold text-lg">$${acc.finalPrice || acc.originalPrice || 0}</p>${acc.status === 'sold' ? '<span class="sold-badge text-xs">SOLD</span>' : '<span class="active-badge text-xs">Active</span>'}</div></div></div>
+                </div>
+                ${acc.status !== 'sold' ? `<div class="mt-3 flex justify-end"><button class="mark-sold-btn bg-red-50 text-red-600 px-4 py-1.5 rounded-xl text-xs font-medium hover:bg-red-100 transition" data-id="${acc.id}"><iconify-icon icon="mdi:sale" width="14" class="inline mr-1"></iconify-icon> Mark as SOLD</button></div>` : '<div class="mt-2 text-right text-xs text-green-600">✓ Already sold</div>'}
+            </div>
+        `).join('');
+        document.querySelectorAll('.mark-sold-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); showSoldModal(id); }); });
+        document.querySelectorAll('.search-result-item').forEach(item => { item.addEventListener('click', (e) => { if(!e.target.closest('.mark-sold-btn')) { window.location.href = `edit.html?id=${item.getAttribute('data-id')}`; } }); });
+    }
+
+    document.getElementById('quickSearchInput')?.addEventListener('input', (e) => {
+        if(quickSearchTimeout) clearTimeout(quickSearchTimeout);
+        quickSearchTimeout = setTimeout(() => { performQuickSearch(e.target.value); }, 150);
     });
 
     function showSoldModal(docId) {
-        const modalDiv = document.createElement('div'); modalDiv.className = 'modal';
-        modalDiv.innerHTML = `<div class="modal-content"><div class="text-center"><iconify-icon icon="mdi:alert-octagon" width="48" class="text-red-500 mx-auto mb-3"></iconify-icon><h3 class="text-xl font-bold mb-2">THIS ACTION IS IRREVERSIBLE</h3><p class="text-gray-500 mb-5">Are you sure you want to mark this account as SOLD?</p><div class="flex gap-3"><button id="modalCancel" class="flex-1 py-2 border rounded-xl">Cancel</button><button id="modalConfirm" class="flex-1 bg-red-600 text-white py-2 rounded-xl">SOLD</button></div></div></div>`;
+        const modalDiv = document.createElement('div'); modalDiv.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[300]';
+        modalDiv.innerHTML = `<div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 text-center"><iconify-icon icon="mdi:alert-octagon" width="48" class="text-red-500 mx-auto mb-3"></iconify-icon><h3 class="text-xl font-bold mb-2">THIS ACTION IS IRREVERSIBLE</h3><p class="text-gray-500 mb-5">Are you sure you want to mark this account as SOLD?</p><div class="flex gap-3"><button id="modalCancel" class="flex-1 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50">Cancel</button><button id="modalConfirm" class="flex-1 bg-red-600 text-white py-2.5 rounded-xl hover:bg-red-700">SOLD</button></div></div>`;
         document.body.appendChild(modalDiv);
         modalDiv.querySelector('#modalCancel').onclick = () => modalDiv.remove();
         modalDiv.querySelector('#modalConfirm').onclick = async () => {
-            await update(ref(db, `marketplaceAccounts/${docId}`), { status: 'sold', soldAt: Date.now() });
-            modalDiv.remove(); document.getElementById('lookupResult').innerHTML = '<div class="bg-green-50 p-4 rounded-xl text-green-700">✅ Account marked as SOLD</div>';
-            loadAccounts();
+            await updateDoc(doc(db, 'marketplaceAccounts', docId), { status: 'sold', soldAt: new Date().toISOString() });
+            modalDiv.remove();
+            await loadAccounts();
+            performQuickSearch(document.getElementById('quickSearchInput')?.value || '');
+            const msg = document.createElement('div'); msg.className = 'fixed bottom-5 right-5 bg-green-600 text-white px-5 py-2 rounded-full text-sm z-[400]'; msg.innerText = '✅ Account marked as sold'; document.body.appendChild(msg); setTimeout(() => msg.remove(), 2000);
         };
     }
+
+    // SETTINGS LOGIC
+    async function fetchSettings() { 
+        try { 
+            const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
+            if(settingsDoc.exists()) { 
+                const data = settingsDoc.data(); 
+                countriesArray = data.countries || []; 
+                categoriesArray = data.categories || []; 
+                premadeFeaturesArray = data.premadeFeatures || []; 
+            } else {
+                countriesArray = []; categoriesArray = []; premadeFeaturesArray = [];
+                await setDoc(doc(db, 'adminSettings', 'config'), { countries: [], categories: [], premadeFeatures: [] });
+            }
+            renderSettingsUI(); 
+        } catch(e) { console.error(e); } 
+    }
+    function renderSettingsUI() {
+        const countriesDiv = document.getElementById('countriesList'); if(countriesDiv) countriesDiv.innerHTML = countriesArray.map(c => `<div class="chip-feature bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(c)} <button onclick="window.removeSetting('country','${c}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No countries</span>';
+        const catsDiv = document.getElementById('categoriesList'); if(catsDiv) catsDiv.innerHTML = categoriesArray.map(c => `<div class="chip-feature bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(c)} <button onclick="window.removeSetting('category','${c}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No categories</span>';
+        const featDiv = document.getElementById('premadeFeaturesManage'); if(featDiv) featDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-1">${escapeHtml(f)} <button onclick="window.removeSetting('feature','${f}')" class="text-gray-500 hover:text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('') || '<span class="text-gray-400 text-sm">No features</span>';
+    }
+    window.removeSetting = async (type, val) => { 
+        if(type === 'country') countriesArray = countriesArray.filter(c=>c!==val); 
+        if(type === 'category') categoriesArray = categoriesArray.filter(c=>c!==val); 
+        if(type === 'feature') premadeFeaturesArray = premadeFeaturesArray.filter(f=>f!==val); 
+        await updateDoc(doc(db, 'adminSettings', 'config'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray }); 
+        renderSettingsUI(); 
+    };
+    document.getElementById('addCountryBtn')?.addEventListener('click', async () => { let inp=document.getElementById('newCountry'); if(inp.value.trim() && !countriesArray.includes(inp.value.trim())) { countriesArray.push(inp.value.trim()); await updateDoc(doc(db, 'adminSettings', 'config'), { countries: countriesArray }); renderSettingsUI(); inp.value=''; } });
+    document.getElementById('addCategoryBtn')?.addEventListener('click', async () => { let inp=document.getElementById('newCategory'); if(inp.value.trim() && !categoriesArray.includes(inp.value.trim())) { categoriesArray.push(inp.value.trim()); await updateDoc(doc(db, 'adminSettings', 'config'), { categories: categoriesArray }); renderSettingsUI(); inp.value=''; } });
+    document.getElementById('addFeatureBtn')?.addEventListener('click', async () => { let inp=document.getElementById('newFeature'); if(inp.value.trim() && !premadeFeaturesArray.includes(inp.value.trim())) { premadeFeaturesArray.push(inp.value.trim()); await updateDoc(doc(db, 'adminSettings', 'config'), { premadeFeatures: premadeFeaturesArray }); renderSettingsUI(); inp.value=''; } });
+
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     // TAB MANAGEMENT
     const tabs = { dashboard: 'dashboardPanel', accounts: 'accountsPanel', addAccount: 'addAccountPanel', accountId: 'accountIdPanel', settings: 'settingsPanel' };
@@ -209,48 +277,15 @@
         if(tabId === 'addAccount') document.getElementById('tab-add-account').classList.add('active');
         if(tabId === 'accountId') document.getElementById('tab-account-id').classList.add('active');
         if(tabId === 'settings') document.getElementById('tab-settings').classList.add('active');
-        if(tabId === 'dashboard') loadAccounts();
         if(tabId === 'accounts') renderAccountsGrid();
+        if(tabId === 'accountId') document.getElementById('quickSearchInput').value = '';
     }
     document.getElementById('tab-dashboard')?.addEventListener('click', () => switchTab('dashboard'));
     document.getElementById('tab-accounts')?.addEventListener('click', () => switchTab('accounts'));
     document.getElementById('tab-add-account')?.addEventListener('click', () => switchTab('addAccount'));
     document.getElementById('tab-account-id')?.addEventListener('click', () => switchTab('accountId'));
     document.getElementById('tab-settings')?.addEventListener('click', () => { switchTab('settings'); fetchSettings(); });
-
-    // ADD ACCOUNT FORM (simplified but functional)
-    document.getElementById('accountForm')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const nickname = document.getElementById('nickname')?.value;
-        const followers = document.getElementById('followers')?.value;
-        const socialMedia = document.getElementById('socialMedia')?.value;
-        const category = document.getElementById('categorySelect')?.value;
-        const country = document.getElementById('countrySelect')?.value;
-        const originalPrice = parseFloat(document.getElementById('originalPrice')?.value);
-        if(!nickname || !followers || !originalPrice) { alert('Fill required fields'); return; }
-        const bargaining = document.getElementById('bargainingCheck')?.checked;
-        const finalPrice = bargaining ? null : originalPrice;
-        const accountData = { nickname, followers, socialMedia, category, country, originalPrice, bargaining, finalPrice, status: 'active', createdAt: Date.now(), features: [] };
-        const newRef = push(ref(db, 'marketplaceAccounts'));
-        await set(newRef, accountData);
-        alert('Account added!');
-        e.target.reset();
-        switchTab('accounts');
-    });
-
-    // SETTINGS LOGIC
-    async function fetchSettings() { try { const snap = await get(child(ref(db), 'adminSettings')); if(snap.exists()) { const d = snap.val(); countriesArray = d.countries || []; categoriesArray = d.categories || []; premadeFeaturesArray = d.premadeFeatures || []; } else { countriesArray = []; categoriesArray = []; premadeFeaturesArray = []; } renderSettingsUI(); } catch(e) { console.error(e); } }
-    function renderSettingsUI() {
-        const countriesDiv = document.getElementById('countriesList'); if(countriesDiv) countriesDiv.innerHTML = countriesArray.map(c => `<div class="chip-feature">${c} <button onclick="window.removeSetting('country','${c}')" class="ml-1 text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
-        const catsDiv = document.getElementById('categoriesList'); if(catsDiv) catsDiv.innerHTML = categoriesArray.map(c => `<div class="chip-feature">${c} <button onclick="window.removeSetting('category','${c}')" class="ml-1 text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
-        const featDiv = document.getElementById('premadeFeaturesManage'); if(featDiv) featDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature">${f} <button onclick="window.removeSetting('feature','${f}')" class="ml-1 text-red-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
-    }
-    window.removeSetting = async (type, val) => { if(type === 'country') countriesArray = countriesArray.filter(c=>c!==val); if(type === 'category') categoriesArray = categoriesArray.filter(c=>c!==val); if(type === 'feature') premadeFeaturesArray = premadeFeaturesArray.filter(f=>f!==val); await update(ref(db, 'adminSettings'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray }); renderSettingsUI(); };
-    document.getElementById('addCountryBtn')?.addEventListener('click', async () => { let inp=document.getElementById('newCountry'); if(inp.value.trim() && !countriesArray.includes(inp.value.trim())) { countriesArray.push(inp.value.trim()); await update(ref(db,'adminSettings'),{countries:countriesArray}); renderSettingsUI(); inp.value=''; } });
-    document.getElementById('addCategoryBtn')?.addEventListener('click', async () => { let inp=document.getElementById('newCategory'); if(inp.value.trim() && !categoriesArray.includes(inp.value.trim())) { categoriesArray.push(inp.value.trim()); await update(ref(db,'adminSettings'),{categories:categoriesArray}); renderSettingsUI(); inp.value=''; } });
-    document.getElementById('addFeatureBtn')?.addEventListener('click', async () => { let inp=document.getElementById('newFeature'); if(inp.value.trim() && !premadeFeaturesArray.includes(inp.value.trim())) { premadeFeaturesArray.push(inp.value.trim()); await update(ref(db,'adminSettings'),{premadeFeatures:premadeFeaturesArray}); renderSettingsUI(); inp.value=''; } });
-
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    document.getElementById('redirectAddBtn')?.addEventListener('click', () => { window.location.href = 'add.html'; });
 
     // MOBILE SIDEBAR
     const menuToggle = document.getElementById('menuToggle'), mobileSidebar = document.getElementById('mobileSidebar'), overlayBg = document.getElementById('overlayBg'), closeSidebar = document.getElementById('closeSidebarBtn');
@@ -261,11 +296,6 @@
     const correctPasswordHash = btoa("MRkidda@12");
     document.getElementById('unlockBtn')?.addEventListener('click', () => { if(btoa(document.getElementById('passwordInput').value) === correctPasswordHash) { document.getElementById('passwordOverlay').style.display='none'; document.getElementById('mainApp').style.display='block'; loadAccounts(); fetchSettings(); switchTab('dashboard'); } else { document.getElementById('passwordError').classList.remove('hidden'); } });
     document.getElementById('passwordInput')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('unlockBtn').click(); });
-
-    // Additional helper for select elements in add form
-    const addHtml = `<div class="grid md:grid-cols-2 gap-4"><div><label>Nickname</label><input type="text" id="nickname" required class="input-modern w-full p-2"></div><div><label>Followers</label><input type="number" id="followers" required class="input-modern w-full p-2"></div></div><div class="grid md:grid-cols-3 gap-4"><div><label>Social Media</label><select id="socialMedia" class="input-modern w-full p-2"><option>Instagram</option><option>Tiktok</option><option>Youtube</option></select></div><div><label>Category</label><select id="categorySelect" class="input-modern w-full p-2"><option>General</option></select></div><div><label>Country</label><select id="countrySelect" class="input-modern w-full p-2"><option>USA</option></select></div></div><div><label>Original Price $</label><input type="number" id="originalPrice" step="0.01" class="input-modern w-full p-2"></div><div><label><input type="checkbox" id="bargainingCheck"> Bargaining enabled</label></div><button type="submit" class="btn-primary w-full py-3 text-white">Create Account</button>`;
-    document.getElementById('accountForm') && (document.getElementById('accountForm').innerHTML = addHtml);
-    setTimeout(() => { if(document.getElementById('categorySelect')) document.getElementById('categorySelect').innerHTML = '<option>Fashion</option><option>Tech</option>'; if(document.getElementById('countrySelect')) document.getElementById('countrySelect').innerHTML = '<option>USA</option><option>UK</option>'; }, 500);
 </script>
 </body>
 </html>
