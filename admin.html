@@ -117,8 +117,8 @@
                         </div>
                         <div class="grid md:grid-cols-3 gap-5">
                             <div><label class="block text-sm font-medium text-gray-700 mb-1">Social Media *</label><select id="socialMedia" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="Instagram">Instagram</option><option value="Linkedin">Linkedin</option><option value="Tiktok">TikTok</option><option value="Youtube">YouTube</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Category *</label><select id="categorySelect" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="">Loading...</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Country *</label><select id="countrySelect" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="">Loading...</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Category *</label><select id="categorySelect" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="">-- No categories yet. Add in Settings --</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Country *</label><select id="countrySelect" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="">-- No countries yet. Add in Settings --</option></select></div>
                         </div>
 
                         <div class="border-t border-gray-100 pt-5">
@@ -187,9 +187,9 @@
             <div id="settingsPanel" class="max-w-4xl mx-auto hidden">
                 <div class="form-card p-5 md:p-8 space-y-8">
                     <h2 class="text-2xl font-semibold tracking-tight">Settings</h2>
-                    <div><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Countries</h3><div class="flex gap-2"><input type="text" id="newCountry" placeholder="Country name" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addCountryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="countriesList" class="flex flex-wrap gap-2"></div></div>
-                    <div class="border-t pt-6"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Categories</h3><div class="flex gap-2"><input type="text" id="newCategory" placeholder="Category" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addCategoryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="categoriesList" class="flex flex-wrap gap-2"></div></div>
-                    <div class="border-t pt-6"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Pre-made Features</h3><div class="flex gap-2"><input type="text" id="newFeature" placeholder="Feature" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addFeatureBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="premadeFeaturesManage" class="flex flex-wrap gap-2"></div></div>
+                    <div><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Countries</h3><div class="flex gap-2"><input type="text" id="newCountry" placeholder="Country name" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addCountryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="countriesList" class="flex flex-wrap gap-2"><div class="text-gray-400 text-sm italic">No countries added yet. Use the form above.</div></div></div>
+                    <div class="border-t pt-6"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Categories</h3><div class="flex gap-2"><input type="text" id="newCategory" placeholder="Category" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addCategoryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="categoriesList" class="flex flex-wrap gap-2"><div class="text-gray-400 text-sm italic">No categories added yet. Use the form above.</div></div></div>
+                    <div class="border-t pt-6"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Pre-made Features</h3><div class="flex gap-2"><input type="text" id="newFeature" placeholder="Feature" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addFeatureBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="premadeFeaturesManage" class="flex flex-wrap gap-2"><div class="text-gray-400 text-sm italic">No features added yet. Use the form above.</div></div></div>
                 </div>
             </div>
         </main>
@@ -205,61 +205,116 @@
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
         const data = await res.json();
         if (data.success) return data.data.url;
-        throw new Error("ImgBB failed");
+        throw new Error("ImgBB upload failed");
     }
 
     let countriesArray = [], categoriesArray = [], premadeFeaturesArray = [];
 
     async function fetchSettings() {
         const dbRef = ref(window.db);
-        const snapshot = await get(child(dbRef, 'adminSettings'));
-        if(snapshot.exists()) {
-            const data = snapshot.val();
-            countriesArray = data.countries || ['USA', 'UK', 'Canada', 'Australia'];
-            categoriesArray = data.categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            premadeFeaturesArray = data.premadeFeatures || ['High engagement', 'Verified badge', 'Fast delivery', 'Monetized'];
-        } else {
-            countriesArray = ['USA', 'UK', 'Canada', 'Australia'];
-            categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            premadeFeaturesArray = ['High engagement', 'Verified badge', 'Fast delivery', 'Monetized'];
-            await update(ref(window.db, 'adminSettings'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray });
+        try {
+            const snapshot = await get(child(dbRef, 'adminSettings'));
+            if(snapshot.exists()) {
+                const data = snapshot.val();
+                countriesArray = data.countries || [];
+                categoriesArray = data.categories || [];
+                premadeFeaturesArray = data.premadeFeatures || [];
+            } else {
+                countriesArray = [];
+                categoriesArray = [];
+                premadeFeaturesArray = [];
+                await set(ref(window.db, 'adminSettings'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray });
+            }
+        } catch(e) {
+            console.error("Firebase error:", e);
+            countriesArray = [];
+            categoriesArray = [];
+            premadeFeaturesArray = [];
         }
-        renderCountriesUI(); renderCategoriesUI(); renderPremadeFeaturesUI(); populateSelects();
+        renderCountriesUI(); 
+        renderCategoriesUI(); 
+        renderPremadeFeaturesUI(); 
+        populateSelects();
     }
 
     function populateSelects() {
         const catSel = document.getElementById('categorySelect');
         const countrySel = document.getElementById('countrySelect');
-        if(catSel) catSel.innerHTML = categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
-        if(countrySel) countrySel.innerHTML = countriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+        if(catSel) {
+            if(categoriesArray.length === 0) catSel.innerHTML = '<option value="">-- No categories yet. Add in Settings --</option>';
+            else catSel.innerHTML = categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        if(countrySel) {
+            if(countriesArray.length === 0) countrySel.innerHTML = '<option value="">-- No countries yet. Add in Settings --</option>';
+            else countrySel.innerHTML = countriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
     }
 
     function renderCountriesUI() {
         const container = document.getElementById('countriesList');
-        if(container) container.innerHTML = countriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry('country','${c}')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+        if(container) {
+            if(countriesArray.length === 0) container.innerHTML = '<div class="text-gray-400 text-sm italic">No countries added yet. Use the form above.</div>';
+            else container.innerHTML = countriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry(\'country\',\'${c.replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+        }
     }
     function renderCategoriesUI() {
         const container = document.getElementById('categoriesList');
-        if(container) container.innerHTML = categoriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry('category','${c}')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+        if(container) {
+            if(categoriesArray.length === 0) container.innerHTML = '<div class="text-gray-400 text-sm italic">No categories added yet. Use the form above.</div>';
+            else container.innerHTML = categoriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry(\'category\',\'${c.replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+        }
     }
     function renderPremadeFeaturesUI() {
         const manageDiv = document.getElementById('premadeFeaturesManage');
         const formContainer = document.getElementById('premadeFeaturesContainer');
-        if(manageDiv) manageDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature">${f} <button onclick="removeEntry('feature','${f}')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
-        if(formContainer) formContainer.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature cursor-pointer hover:bg-gray-200 transition" data-feat="${f}">${f}</span>`).join('');
+        if(manageDiv) {
+            if(premadeFeaturesArray.length === 0) manageDiv.innerHTML = '<div class="text-gray-400 text-sm italic">No features added yet. Use the form above.</div>';
+            else manageDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature">${f} <button onclick="removeEntry(\'feature\',\'${f.replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+        }
+        if(formContainer) {
+            if(premadeFeaturesArray.length === 0) formContainer.innerHTML = '<div class="text-gray-400 text-xs italic">No pre-made features. Add in Settings.</div>';
+            else formContainer.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature cursor-pointer hover:bg-gray-200 transition" data-feat="${f.replace(/"/g, '&quot;')}">${f}</span>`).join('');
+        }
         document.querySelectorAll('#premadeFeaturesContainer .chip-feature').forEach(el => {
             el.addEventListener('click', () => { const ta = document.getElementById('featuresText'); let val = ta.value; if(val && !val.endsWith('\n')) val += '\n'; ta.value = val + `• ${el.getAttribute('data-feat') || el.innerText}`; });
         });
     }
+    
     window.removeEntry = async (type, value) => {
         if(type === 'country') { countriesArray = countriesArray.filter(c => c !== value); await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); renderCountriesUI(); populateSelects(); }
         if(type === 'category') { categoriesArray = categoriesArray.filter(c => c !== value); await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); renderCategoriesUI(); populateSelects(); }
         if(type === 'feature') { premadeFeaturesArray = premadeFeaturesArray.filter(f => f !== value); await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); renderPremadeFeaturesUI(); }
     };
 
-    document.getElementById('addCountryBtn')?.addEventListener('click', async () => { let inp = document.getElementById('newCountry'); if(inp.value.trim() && !countriesArray.includes(inp.value.trim())) { countriesArray.push(inp.value.trim()); await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); renderCountriesUI(); populateSelects(); inp.value = ''; } });
-    document.getElementById('addCategoryBtn')?.addEventListener('click', async () => { let inp = document.getElementById('newCategory'); if(inp.value.trim() && !categoriesArray.includes(inp.value.trim())) { categoriesArray.push(inp.value.trim()); await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); renderCategoriesUI(); populateSelects(); inp.value = ''; } });
-    document.getElementById('addFeatureBtn')?.addEventListener('click', async () => { let inp = document.getElementById('newFeature'); if(inp.value.trim() && !premadeFeaturesArray.includes(inp.value.trim())) { premadeFeaturesArray.push(inp.value.trim()); await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); renderPremadeFeaturesUI(); inp.value = ''; } });
+    document.getElementById('addCountryBtn')?.addEventListener('click', async () => { 
+        let inp = document.getElementById('newCountry'); 
+        if(inp.value.trim() && !countriesArray.includes(inp.value.trim())) { 
+            countriesArray.push(inp.value.trim()); 
+            await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); 
+            renderCountriesUI(); 
+            populateSelects(); 
+            inp.value = ''; 
+        } 
+    });
+    document.getElementById('addCategoryBtn')?.addEventListener('click', async () => { 
+        let inp = document.getElementById('newCategory'); 
+        if(inp.value.trim() && !categoriesArray.includes(inp.value.trim())) { 
+            categoriesArray.push(inp.value.trim()); 
+            await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); 
+            renderCategoriesUI(); 
+            populateSelects(); 
+            inp.value = ''; 
+        } 
+    });
+    document.getElementById('addFeatureBtn')?.addEventListener('click', async () => { 
+        let inp = document.getElementById('newFeature'); 
+        if(inp.value.trim() && !premadeFeaturesArray.includes(inp.value.trim())) { 
+            premadeFeaturesArray.push(inp.value.trim()); 
+            await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); 
+            renderPremadeFeaturesUI(); 
+            inp.value = ''; 
+        } 
+    });
 
     function setupImageUpload(inputId, previewContainerId, isCircle = false, maxFiles = 1, multiple = false) {
         const input = document.getElementById(inputId);
@@ -312,11 +367,22 @@
         let discountPrice = document.getElementById('discountPrice').value ? parseFloat(document.getElementById('discountPrice').value) : null;
         const bargaining = document.getElementById('bargainingCheck').checked;
         const acceptDiscount = document.getElementById('acceptDiscountCheck').checked;
-        if(!nickname || !followers || !socialMedia || !category || !country || isNaN(originalPrice)) { document.getElementById('formMessage').innerHTML = '<span class="text-red-500">❌ Required fields missing</span>'; return; }
+        
+        if(!nickname || !followers || !socialMedia || !category || !country || isNaN(originalPrice)) { 
+            document.getElementById('formMessage').innerHTML = '<span class="text-red-500">❌ Required fields missing (Nickname, Followers, Category, Country, Price)</span>'; 
+            return; 
+        }
+        if(category === "-- No categories yet. Add in Settings --" || country === "-- No countries yet. Add in Settings --") {
+            document.getElementById('formMessage').innerHTML = '<span class="text-red-500">❌ Please add categories/countries in Settings first.</span>'; 
+            return;
+        }
         const frontFile = document.getElementById('frontImage').files[0];
         if(!frontFile) { document.getElementById('formMessage').innerHTML = '<span class="text-red-500">❌ Front image required</span>'; return; }
-        document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Processing...';
-        const loadingDiv = document.createElement('div'); loadingDiv.className = 'loading-overlay'; loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-4 shadow-xl"><iconify-icon icon="line-md:uploading-loop" width="28"></iconify-icon><span>Uploading assets...</span></div>'; document.body.appendChild(loadingDiv);
+        
+        document.getElementById('submitBtn').disabled = true; 
+        document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Processing...';
+        const loadingDiv = document.createElement('div'); loadingDiv.className = 'loading-overlay'; loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-4 shadow-xl flex gap-2"><iconify-icon icon="line-md:uploading-loop" width="28"></iconify-icon><span>Uploading assets...</span></div>'; document.body.appendChild(loadingDiv);
+        
         try {
             const profileFile = document.getElementById('profileImage').files[0];
             const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []);
@@ -324,11 +390,27 @@
             const [profileUrl, frontUrl] = await Promise.all([profileFile ? uploadToImgBB(profileFile) : null, uploadToImgBB(frontFile)]);
             const dashboardUrls = await Promise.all(dashboardFiles.map(f => uploadToImgBB(f)));
             const otherUrls = await Promise.all(otherFiles.map(f => uploadToImgBB(f)));
+            
             let finalPrice = originalPrice, hasDiscount = false;
-            if(!bargaining) { if((acceptDiscount && discountPrice) || (!acceptDiscount && discountPrice)) { finalPrice = discountPrice; hasDiscount = true; } else { finalPrice = originalPrice; } }
+            if(!bargaining) { 
+                if((acceptDiscount && discountPrice) || (!acceptDiscount && discountPrice && discountPrice > 0)) { 
+                    finalPrice = discountPrice; 
+                    hasDiscount = true; 
+                } else { 
+                    finalPrice = originalPrice; 
+                } 
+            }
+            
             const featuresRaw = document.getElementById('featuresText').value;
             const featuresList = featuresRaw.split('\n').filter(l => l.trim()).map(l => l.replace(/^•\s*/, '').trim());
-            const accountData = { nickname, followers: parseInt(followers), socialMedia, category, country, originalPrice, discountPrice: discountPrice || null, bargaining, acceptDiscount, finalPrice: bargaining ? null : finalPrice, hasDiscount: hasDiscount && !bargaining, images: { profile: profileUrl, front: frontUrl, dashboard: dashboardUrls, other: otherUrls }, features: featuresList, createdAt: Date.now() };
+            
+            const accountData = { 
+                nickname, followers: parseInt(followers), socialMedia, category, country, 
+                originalPrice, discountPrice: discountPrice || null, bargaining, acceptDiscount, 
+                finalPrice: bargaining ? null : finalPrice, hasDiscount: hasDiscount && !bargaining, 
+                images: { profile: profileUrl, front: frontUrl, dashboard: dashboardUrls, other: otherUrls }, 
+                features: featuresList, createdAt: Date.now() 
+            };
             const newRef = push(ref(window.db, 'marketplaceAccounts'));
             await set(newRef, accountData);
             document.getElementById('formMessage').innerHTML = '<span class="text-emerald-600 text-sm">✅ Account added successfully!</span>';
@@ -340,8 +422,14 @@
             document.getElementById('featuresText').value = '';
             document.getElementById('bargainingCheck').checked = false;
             document.getElementById('acceptDiscountCheck').checked = false;
-        } catch(err) { document.getElementById('formMessage').innerHTML = `<span class="text-red-500">❌ ${err.message}</span>`; }
-        finally { document.getElementById('submitBtn').disabled = false; document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:cloud-upload" width="18"></iconify-icon> Upload Account'; loadingDiv.remove(); }
+        } catch(err) { 
+            document.getElementById('formMessage').innerHTML = `<span class="text-red-500">❌ ${err.message}</span>`; 
+        }
+        finally { 
+            document.getElementById('submitBtn').disabled = false; 
+            document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:cloud-upload" width="18"></iconify-icon> Upload Account'; 
+            loadingDiv.remove(); 
+        }
     });
 
     const correctPasswordHash = btoa("MRkidda@12");
