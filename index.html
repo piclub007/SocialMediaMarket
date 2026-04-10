@@ -27,7 +27,7 @@
         .status-sold { background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
         .hero-image-container { background: transparent; box-shadow: none; border: none; }
         
-        /* Infinite scrolling carousel */
+        /* Infinite scrolling carousel - slower speed */
         .suggestions-container {
             overflow: hidden;
             position: relative;
@@ -36,7 +36,7 @@
         .suggestions-track {
             display: flex;
             width: fit-content;
-            animation: scrollSuggestions 60s linear infinite;
+            animation: scrollSuggestions 120s linear infinite;
         }
         .suggestions-track:hover {
             animation-play-state: paused;
@@ -58,20 +58,85 @@
         .pagination-btn { transition: all 0.2s; }
         .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
         .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease-out;
+        }
+        .splash-content {
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
+        }
+        .main-content.visible {
+            opacity: 1;
+        }
+        .greeting-text {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
+<!-- Splash Screen -->
+<div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+        <div class="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <iconify-icon icon="ri:exchange-dollar-line" width="48" class="text-white"></iconify-icon>
+        </div>
+        <h2 id="greetingMessage" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Good Day!</h2>
+        <p class="text-gray-400 text-sm">Loading your marketplace experience...</p>
+        <div class="mt-6 flex justify-center gap-2">
+            <div class="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+            <div class="w-2 h-2 bg-black rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+            <div class="w-2 h-2 bg-black rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content (initially hidden) -->
+<div id="mainContent" class="main-content" style="opacity: 0;">
 <div class="max-w-7xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
-    <!-- HEADER -->
-    <header class="flex items-center justify-between mb-10 pb-4 border-b border-gray-100">
-        <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center shadow-sm">
-                <iconify-icon icon="ri:exchange-dollar-line" width="24" height="24" class="text-white"></iconify-icon>
+    <!-- HEADER with Greeting on left side -->
+    <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center shadow-sm">
+                    <iconify-icon icon="ri:exchange-dollar-line" width="24" height="24" class="text-white"></iconify-icon>
+                </div>
+                <div class="flex items-baseline">
+                    <span class="w-6 h-0.5 bg-gray-300 rounded-full block ml-1"></span>
+                    <span class="w-2 h-2 bg-gray-400 rounded-full ml-1"></span>
+                </div>
             </div>
-            <div class="flex items-baseline">
-                <span class="w-6 h-0.5 bg-gray-300 rounded-full block ml-1"></span>
-                <span class="w-2 h-2 bg-gray-400 rounded-full ml-1"></span>
+            <div id="headerGreeting" class="text-sm font-medium text-gray-500 hidden md:block">
+                <!-- Greeting will be inserted here -->
             </div>
         </div>
         <button id="startSellingBtn" class="bg-black text-white px-6 py-2.5 rounded-full font-medium text-sm shadow-md shadow-black/10 btn-sleek flex items-center gap-2">
@@ -191,6 +256,7 @@
         </div>
     </div>
 </footer>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -217,7 +283,18 @@
     let currentPage = 1;
     const ITEMS_PER_PAGE = 24;
     let filteredAccounts = [];
-    let suggestionsAnimationFrame = null;
+    
+    // Get greeting based on time of day
+    function getTimeBasedGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return "Good Morning!";
+        if (hour >= 12 && hour < 17) return "Good Afternoon!";
+        if (hour >= 17 && hour < 22) return "Good Evening!";
+        return "Good Night!";
+    }
+    
+    const greeting = getTimeBasedGreeting();
+    document.getElementById('greetingMessage').innerText = greeting;
     
     // AI Recommendation Engine using localStorage
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
@@ -264,21 +341,15 @@
     
     function generateInfiniteSuggestions(accounts, count = 50) {
         if (accounts.length === 0) return [];
-        
         const suggestions = [];
         const availableAccounts = accounts.filter(a => a.status !== 'sold');
         const soldAccounts = accounts.filter(a => a.status === 'sold');
-        
-        // Mix: 70% available, 30% sold for variety
         const pool = [...availableAccounts, ...soldAccounts];
         if (pool.length === 0) return [];
         
         for (let i = 0; i < count; i++) {
             let selected = null;
-            
-            // 60% chance to use AI algorithm, 40% random (for discovery)
             if (Math.random() < 0.6 && userProfile.clickedAccounts.length > 0) {
-                // AI-weighted selection
                 const scores = pool.map(acc => {
                     let score = 0;
                     if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 40;
@@ -293,22 +364,16 @@
                 });
                 selected = getWeightedRandomAccount(pool, scores);
             } else {
-                // Random selection for discovery
                 const randomIndex = Math.floor(Math.random() * pool.length);
                 selected = pool[randomIndex];
             }
-            
             suggestions.push(selected);
         }
-        
         return suggestions;
     }
     
     function renderInfiniteSuggestions() {
-        const availableAccounts = allAccounts.filter(a => a.status !== 'sold');
         if (allAccounts.length === 0) return;
-        
-        // Generate a large batch of suggestions (infinite feel)
         const suggestionBatch = generateInfiniteSuggestions(allAccounts, 40);
         const track = document.getElementById('suggestionsTrack');
         if (!track) return;
@@ -344,10 +409,7 @@
             `;
         }).join('');
         
-        // Double the items for seamless infinite loop
         track.innerHTML = suggestionItems + suggestionItems;
-        
-        // Add click handlers
         track.querySelectorAll('.suggestion-item').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -360,10 +422,9 @@
             });
         });
         
-        // Reset animation
         track.style.animation = 'none';
-        track.offsetHeight; // force reflow
-        track.style.animation = 'scrollSuggestions 60s linear infinite';
+        track.offsetHeight;
+        track.style.animation = 'scrollSuggestions 120s linear infinite';
     }
     
     async function loadAccounts() {
@@ -377,11 +438,7 @@
             await loadCategories();
             applyFiltersAndRender();
             renderInfiniteSuggestions();
-            
-            // Refresh suggestions every 30 seconds to keep them fresh
-            setInterval(() => {
-                if (allAccounts.length > 0) renderInfiniteSuggestions();
-            }, 30000);
+            setInterval(() => { if (allAccounts.length > 0) renderInfiniteSuggestions(); }, 30000);
         } catch(e) {
             console.error("Firebase error:", e);
             document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Unable to load accounts. Please try again later.</div>';
@@ -557,7 +614,31 @@
     document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     
-    loadAccounts();
+    // Start loading data and show splash screen for minimum 3 seconds
+    const splashScreen = document.getElementById('splashScreen');
+    const mainContent = document.getElementById('mainContent');
+    const headerGreeting = document.getElementById('headerGreeting');
+    
+    // Set header greeting
+    headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
+    
+    // Start loading data in background
+    const loadPromise = loadAccounts();
+    
+    // Minimum 3 seconds splash display
+    const startTime = Date.now();
+    const minSplashTime = 3000;
+    
+    Promise.all([
+        loadPromise,
+        new Promise(resolve => setTimeout(resolve, minSplashTime))
+    ]).then(() => {
+        splashScreen.style.opacity = '0';
+        setTimeout(() => {
+            splashScreen.style.display = 'none';
+            mainContent.classList.add('visible');
+        }, 800);
+    });
 </script>
 </body>
 </html>
