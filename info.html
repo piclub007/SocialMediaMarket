@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Information — Social Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #f7f9fc; }
+        .info-card { background: white; border-radius: 32px; border: 1px solid #eef2f6; box-shadow: 0 8px 30px rgba(0,0,0,0.02); transition: all 0.2s; }
+        .info-card:hover { transform: translateY(-2px); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1); }
+        .nav-tab { cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; }
+        .nav-tab.active { border-bottom-color: #000000; color: #000000; font-weight: 600; }
+        .nav-tab:not(.active):hover { border-bottom-color: #d1d5db; color: #374151; }
+        @media (max-width: 768px) {
+            .info-card { border-radius: 24px; }
+            .nav-tab { font-size: 14px; padding: 8px 0; }
+        }
+        .faq-item { border-bottom: 1px solid #f0f0f0; }
+        .faq-question { cursor: pointer; transition: all 0.2s; }
+        .faq-question:hover { color: #000000; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .faq-item.open .faq-answer { max-height: 300px; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+<div class="max-w-5xl mx-auto">
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 hover:text-black transition mb-6 group">
+        <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
+        <span class="text-sm font-medium">Back</span>
+    </a>
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+        <div class="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+            <iconify-icon icon="ri:exchange-dollar-line" width="32" class="text-white"></iconify-icon>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Information Center</h1>
+        <p class="text-gray-500 mt-2">Trust, Guidelines & Support — Everything you need to know</p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex justify-center gap-8 md:gap-12 border-b border-gray-200 mb-8">
+        <button data-tab="trust" class="nav-tab active pb-3 px-2 text-gray-600">Trust & Safety</button>
+        <button data-tab="guidelines" class="nav-tab pb-3 px-2 text-gray-600">Guidelines</button>
+        <button data-tab="support" class="nav-tab pb-3 px-2 text-gray-600">Support</button>
+    </div>
+
+    <!-- Trust & Safety Content -->
+    <div id="trustContent" class="tab-content">
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="info-card p-6">
+                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4">
+                    <iconify-icon icon="mdi:shield-check" width="24" class="text-emerald-600"></iconify-icon>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Verified Accounts</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">All accounts undergo a thorough verification process. We check follower authenticity, engagement rates, and account history before listing.</p>
+            </div>
+            <div class="info-card p-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                    <iconify-icon icon="mdi:lock" width="24" class="text-blue-600"></iconify-icon>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Secure Escrow</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Funds are held in secure escrow until the buyer confirms receipt of account credentials. Your money is always protected.</p>
+            </div>
+            <div class="info-card p-6">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                    <iconify-icon icon="mdi:account-check" width="24" class="text-purple-600"></iconify-icon>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Seller Verification</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Sellers are verified through ID and social media history. We maintain a trusted seller program with premium benefits.</p>
+            </div>
+            <div class="info-card p-6">
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                    <iconify-icon icon="mdi:handshake" width="24" class="text-orange-600"></iconify-icon>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Dispute Resolution</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Our dedicated team handles disputes within 24-48 hours. All transactions are monitored for fair play.</p>
+            </div>
+        </div>
+
+        <div class="info-card p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><iconify-icon icon="mdi:gavel" width="20"></iconify-icon> Our Commitment</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">Social Market is committed to providing a safe, transparent marketplace for buying and selling social media accounts. We use advanced fraud detection, real-time monitoring, and community reporting to maintain platform integrity.</p>
+            <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100">
+                <div class="text-center"><p class="text-2xl font-bold text-gray-800">98%</p><p class="text-xs text-gray-400">Success Rate</p></div>
+                <div class="text-center"><p class="text-2xl font-bold text-gray-800">24/7</p><p class="text-xs text-gray-400">Support</p></div>
+                <div class="text-center"><p class="text-2xl font-bold text-gray-800">100%</p><p class="text-xs text-gray-400">Secure</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guidelines Content -->
+    <div id="guidelinesContent" class="tab-content hidden">
+        <div class="info-card p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2"><iconify-icon icon="mdi:file-document" width="22"></iconify-icon> Platform Guidelines</h3>
+            <div class="space-y-4">
+                <div class="p-4 bg-gray-50 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <iconify-icon icon="mdi:check-circle" width="20" class="text-green-500 mt-0.5"></iconify-icon>
+                        <div><h4 class="font-semibold text-gray-800">Authentic Followers Only</h4><p class="text-sm text-gray-500">Accounts with fake followers, bots, or purchased engagement are strictly prohibited and will be removed.</p></div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <iconify-icon icon="mdi:check-circle" width="20" class="text-green-500 mt-0.5"></iconify-icon>
+                        <div><h4 class="font-semibold text-gray-800">Clear Communication</h4><p class="text-sm text-gray-500">Sellers must provide accurate account information, including follower count, engagement rate, and any restrictions.</p></div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <iconify-icon icon="mdi:check-circle" width="20" class="text-green-500 mt-0.5"></iconify-icon>
+                        <div><h4 class="font-semibold text-gray-800">No Prohibited Content</h4><p class="text-sm text-gray-500">Accounts promoting hate speech, illegal activities, or adult content are not allowed on the marketplace.</p></div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <iconify-icon icon="mdi:check-circle" width="20" class="text-green-500 mt-0.5"></iconify-icon>
+                        <div><h4 class="font-semibold text-gray-800">Fair Pricing</h4><p class="text-sm text-gray-500">List accounts at reasonable prices based on market value. Price manipulation is monitored and penalized.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card p-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><iconify-icon icon="mdi:alert" width="20"></iconify-icon> Prohibited Items</h3>
+            <ul class="space-y-2 text-gray-600 text-sm">
+                <li class="flex items-center gap-2"><iconify-icon icon="mdi:close" width="16" class="text-red-500"></iconify-icon> Stolen or hacked accounts</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="mdi:close" width="16" class="text-red-500"></iconify-icon> Accounts with active bans or restrictions</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="mdi:close" width="16" class="text-red-500"></iconify-icon> Fake follower packages or bot accounts</li>
+                <li class="flex items-center gap-2"><iconify-icon icon="mdi:close" width="16" class="text-red-500"></iconify-icon> Accounts impersonating brands or public figures</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Support Content -->
+    <div id="supportContent" class="tab-content hidden">
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="info-card p-6 text-center">
+                <iconify-icon icon="mdi:email" width="40" class="text-gray-400 mx-auto mb-3"></iconify-icon>
+                <h3 class="font-semibold mb-2">Email Support</h3>
+                <p class="text-gray-500 text-sm">support@socialmarket.com</p>
+                <p class="text-xs text-gray-400 mt-1">Response within 24 hours</p>
+            </div>
+            <div class="info-card p-6 text-center">
+                <iconify-icon icon="mdi:chat" width="40" class="text-gray-400 mx-auto mb-3"></iconify-icon>
+                <h3 class="font-semibold mb-2">Live Chat</h3>
+                <p class="text-gray-500 text-sm">Mon-Fri, 9 AM - 6 PM EST</p>
+                <button id="liveChatBtn" class="mt-3 text-sm text-black underline">Start chat →</button>
+            </div>
+        </div>
+
+        <div class="info-card p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><iconify-icon icon="mdi:frequently-asked-questions" width="20"></iconify-icon> Frequently Asked Questions</h3>
+            
+            <div class="faq-item py-3">
+                <div class="faq-question flex justify-between items-center">
+                    <span class="font-medium text-gray-800">How long does account transfer take?</span>
+                    <iconify-icon icon="mdi:chevron-down" width="20" class="text-gray-400 transition"></iconify-icon>
+                </div>
+                <div class="faq-answer text-gray-500 text-sm pt-2">Typically 1-3 business days after payment confirmation. The seller will provide credentials and guide you through the transfer process.</div>
+            </div>
+            <div class="faq-item py-3">
+                <div class="faq-question flex justify-between items-center">
+                    <span class="font-medium text-gray-800">Is my payment secure?</span>
+                    <iconify-icon icon="mdi:chevron-down" width="20" class="text-gray-400 transition"></iconify-icon>
+                </div>
+                <div class="faq-answer text-gray-500 text-sm pt-2">Yes! We use encrypted payment processing and escrow protection. Funds are only released to the seller after buyer confirmation.</div>
+            </div>
+            <div class="faq-item py-3">
+                <div class="faq-question flex justify-between items-center">
+                    <span class="font-medium text-gray-800">What if the account gets recovered?</span>
+                    <iconify-icon icon="mdi:chevron-down" width="20" class="text-gray-400 transition"></iconify-icon>
+                </div>
+                <div class="faq-answer text-gray-500 text-sm pt-2">We offer a 30-day warranty against account recovery. If the original owner reclaims the account, you get a full refund.</div>
+            </div>
+            <div class="faq-item py-3">
+                <div class="faq-question flex justify-between items-center">
+                    <span class="font-medium text-gray-800">Can I sell multiple accounts?</span>
+                    <iconify-icon icon="mdi:chevron-down" width="20" class="text-gray-400 transition"></iconify-icon>
+                </div>
+                <div class="faq-answer text-gray-500 text-sm pt-2">Absolutely! Verified sellers can list unlimited accounts. Contact support for bulk listing options.</div>
+            </div>
+        </div>
+
+        <div class="info-card p-6 text-center bg-gradient-to-r from-gray-50 to-white">
+            <iconify-icon icon="mdi:headset" width="48" class="text-gray-500 mx-auto mb-3"></iconify-icon>
+            <h3 class="text-lg font-semibold mb-2">Still have questions?</h3>
+            <p class="text-gray-500 text-sm mb-4">Our support team is ready to help you</p>
+            <button id="contactSupportBtn" class="bg-black text-white px-6 py-2.5 rounded-xl font-medium">Contact Support</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    const tabs = document.querySelectorAll('.nav-tab');
+    const contents = {
+        trust: document.getElementById('trustContent'),
+        guidelines: document.getElementById('guidelinesContent'),
+        support: document.getElementById('supportContent')
+    };
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            Object.values(contents).forEach(content => content.classList.add('hidden'));
+            contents[tabId].classList.remove('hidden');
+        });
+    });
+    
+    // FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+            const parent = question.closest('.faq-item');
+            const icon = question.querySelector('iconify-icon');
+            parent.classList.toggle('open');
+            if (parent.classList.contains('open')) {
+                icon.setAttribute('icon', 'mdi:chevron-up');
+            } else {
+                icon.setAttribute('icon', 'mdi:chevron-down');
+            }
+        });
+    });
+    
+    // Button handlers
+    document.getElementById('liveChatBtn')?.addEventListener('click', () => {
+        alert('Live Chat: support@socialmarket.com\n\nOur team will respond within minutes during business hours.');
+    });
+    
+    document.getElementById('contactSupportBtn')?.addEventListener('click', () => {
+        window.location.href = 'mailto:support@socialmarket.com';
+    });
+</script>
+</body>
+</html>
