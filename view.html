@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Account Details — Social Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #f7f9fc; }
+        .detail-card { background: white; border-radius: 32px; border: 1px solid #eef2f6; box-shadow: 0 8px 30px rgba(0,0,0,0.02); }
+        .feature-badge { background: #f3f4f6; border-radius: 40px; padding: 6px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
+        .image-gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+        .image-gallery-img:hover { transform: scale(1.02); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; cursor: pointer; }
+        .modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 40px; font-size: 13px; font-weight: 500; }
+        .status-available { background: #10b98120; color: #10b981; border: 1px solid #10b98130; }
+        .status-sold { background: #ef444420; color: #ef4444; border: 1px solid #ef444430; }
+        @media (max-width: 768px) {
+            .detail-card { border-radius: 24px; }
+            .image-gallery-img { height: 160px; }
+        }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+<div class="max-w-6xl mx-auto">
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 hover:text-black transition mb-6 group">
+        <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
+        <span class="text-sm font-medium">Back</span>
+    </a>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="detail-card p-6 md:p-8">
+        <div class="skeleton h-8 w-48 rounded-lg mb-4"></div>
+        <div class="skeleton h-64 w-full rounded-2xl mb-6"></div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-3"><div class="skeleton h-6 w-32 rounded"></div><div class="skeleton h-12 w-full rounded"></div></div>
+            <div class="space-y-3"><div class="skeleton h-6 w-32 rounded"></div><div class="skeleton h-12 w-full rounded"></div></div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="contentState" class="hidden">
+        <div class="detail-card p-6 md:p-8">
+            <!-- Header with Nickname & Status -->
+            <div class="flex flex-wrap justify-between items-start gap-4 mb-6 pb-4 border-b border-gray-100">
+                <div>
+                    <h1 id="accountNickname" class="text-2xl md:text-3xl font-bold text-gray-900">Loading...</h1>
+                    <div class="flex items-center gap-3 mt-2 flex-wrap">
+                        <span id="accountPlatform" class="text-sm text-gray-500 flex items-center gap-1"><iconify-icon icon="mdi:earth" width="14"></iconify-icon> Platform</span>
+                        <span id="accountStatusBadge" class="status-badge">Loading</span>
+                    </div>
+                </div>
+                <div id="accountPriceBox" class="text-right">
+                    <span class="text-2xl md:text-3xl font-bold text-gray-900">$0</span>
+                    <p class="text-xs text-gray-400 mt-1">Final price</p>
+                </div>
+            </div>
+
+            <!-- Image Gallery -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:image-multiple" width="20"></iconify-icon> Gallery</h2>
+                <div id="imageGallery" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+                <p id="noImagesMsg" class="text-gray-400 text-sm hidden">No images available for this account</p>
+            </div>
+
+            <!-- Main Info Grid -->
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Nickname</p>
+                        <p id="detailNickname" class="text-lg font-medium text-gray-800">-</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Followers</p>
+                        <p id="detailFollowers" class="text-2xl font-bold text-gray-800">-</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Social Media</p>
+                        <p id="detailSocialMedia" class="text-lg font-medium text-gray-800">-</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Category</p>
+                        <p id="detailCategory" class="text-lg font-medium text-gray-800">-</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Country</p>
+                        <p id="detailCountry" class="text-lg font-medium text-gray-800">-</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Document ID</p>
+                        <p id="detailDocId" class="text-sm font-mono text-gray-600 break-all">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Details -->
+            <div class="mb-8 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div><p class="text-xs text-gray-400">Original Price</p><p id="priceOriginal" class="text-xl font-semibold text-gray-700">-</p></div>
+                    <div><p class="text-xs text-gray-400">Discount Price</p><p id="priceDiscount" class="text-xl font-semibold text-gray-700">-</p></div>
+                    <div><p class="text-xs text-gray-400">Final Price</p><p id="priceFinal" class="text-2xl font-bold text-black">-</p></div>
+                </div>
+                <div id="pricingBadges" class="flex flex-wrap gap-2 mt-4"></div>
+            </div>
+
+            <!-- Features -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
+                <div id="featuresList" class="flex flex-wrap gap-2"></div>
+                <p id="noFeaturesMsg" class="text-gray-400 text-sm hidden">No features listed</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
+                <button id="contactSellerBtn" class="flex-1 bg-black text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition">
+                    <iconify-icon icon="mdi:message-text" width="18"></iconify-icon> Contact Seller
+                </button>
+                <button id="reportBtn" class="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition flex items-center gap-2">
+                    <iconify-icon icon="mdi:flag" width="18"></iconify-icon> Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="detail-card p-8 text-center hidden">
+        <iconify-icon icon="mdi:alert-circle-outline" width="64" class="text-red-400 mx-auto mb-4"></iconify-icon>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Account Not Found</h3>
+        <p class="text-gray-500 mb-6">The account you're looking for doesn't exist or has been removed.</p>
+        <a href="index.html" class="inline-block bg-black text-white px-6 py-3 rounded-xl font-medium">Return to Home</a>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
+        authDomain: "project-k21n.firebaseapp.com",
+        projectId: "project-k21n",
+        storageBucket: "project-k21n.firebasestorage.app",
+        messagingSenderId: "266081318769",
+        appId: "1:266081318769:web:a7893c55b5b30a8dd768d0"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const accountId = urlParams.get('id');
+    
+    if (!accountId) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+    } else {
+        loadAccount();
+    }
+    
+    async function loadAccount() {
+        try {
+            const docRef = doc(db, 'marketplaceAccounts', accountId);
+            const docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                throw new Error('Account not found');
+            }
+            
+            const account = { id: docSnap.id, ...docSnap.data() };
+            displayAccount(account);
+            
+            // Update user profile for recommendations (localStorage)
+            updateUserProfile(account);
+            
+        } catch (error) {
+            console.error('Error loading account:', error);
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+    }
+    
+    function updateUserProfile(account) {
+        let profile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
+            viewedPlatforms: {},
+            viewedCategories: {},
+            clickedAccounts: []
+        };
+        profile.viewedPlatforms[account.socialMedia] = (profile.viewedPlatforms[account.socialMedia] || 0) + 1;
+        if (account.category) profile.viewedCategories[account.category] = (profile.viewedCategories[account.category] || 0) + 1;
+        profile.clickedAccounts.push({ id: account.id, timestamp: Date.now() });
+        if (profile.clickedAccounts.length > 20) profile.clickedAccounts.shift();
+        localStorage.setItem('socialMarketProfile', JSON.stringify(profile));
+    }
+    
+    function displayAccount(account) {
+        const isSold = account.status === 'sold';
+        
+        // Basic Info
+        document.getElementById('accountNickname').innerText = account.nickname || 'Unnamed';
+        document.getElementById('accountPlatform').innerHTML = `<iconify-icon icon="mdi:earth" width="14"></iconify-icon> ${account.socialMedia || 'Unknown'}`;
+        
+        const statusBadge = isSold ? 
+            '<span class="status-badge status-sold"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon> SOLD</span>' : 
+            '<span class="status-badge status-available"><iconify-icon icon="mdi:check-circle" width="14"></iconify-icon> AVAILABLE</span>';
+        document.getElementById('accountStatusBadge').innerHTML = statusBadge;
+        
+        // Price Box
+        const finalPrice = account.finalPrice || account.originalPrice || 0;
+        document.getElementById('accountPriceBox').innerHTML = `
+            <span class="text-2xl md:text-3xl font-bold text-gray-900">$${finalPrice.toLocaleString()}</span>
+            <p class="text-xs text-gray-400 mt-1">${isSold ? 'Sold price' : 'Final price'}</p>
+        `;
+        
+        // Detail fields
+        document.getElementById('detailNickname').innerText = account.nickname || '-';
+        document.getElementById('detailFollowers').innerText = account.followers?.toLocaleString() || '0';
+        document.getElementById('detailSocialMedia').innerText = account.socialMedia || '-';
+        document.getElementById('detailCategory').innerText = account.category || '-';
+        document.getElementById('detailCountry').innerText = account.country || '-';
+        document.getElementById('detailDocId').innerText = account.id;
+        
+        // Pricing
+        const originalPrice = account.originalPrice || 0;
+        const discountPrice = account.discountPrice || null;
+        document.getElementById('priceOriginal').innerHTML = `$${originalPrice.toLocaleString()}`;
+        document.getElementById('priceDiscount').innerHTML = discountPrice ? `$${discountPrice.toLocaleString()}` : '<span class="text-gray-400">Not set</span>';
+        document.getElementById('priceFinal').innerHTML = `$${(account.finalPrice || originalPrice).toLocaleString()}`;
+        
+        // Pricing Badges
+        const badgesContainer = document.getElementById('pricingBadges');
+        badgesContainer.innerHTML = '';
+        if (account.bargaining) {
+            badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:handshake" width="14"></iconify-icon> Negotiable</span>';
+        }
+        if (account.hasDiscount || (account.discountPrice && !account.bargaining)) {
+            badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:sale" width="14"></iconify-icon> Discount Applied</span>';
+        }
+        if (account.acceptDiscount) {
+            badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:check-decagram" width="14"></iconify-icon> Accept Discount</span>';
+        }
+        if (isSold) {
+            badgesContainer.innerHTML += '<span class="feature-badge bg-red-50 text-red-600"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> Sold Out</span>';
+        }
+        
+        // Features
+        const featuresList = document.getElementById('featuresList');
+        const noFeaturesMsg = document.getElementById('noFeaturesMsg');
+        if (account.features && account.features.length > 0) {
+            featuresList.innerHTML = account.features.map(f => `<span class="feature-badge"><iconify-icon icon="mdi:check-circle" width="14" class="text-green-500"></iconify-icon> ${escapeHtml(f)}</span>`).join('');
+            noFeaturesMsg.classList.add('hidden');
+        } else {
+            featuresList.innerHTML = '';
+            noFeaturesMsg.classList.remove('hidden');
+        }
+        
+        // Image Gallery
+        const gallery = document.getElementById('imageGallery');
+        const noImagesMsg = document.getElementById('noImagesMsg');
+        const allImages = [];
+        if (account.images?.profile) allImages.push({ url: account.images.profile, type: 'profile' });
+        if (account.images?.front) allImages.push({ url: account.images.front, type: 'front' });
+        if (account.images?.dashboard) allImages.push(...account.images.dashboard.map(url => ({ url, type: 'dashboard' })));
+        if (account.images?.other) allImages.push(...account.images.other.map(url => ({ url, type: 'other' })));
+        
+        if (allImages.length > 0) {
+            gallery.innerHTML = allImages.map(img => `
+                <div class="relative group cursor-pointer" onclick="openImageModal('${img.url}')">
+                    <img src="${img.url}" class="image-gallery-img w-full h-40 md:h-48 object-cover rounded-xl border border-gray-100" loading="lazy" onerror="this.src='https://placehold.co/400x300/f0f0f0/999?text=Image+Error'">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <iconify-icon icon="mdi:magnify-plus" width="28" class="text-white drop-shadow-lg"></iconify-icon>
+                    </div>
+                </div>
+            `).join('');
+            noImagesMsg.classList.add('hidden');
+        } else {
+            gallery.innerHTML = '';
+            noImagesMsg.classList.remove('hidden');
+        }
+        
+        // Show content, hide loading
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('contentState').classList.remove('hidden');
+    }
+    
+    window.openImageModal = (url) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<img src="${url}" alt="Full size image" onerror="this.src='https://placehold.co/800x600/f0f0f0/999?text=Image+Error'"><div class="absolute top-4 right-4 text-white text-2xl cursor-pointer bg-black/50 rounded-full p-2">&times;</div>`;
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+        modal.querySelector('.absolute')?.addEventListener('click', () => modal.remove());
+        document.body.appendChild(modal);
+    };
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Button handlers
+    document.getElementById('contactSellerBtn')?.addEventListener('click', () => {
+        alert('Contact seller: support@socialmarket.com\n\nPlease include the Account ID: ' + accountId);
+    });
+    
+    document.getElementById('reportBtn')?.addEventListener('click', () => {
+        alert('Report this account?\n\nOur team will review it within 24 hours.\nAccount ID: ' + accountId);
+    });
+</script>
+</body>
+</html>
