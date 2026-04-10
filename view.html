@@ -7,6 +7,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <!-- Dynamic Open Graph for view.html -->
+<script type="text/javascript">
+    // This will be populated dynamically by JavaScript after loading account data
+    function updateOpenGraph(account) {
+        if (!account) return;
+        
+        const ogTitle = `${account.nickname} - ${account.followers?.toLocaleString()} followers on ${account.socialMedia} | Imbuga Store`;
+        const ogDescription = `$${(account.finalPrice || account.originalPrice || 0).toLocaleString()} - Buy this ${account.socialMedia} account with ${account.followers?.toLocaleString()} followers. ${account.features?.slice(0,3).join(', ') || 'Verified account'}`;
+        const ogImage = account.images?.front || 'https://imbuga.vercel.app/Image/og-image.jpg';
+        const ogUrl = `https://imbuga.vercel.app/view.html?id=${account.id}`;
+        
+        // Update or create meta tags
+        let meta = document.querySelector('meta[property="og:title"]');
+        if (meta) meta.setAttribute('content', ogTitle);
+        else { meta = document.createElement('meta'); meta.setAttribute('property', 'og:title'); meta.setAttribute('content', ogTitle); document.head.appendChild(meta); }
+        
+        meta = document.querySelector('meta[property="og:description"]');
+        if (meta) meta.setAttribute('content', ogDescription);
+        else { meta = document.createElement('meta'); meta.setAttribute('property', 'og:description'); meta.setAttribute('content', ogDescription); document.head.appendChild(meta); }
+        
+        meta = document.querySelector('meta[property="og:image"]');
+        if (meta) meta.setAttribute('content', ogImage);
+        else { meta = document.createElement('meta'); meta.setAttribute('property', 'og:image'); meta.setAttribute('content', ogImage); document.head.appendChild(meta); }
+        
+        meta = document.querySelector('meta[property="og:url"]');
+        if (meta) meta.setAttribute('content', ogUrl);
+        else { meta = document.createElement('meta'); meta.setAttribute('property', 'og:url'); meta.setAttribute('content', ogUrl); document.head.appendChild(meta); }
+        
+        meta = document.querySelector('meta[name="twitter:title"]');
+        if (meta) meta.setAttribute('content', ogTitle);
+        else { meta = document.createElement('meta'); meta.setAttribute('name', 'twitter:title'); meta.setAttribute('content', ogTitle); document.head.appendChild(meta); }
+        
+        meta = document.querySelector('meta[name="twitter:description"]');
+        if (meta) meta.setAttribute('content', ogDescription);
+        else { meta = document.createElement('meta'); meta.setAttribute('name', 'twitter:description'); meta.setAttribute('content', ogDescription); document.head.appendChild(meta); }
+        
+        meta = document.querySelector('meta[name="twitter:image"]');
+        if (meta) meta.setAttribute('content', ogImage);
+        else { meta = document.createElement('meta'); meta.setAttribute('name', 'twitter:image'); meta.setAttribute('content', ogImage); document.head.appendChild(meta); }
+        
+        // Update canonical link
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) canonical.setAttribute('href', ogUrl);
+        else { canonical = document.createElement('link'); canonical.setAttribute('rel', 'canonical'); canonical.setAttribute('href', ogUrl); document.head.appendChild(canonical); }
+    }
+</script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
         /* FULL SLEEK BLACK THEME - MAXIMUM VISIBILITY */
