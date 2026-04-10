@@ -123,19 +123,13 @@
                 </div>
             </div>
 
-            <!-- REQUESTS PANEL (For sellers who want to sell their accounts) -->
-            <div id="requestsPanel" class="max-w-5xl mx-auto hidden fade-in">
-                <div class="form-card p-6 md:p-8">
-                    <div class="flex items-center gap-3 mb-4">
-                        <iconify-icon icon="mdi:message-processing" width="32" class="text-black"></iconify-icon>
-                        <h2 class="text-2xl font-semibold">Seller Requests</h2>
-                    </div>
-                    <p class="text-gray-500 mb-6">People who want to sell their social media accounts submit requests here. Review, approve, or reject each request.</p>
-                    
-                    <div id="requestsList" class="space-y-4 max-h-[600px] overflow-y-auto">
-                        <!-- Requests will be loaded dynamically -->
-                        <div class="text-center text-gray-400 py-8">Loading seller requests...</div>
-                    </div>
+            <!-- REQUESTS PANEL (Redirect to requests.html) -->
+            <div id="requestsPanel" class="max-w-4xl mx-auto hidden fade-in">
+                <div class="form-card p-8 text-center">
+                    <iconify-icon icon="mdi:message-processing" width="64" class="text-gray-300 mx-auto mb-4"></iconify-icon>
+                    <h3 class="text-xl font-semibold mb-2">Seller Requests</h3>
+                    <p class="text-gray-500 mb-6">Manage all seller submissions and account sale requests</p>
+                    <button id="redirectRequestsBtn" class="btn-primary px-8 py-3 text-white font-medium">Open Requests Dashboard →</button>
                 </div>
             </div>
 
@@ -184,7 +178,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -198,7 +192,6 @@
     const db = getFirestore(app);
 
     let allAccounts = [];
-    let sellerRequests = [];
     let searchTimeout = null;
     let quickSearchTimeout = null;
     let categoriesArray = [], countriesArray = [], premadeFeaturesArray = [];
@@ -212,73 +205,6 @@
         updateAnalytics();
         updatePayoutAnalytics();
         renderAccountsGrid();
-    }
-
-    async function loadSellerRequests() {
-        try {
-            const requestsSnapshot = await getDocs(collection(db, 'sellerRequests'));
-            sellerRequests = [];
-            requestsSnapshot.forEach(doc => { sellerRequests.push({ id: doc.id, ...doc.data() }); });
-            renderRequestsList();
-        } catch(e) {
-            console.log("No requests collection yet, creating sample or empty");
-            sellerRequests = [];
-            renderRequestsList();
-        }
-    }
-
-    function renderRequestsList() {
-        const container = document.getElementById('requestsList');
-        if(!container) return;
-        
-        if(sellerRequests.length === 0) {
-            container.innerHTML = `
-                <div class="text-center text-gray-400 py-12">
-                    <iconify-icon icon="mdi:inbox-outline" width="48" class="mx-auto mb-3"></iconify-icon>
-                    <p>No seller requests yet</p>
-                    <p class="text-xs mt-1">When sellers submit their accounts for review, they will appear here</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = sellerRequests.map(req => `
-            <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                <div class="flex flex-wrap justify-between items-start gap-3">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="font-semibold text-gray-800">${escapeHtml(req.sellerName || req.sellerEmail || 'Anonymous')}</span>
-                            <span class="text-xs px-2 py-0.5 rounded-full ${req.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : req.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${req.status || 'pending'}</span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Account:</span> ${escapeHtml(req.accountName || req.nickname || 'N/A')}</p>
-                        <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Platform:</span> ${escapeHtml(req.platform || req.socialMedia || 'N/A')}</p>
-                        <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Followers:</span> ${req.followers?.toLocaleString() || 'N/A'}</p>
-                        <p class="text-sm text-gray-600"><span class="font-medium">Asking Price:</span> $${(req.price || req.askingPrice || 0).toLocaleString()}</p>
-                        ${req.message ? `<p class="text-sm text-gray-500 mt-2 italic">"${escapeHtml(req.message)}"</p>` : ''}
-                    </div>
-                    <div class="flex gap-2">
-                        ${req.status !== 'approved' ? `<button class="approve-request bg-green-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-green-700 transition" data-id="${req.id}"><iconify-icon icon="mdi:check" width="16" class="inline mr-1"></iconify-icon> Approve</button>` : ''}
-                        ${req.status !== 'rejected' ? `<button class="reject-request bg-red-500 text-white px-4 py-2 rounded-xl text-sm hover:bg-red-600 transition" data-id="${req.id}"><iconify-icon icon="mdi:close" width="16" class="inline mr-1"></iconify-icon> Reject</button>` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-        document.querySelectorAll('.approve-request').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = btn.getAttribute('data-id');
-                await updateDoc(doc(db, 'sellerRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
-                await loadSellerRequests();
-            });
-        });
-        
-        document.querySelectorAll('.reject-request').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = btn.getAttribute('data-id');
-                await updateDoc(doc(db, 'sellerRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
-                await loadSellerRequests();
-            });
-        });
     }
 
     function updateDashboardStats() {
@@ -452,7 +378,6 @@
         if(tabId === 'accounts') renderAccountsGrid();
         if(tabId === 'accountId') document.getElementById('quickSearchInput').value = '';
         if(tabId === 'payout') updatePayoutAnalytics();
-        if(tabId === 'requests') loadSellerRequests();
     }
     document.getElementById('tab-dashboard')?.addEventListener('click', () => switchTab('dashboard'));
     document.getElementById('tab-accounts')?.addEventListener('click', () => switchTab('accounts'));
@@ -462,6 +387,7 @@
     document.getElementById('tab-settings')?.addEventListener('click', () => { switchTab('settings'); fetchSettings(); });
     document.getElementById('tab-payout')?.addEventListener('click', () => { switchTab('payout'); updatePayoutAnalytics(); });
     document.getElementById('redirectAddBtn')?.addEventListener('click', () => { window.location.href = 'add.html'; });
+    document.getElementById('redirectRequestsBtn')?.addEventListener('click', () => { window.location.href = 'requests.html'; });
 
     const menuToggle = document.getElementById('menuToggle'), mobileSidebar = document.getElementById('mobileSidebar'), overlayBg = document.getElementById('overlayBg'), closeSidebar = document.getElementById('closeSidebarBtn');
     function openSidebar() { mobileSidebar.classList.add('open'); overlayBg.classList.add('active'); }
