@@ -19,12 +19,47 @@
         .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 40px; font-size: 13px; font-weight: 500; }
         .status-available { background: #10b98120; color: #10b981; border: 1px solid #10b98130; }
         .status-sold { background: #ef444420; color: #ef4444; border: 1px solid #ef444430; }
+        .original-price-small { text-decoration: line-through; color: #9ca3af; font-size: 14px; }
         @media (max-width: 768px) {
             .detail-card { border-radius: 24px; }
             .image-gallery-img { height: 160px; }
         }
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        /* Suggestions Carousel */
+        .suggestions-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .suggestions-track {
+            display: flex;
+            width: fit-content;
+            animation: scrollSuggestions 180s linear infinite;
+        }
+        .suggestions-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scrollSuggestions {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .suggestion-item {
+            flex: 0 0 auto;
+            width: 260px;
+            margin-right: 16px;
+            transition: all 0.2s;
+            background: white;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid #eef2f6;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12);
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
@@ -59,8 +94,8 @@
                     </div>
                 </div>
                 <div id="accountPriceBox" class="text-right">
-                    <span class="text-2xl md:text-3xl font-bold text-gray-900">$0</span>
-                    <p class="text-xs text-gray-400 mt-1">Final price</p>
+                    <span id="finalPriceDisplay" class="text-2xl md:text-3xl font-bold text-gray-900">$0</span>
+                    <div id="originalPriceSmall" class="original-price-small hidden"></div>
                 </div>
             </div>
 
@@ -71,64 +106,63 @@
                 <p id="noImagesMsg" class="text-gray-400 text-sm hidden">No images available for this account</p>
             </div>
 
-            <!-- Main Info Grid -->
-            <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <!-- Main Info Grid (without Document ID) -->
+            <div class="grid md:grid-cols-2 gap-8 mb-6">
                 <div class="space-y-4">
                     <div class="bg-gray-50 rounded-2xl p-4">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Nickname</p>
                         <p id="detailNickname" class="text-lg font-medium text-gray-800">-</p>
                     </div>
                     <div class="bg-gray-50 rounded-2xl p-4">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Followers</p>
-                        <p id="detailFollowers" class="text-2xl font-bold text-gray-800">-</p>
-                    </div>
-                    <div class="bg-gray-50 rounded-2xl p-4">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Social Media</p>
                         <p id="detailSocialMedia" class="text-lg font-medium text-gray-800">-</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Category</p>
+                        <p id="detailCategory" class="text-lg font-medium text-gray-800">-</p>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <div class="bg-gray-50 rounded-2xl p-4">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Category</p>
-                        <p id="detailCategory" class="text-lg font-medium text-gray-800">-</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Followers</p>
+                        <p id="detailFollowers" class="text-2xl font-bold text-gray-800">-</p>
                     </div>
                     <div class="bg-gray-50 rounded-2xl p-4">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Country</p>
                         <p id="detailCountry" class="text-lg font-medium text-gray-800">-</p>
                     </div>
-                    <div class="bg-gray-50 rounded-2xl p-4">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Document ID</p>
-                        <p id="detailDocId" class="text-sm font-mono text-gray-600 break-all">-</p>
-                    </div>
                 </div>
             </div>
 
-            <!-- Pricing Details -->
-            <div class="mb-8 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
-                <div class="grid md:grid-cols-3 gap-4">
-                    <div><p class="text-xs text-gray-400">Original Price</p><p id="priceOriginal" class="text-xl font-semibold text-gray-700">-</p></div>
-                    <div><p class="text-xs text-gray-400">Discount Price</p><p id="priceDiscount" class="text-xl font-semibold text-gray-700">-</p></div>
-                    <div><p class="text-xs text-gray-400">Final Price</p><p id="priceFinal" class="text-2xl font-bold text-black">-</p></div>
-                </div>
-                <div id="pricingBadges" class="flex flex-wrap gap-2 mt-4"></div>
-            </div>
-
-            <!-- Features -->
+            <!-- Key Features (below followers) -->
             <div class="mb-8">
                 <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
                 <div id="featuresList" class="flex flex-wrap gap-2"></div>
                 <p id="noFeaturesMsg" class="text-gray-400 text-sm hidden">No features listed</p>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Simplified Pricing -->
+            <div class="mb-8 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
+                <div id="pricingBadges" class="flex flex-wrap gap-2 mb-3"></div>
+            </div>
+
+            <!-- Action Buttons: Buy & Share -->
             <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
-                <button id="contactSellerBtn" class="flex-1 bg-black text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition">
-                    <iconify-icon icon="mdi:message-text" width="18"></iconify-icon> Contact Seller
+                <button id="buyBtn" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition">
+                    <iconify-icon icon="mdi:whatsapp" width="18"></iconify-icon> Buy on WhatsApp
                 </button>
-                <button id="reportBtn" class="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition flex items-center gap-2">
-                    <iconify-icon icon="mdi:flag" width="18"></iconify-icon> Report
+                <button id="shareBtn" class="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition flex items-center gap-2">
+                    <iconify-icon icon="mdi:share-variant" width="18"></iconify-icon> Share
                 </button>
+            </div>
+        </div>
+
+        <!-- Suggestions Section -->
+        <div class="mt-10">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="20"></iconify-icon> You May Also Like</h3>
+            <div class="suggestions-container">
+                <div id="suggestionsTrack" class="suggestions-track"></div>
             </div>
         </div>
     </div>
@@ -144,7 +178,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -160,12 +194,92 @@
     
     const urlParams = new URLSearchParams(window.location.search);
     const accountId = urlParams.get('id');
+    let currentAccount = null;
+    let allAccounts = [];
     
     if (!accountId) {
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('errorState').classList.remove('hidden');
     } else {
         loadAccount();
+        loadAllAccountsForSuggestions();
+    }
+    
+    async function loadAllAccountsForSuggestions() {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
+            allAccounts = [];
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                if (data && doc.id !== accountId) {
+                    allAccounts.push({ id: doc.id, ...data });
+                }
+            });
+            renderSuggestions();
+        } catch(e) {
+            console.error("Error loading suggestions:", e);
+        }
+    }
+    
+    function renderSuggestions() {
+        if (allAccounts.length === 0) return;
+        
+        // Random selection for suggestions
+        const shuffled = [...allAccounts];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        const suggestions = shuffled.slice(0, 20);
+        
+        const track = document.getElementById('suggestionsTrack');
+        if (!track) return;
+        
+        const suggestionItems = suggestions.map(acc => {
+            let platformIcon = "skill-icons:instagram";
+            if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
+            else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
+            
+            const isSold = acc.status === 'sold';
+            const statusBadge = isSold ? '<span class="text-[10px] text-red-500">SOLD</span>' : '<span class="text-[10px] text-green-500">AVAIL</span>';
+            const price = acc.finalPrice || acc.originalPrice || 0;
+            
+            return `
+                <div class="suggestion-item" data-id="${acc.id}">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <iconify-icon icon="${platformIcon}" width="24"></iconify-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname || 'Unknown')}</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs text-gray-400">${acc.socialMedia || ''}</p>
+                                ${statusBadge}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="font-bold text-sm">$${price.toLocaleString()}</span>
+                        <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        track.innerHTML = suggestionItems + suggestionItems;
+        track.querySelectorAll('.suggestion-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.getAttribute('data-id');
+                if (id) window.location.href = `view.html?id=${id}`;
+            });
+        });
+        
+        track.style.animation = 'none';
+        track.offsetHeight;
+        track.style.animation = 'scrollSuggestions 180s linear infinite';
     }
     
     async function loadAccount() {
@@ -177,11 +291,11 @@
                 throw new Error('Account not found');
             }
             
-            const account = { id: docSnap.id, ...docSnap.data() };
-            displayAccount(account);
+            currentAccount = { id: docSnap.id, ...docSnap.data() };
+            displayAccount(currentAccount);
             
-            // Update user profile for recommendations (localStorage)
-            updateUserProfile(account);
+            // Update user profile for recommendations
+            updateUserProfile(currentAccount);
             
         } catch (error) {
             console.error('Error loading account:', error);
@@ -215,27 +329,24 @@
             '<span class="status-badge status-available"><iconify-icon icon="mdi:check-circle" width="14"></iconify-icon> AVAILABLE</span>';
         document.getElementById('accountStatusBadge').innerHTML = statusBadge;
         
-        // Price Box
+        // Pricing - Simplified (only final price, original price shown small above if exists)
         const finalPrice = account.finalPrice || account.originalPrice || 0;
-        document.getElementById('accountPriceBox').innerHTML = `
-            <span class="text-2xl md:text-3xl font-bold text-gray-900">$${finalPrice.toLocaleString()}</span>
-            <p class="text-xs text-gray-400 mt-1">${isSold ? 'Sold price' : 'Final price'}</p>
-        `;
+        const originalPrice = account.originalPrice || 0;
         
-        // Detail fields
+        if (account.hasDiscount || (account.discountPrice && !account.bargaining) || (originalPrice > finalPrice)) {
+            document.getElementById('originalPriceSmall').innerHTML = `$${originalPrice.toLocaleString()}`;
+            document.getElementById('originalPriceSmall').classList.remove('hidden');
+        } else {
+            document.getElementById('originalPriceSmall').classList.add('hidden');
+        }
+        document.getElementById('finalPriceDisplay').innerHTML = `$${finalPrice.toLocaleString()}`;
+        
+        // Detail fields (without document ID)
         document.getElementById('detailNickname').innerText = account.nickname || '-';
         document.getElementById('detailFollowers').innerText = account.followers?.toLocaleString() || '0';
         document.getElementById('detailSocialMedia').innerText = account.socialMedia || '-';
         document.getElementById('detailCategory').innerText = account.category || '-';
         document.getElementById('detailCountry').innerText = account.country || '-';
-        document.getElementById('detailDocId').innerText = account.id;
-        
-        // Pricing
-        const originalPrice = account.originalPrice || 0;
-        const discountPrice = account.discountPrice || null;
-        document.getElementById('priceOriginal').innerHTML = `$${originalPrice.toLocaleString()}`;
-        document.getElementById('priceDiscount').innerHTML = discountPrice ? `$${discountPrice.toLocaleString()}` : '<span class="text-gray-400">Not set</span>';
-        document.getElementById('priceFinal').innerHTML = `$${(account.finalPrice || originalPrice).toLocaleString()}`;
         
         // Pricing Badges
         const badgesContainer = document.getElementById('pricingBadges');
@@ -314,13 +425,50 @@
         });
     }
     
-    // Button handlers
-    document.getElementById('contactSellerBtn')?.addEventListener('click', () => {
-        alert('Contact seller: support@socialmarket.com\n\nPlease include the Account ID: ' + accountId);
+    // Share button - copies link and opens share dialog
+    document.getElementById('shareBtn')?.addEventListener('click', async () => {
+        const shareUrl = window.location.href;
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: currentAccount?.nickname || 'Social Media Account',
+                    text: `Check out this ${currentAccount?.socialMedia || 'social media'} account: ${currentAccount?.nickname || ''}`,
+                    url: shareUrl
+                });
+            } else {
+                await navigator.clipboard.writeText(shareUrl);
+                alert('Link copied to clipboard!');
+            }
+        } catch (err) {
+            // Fallback
+            await navigator.clipboard.writeText(shareUrl);
+            alert('Link copied to clipboard!');
+        }
     });
     
-    document.getElementById('reportBtn')?.addEventListener('click', () => {
-        alert('Report this account?\n\nOur team will review it within 24 hours.\nAccount ID: ' + accountId);
+    // Buy button - WhatsApp with product details
+    document.getElementById('buyBtn')?.addEventListener('click', () => {
+        if (!currentAccount) return;
+        
+        const phoneNumber = "250734248701";
+        const productName = currentAccount.nickname || 'Social Media Account';
+        const followers = currentAccount.followers?.toLocaleString() || 'N/A';
+        const platform = currentAccount.socialMedia || 'Unknown';
+        const price = currentAccount.finalPrice || currentAccount.originalPrice || 0;
+        const docIdShort = currentAccount.id.substring(0, 8);
+        
+        const message = `Hello! I'm interested in buying this account from Social Market.%0A%0A` +
+            `📱 *Account Details:*%0A` +
+            `• Nickname: ${productName}%0A` +
+            `• Platform: ${platform}%0A` +
+            `• Followers: ${followers}%0A` +
+            `• Price: $${price.toLocaleString()}%0A` +
+            `• Reference ID: ${docIdShort}...%0A%0A` +
+            `I found this on Social Market and would like to proceed with the purchase. Please let me know the next steps.%0A%0A` +
+            `Thank you! 🙏`;
+        
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
     });
 </script>
 </body>
