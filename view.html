@@ -9,30 +9,31 @@
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
-        body { background: #f7f9fc; }
-        .detail-card { background: white; border-radius: 32px; border: 1px solid #eef2f6; box-shadow: 0 8px 30px rgba(0,0,0,0.02); }
-        .feature-badge { background: #f3f4f6; border-radius: 40px; padding: 6px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
-        .image-gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
-        .image-gallery-img:hover { transform: scale(1.02); }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; cursor: pointer; }
-        .modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        /* FULL SLEEK BLACK THEME - MAXIMUM VISIBILITY */
+        body { background: #050505; }
+        .detail-card { background: #0f0f0f; border-radius: 32px; border: 1px solid #2a2a2a; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+        .feature-badge { background: #1e1e1e; border-radius: 40px; padding: 6px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; color: #e0e0e0; border: 1px solid #3a3a3a; }
+        .image-gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 20px; cursor: pointer; transition: all 0.2s; border: 1px solid #333; background: #1a1a1a; }
+        .image-gallery-img:hover { transform: scale(1.02); border-color: #666; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 1000; cursor: pointer; }
+        .modal img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 12px; }
         .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 40px; font-size: 13px; font-weight: 500; }
-        .status-available { background: #10b98120; color: #10b981; border: 1px solid #10b98130; }
-        .status-sold { background: #ef444420; color: #ef4444; border: 1px solid #ef444430; }
+        .status-available { background: #10b98120; color: #4ade80; border: 1px solid #10b98160; }
+        .status-sold { background: #ef444420; color: #fca5a5; border: 1px solid #ef444460; }
         .original-price-small { text-decoration: line-through; color: #9ca3af; font-size: 14px; }
-        .currency-card { background: #f8f9fc; border-radius: 16px; transition: all 0.2s; cursor: pointer; }
-        .currency-card:hover { background: #f0f2f5; transform: translateY(-2px); }
-        .currency-active { background: #111111; color: white; }
-        .currency-active .currency-symbol, .currency-active .currency-amount { color: white; }
-        .currency-active .currency-label { color: #9ca3af; }
+        .currency-card { background: #1a1a1a; border-radius: 16px; transition: all 0.2s; cursor: pointer; border: 1px solid #333; }
+        .currency-card:hover { background: #2a2a2a; transform: translateY(-2px); }
+        .currency-active { background: #ffffff; color: #000000; }
+        .currency-active .currency-symbol, .currency-active .currency-amount { color: #000000; font-weight: bold; }
+        .currency-active .currency-label { color: #4b5563; }
         @media (max-width: 768px) {
             .detail-card { border-radius: 24px; }
             .image-gallery-img { height: 160px; }
         }
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        .skeleton { background: linear-gradient(90deg, #1a1a1a 25%, #2c2c2c 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 16px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        /* Suggestions Carousel - Speed 1.7x */
+        /* Suggestions Carousel */
         .suggestions-container {
             overflow: hidden;
             position: relative;
@@ -55,50 +56,98 @@
             width: 260px;
             margin-right: 16px;
             transition: all 0.2s;
-            background: white;
+            background: #0f0f0f;
             border-radius: 16px;
             padding: 12px;
-            border: 1px solid #eef2f6;
+            border: 1px solid #2a2a2a;
             cursor: pointer;
         }
         .suggestion-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12);
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.5);
+            border-color: #444;
         }
         
-        /* Buy Modal */
-        .buy-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1100;
-            padding: 16px;
+        /* High Visibility Text Colors */
+        .text-white-high { color: #ffffff !important; }
+        .text-gray-light { color: #d4d4d4 !important; }
+        .text-gray-mid { color: #a0a0a0 !important; }
+        .border-custom { border-color: #2a2a2a !important; }
+        .bg-dark-card { background-color: #0f0f0f !important; }
+        .bg-dark-elevated { background-color: #1a1a1a !important; }
+        
+        /* Ensure all text is visible */
+        .detail-card h1, .detail-card h2, .detail-card h3, .detail-card p, .detail-card span, .detail-card div:not(.currency-active *) {
+            color: #e5e5e5;
         }
-        .buy-modal-content {
-            background: white;
-            border-radius: 32px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
+        .currency-card .currency-amount, .currency-card .currency-symbol, .currency-card .currency-label {
+            color: #c0c0c0;
         }
-        @media (max-width: 640px) {
-            .buy-modal-content { border-radius: 24px; margin: 16px; }
-            .suggestion-item { width: 220px; }
-            .currency-grid { gap: 8px; }
-            .currency-card { padding: 10px !important; }
+        .currency-active .currency-amount, .currency-active .currency-symbol, .currency-active .currency-label {
+            color: #000000 !important;
+        }
+        .feature-badge iconify-icon {
+            color: #4ade80;
+        }
+        .bg-gray-900, .bg-gray-800 {
+            background-color: #0f0f0f !important;
+        }
+        .border-gray-700, .border-gray-800 {
+            border-color: #2a2a2a !important;
+        }
+        .text-gray-200, .text-gray-300 {
+            color: #e0e0e0 !important;
+        }
+        .text-gray-400, .text-gray-500 {
+            color: #a0a0a0 !important;
+        }
+        .text-white {
+            color: #ffffff !important;
+        }
+        .text-black {
+            color: #000000 !important;
+        }
+        .bg-white {
+            background-color: #ffffff !important;
+        }
+        button.bg-white {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        button.bg-white:hover {
+            background-color: #e8e8e8 !important;
+        }
+        .suggestion-item .text-white, .suggestion-item .font-semibold {
+            color: #ffffff !important;
+        }
+        .suggestion-item .text-gray-400 {
+            color: #9ca3af !important;
+        }
+        .text-green-500, .text-green-400 {
+            color: #4ade80 !important;
+        }
+        .text-red-400, .text-red-500 {
+            color: #fca5a5 !important;
+        }
+        .hover\:text-white:hover {
+            color: #ffffff !important;
+        }
+        a.text-gray-400 {
+            color: #a0a0a0 !important;
+        }
+        a.text-gray-400:hover {
+            color: #ffffff !important;
+        }
+        .original-price-small {
+            color: #9ca3af !important;
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8" style="background: #050505;">
 
 <div class="max-w-6xl mx-auto">
     <!-- Back Button -->
-    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 hover:text-black transition mb-6 group">
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition mb-6 group">
         <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
         <span class="text-sm font-medium">Back</span>
     </a>
@@ -117,66 +166,66 @@
     <div id="contentState" class="hidden">
         <div class="detail-card p-6 md:p-8">
             <!-- Header with Nickname & Status -->
-            <div class="flex flex-wrap justify-between items-start gap-4 mb-6 pb-4 border-b border-gray-100">
+            <div class="flex flex-wrap justify-between items-start gap-4 mb-6 pb-4 border-b border-gray-800">
                 <div>
-                    <h1 id="accountNickname" class="text-2xl md:text-3xl font-bold text-gray-900">Loading...</h1>
+                    <h1 id="accountNickname" class="text-2xl md:text-3xl font-bold text-white">Loading...</h1>
                     <div class="flex items-center gap-3 mt-2 flex-wrap">
-                        <span id="accountPlatform" class="text-sm text-gray-500 flex items-center gap-1"><iconify-icon icon="mdi:earth" width="14"></iconify-icon> Platform</span>
+                        <span id="accountPlatform" class="text-sm text-gray-300 flex items-center gap-1"><iconify-icon icon="mdi:earth" width="14"></iconify-icon> Platform</span>
                         <span id="accountStatusBadge" class="status-badge">Loading</span>
                     </div>
                 </div>
                 <div id="accountPriceBox" class="text-right">
-                    <span id="finalPriceDisplay" class="text-2xl md:text-3xl font-bold text-gray-900">$0</span>
+                    <span id="finalPriceDisplay" class="text-2xl md:text-3xl font-bold text-white">$0</span>
                     <div id="originalPriceSmall" class="original-price-small hidden"></div>
                 </div>
             </div>
 
             <!-- Image Gallery -->
             <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:image-multiple" width="20"></iconify-icon> Gallery</h2>
+                <h2 class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:image-multiple" width="20"></iconify-icon> Gallery</h2>
                 <div id="imageGallery" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-                <p id="noImagesMsg" class="text-gray-400 text-sm hidden">No images available for this account</p>
+                <p id="noImagesMsg" class="text-gray-500 text-sm hidden">No images available for this account</p>
             </div>
 
             <!-- Main Info Grid -->
             <div class="grid md:grid-cols-2 gap-8 mb-6">
                 <div class="space-y-4">
-                    <div class="bg-gray-50 rounded-2xl p-4">
+                    <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Nickname</p>
-                        <p id="detailNickname" class="text-lg font-medium text-gray-800">-</p>
+                        <p id="detailNickname" class="text-lg font-medium text-white">-</p>
                     </div>
-                    <div class="bg-gray-50 rounded-2xl p-4">
+                    <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Social Media</p>
-                        <p id="detailSocialMedia" class="text-lg font-medium text-gray-800">-</p>
+                        <p id="detailSocialMedia" class="text-lg font-medium text-white">-</p>
                     </div>
-                    <div class="bg-gray-50 rounded-2xl p-4">
+                    <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Category</p>
-                        <p id="detailCategory" class="text-lg font-medium text-gray-800">-</p>
+                        <p id="detailCategory" class="text-lg font-medium text-white">-</p>
                     </div>
                 </div>
                 <div class="space-y-4">
-                    <div class="bg-gray-50 rounded-2xl p-4">
+                    <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Followers</p>
-                        <p id="detailFollowers" class="text-2xl font-bold text-gray-800">-</p>
+                        <p id="detailFollowers" class="text-2xl font-bold text-white">-</p>
                     </div>
-                    <div class="bg-gray-50 rounded-2xl p-4">
+                    <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
                         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Country</p>
-                        <p id="detailCountry" class="text-lg font-medium text-gray-800">-</p>
+                        <p id="detailCountry" class="text-lg font-medium text-white">-</p>
                     </div>
                 </div>
             </div>
 
             <!-- Key Features -->
             <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
+                <h2 class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
                 <div id="featuresList" class="flex flex-wrap gap-2"></div>
-                <p id="noFeaturesMsg" class="text-gray-400 text-sm hidden">No features listed</p>
+                <p id="noFeaturesMsg" class="text-gray-500 text-sm hidden">No features listed</p>
             </div>
 
             <!-- Pricing with Currency Converter -->
-            <div class="mb-8 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100">
+            <div class="mb-8 p-5 bg-gray-900 rounded-2xl border border-gray-800">
                 <div class="flex flex-wrap justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
+                    <h2 class="text-lg font-semibold text-gray-200 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
                     <div class="text-xs text-gray-400">Click any currency to convert</div>
                 </div>
                 
@@ -213,11 +262,11 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
-                <button id="buyBtn" class="flex-1 bg-black text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition">
+            <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-800">
+                <button id="buyBtn" class="flex-1 bg-white text-black py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition shadow-md">
                     <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon> BUY NOW
                 </button>
-                <button id="shareBtn" class="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition flex items-center gap-2">
+                <button id="shareBtn" class="px-6 py-3 border border-gray-700 rounded-xl font-medium text-gray-300 hover:bg-gray-900 hover:text-white transition flex items-center gap-2">
                     <iconify-icon icon="mdi:share-variant" width="18"></iconify-icon> Share
                 </button>
             </div>
@@ -225,7 +274,7 @@
 
         <!-- Suggestions Section -->
         <div class="mt-10">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="20"></iconify-icon> You May Also Like</h3>
+            <h3 class="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="20"></iconify-icon> You May Also Like</h3>
             <div class="suggestions-container">
                 <div id="suggestionsTrack" class="suggestions-track"></div>
             </div>
@@ -235,9 +284,9 @@
     <!-- Error State -->
     <div id="errorState" class="detail-card p-8 text-center hidden">
         <iconify-icon icon="mdi:alert-circle-outline" width="64" class="text-red-400 mx-auto mb-4"></iconify-icon>
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">Account Not Found</h3>
-        <p class="text-gray-500 mb-6">The account you're looking for doesn't exist or has been removed.</p>
-        <a href="index.html" class="inline-block bg-black text-white px-6 py-3 rounded-xl font-medium">Return to Home</a>
+        <h3 class="text-xl font-semibold text-gray-200 mb-2">Account Not Found</h3>
+        <p class="text-gray-400 mb-6">The account you're looking for doesn't exist or has been removed.</p>
+        <a href="index.html" class="inline-block bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition">Return to Home</a>
     </div>
 </div>
 
@@ -286,7 +335,6 @@
             }
         } catch (error) {
             console.log("Using fallback exchange rates");
-            // Keep fallback rates
         }
         updateAllCurrencies();
     }
@@ -307,7 +355,7 @@
             const element = document.querySelector(`[data-currency="${currency.code}"] .currency-amount`);
             if (element) {
                 if (currency.code === 'RWF' || currency.code === 'UGX') {
-                    element.textContent = `${Math.round(convertedValue).toLocaleString()}${currency.suffix}${currency.suffix ? '' : currency.suffix}`;
+                    element.textContent = `${Math.round(convertedValue).toLocaleString()}${currency.suffix}`;
                 } else {
                     element.textContent = currency.format(convertedValue);
                 }
@@ -321,7 +369,6 @@
             card.addEventListener('click', () => {
                 currencyCards.forEach(c => c.classList.remove('currency-active'));
                 card.classList.add('currency-active');
-                // Visual feedback only - all currencies are already displayed
             });
         });
     }
@@ -373,17 +420,17 @@
             else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
             
             const isSold = acc.status === 'sold';
-            const statusBadge = isSold ? '<span class="text-[10px] text-red-500">SOLD</span>' : '<span class="text-[10px] text-green-500">AVAIL</span>';
+            const statusBadge = isSold ? '<span class="text-[10px] text-red-400">SOLD</span>' : '<span class="text-[10px] text-green-400">AVAIL</span>';
             const price = acc.finalPrice || acc.originalPrice || 0;
             
             return `
                 <div class="suggestion-item" data-id="${acc.id}">
                     <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0">
                             <iconify-icon icon="${platformIcon}" width="24"></iconify-icon>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname || 'Unknown')}</p>
+                            <p class="font-semibold text-sm truncate text-white">${escapeHtml(acc.nickname || 'Unknown')}</p>
                             <div class="flex items-center justify-between">
                                 <p class="text-xs text-gray-400">${acc.socialMedia || ''}</p>
                                 ${statusBadge}
@@ -391,7 +438,7 @@
                         </div>
                     </div>
                     <div class="mt-2 flex justify-between items-center">
-                        <span class="font-bold text-sm">$${price.toLocaleString()}</span>
+                        <span class="font-bold text-sm text-white">$${price.toLocaleString()}</span>
                         <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span>
                     </div>
                 </div>
@@ -469,7 +516,6 @@
         }
         document.getElementById('finalPriceDisplay').innerHTML = `$${finalPrice.toLocaleString()}`;
         
-        // Update USD display in currency grid
         const usdElement = document.querySelector('[data-currency="USD"] .currency-amount');
         if (usdElement) usdElement.textContent = `$${finalPrice.toLocaleString()}`;
         
@@ -491,7 +537,7 @@
             badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:check-decagram" width="14"></iconify-icon> Accept Discount</span>';
         }
         if (isSold) {
-            badgesContainer.innerHTML += '<span class="feature-badge bg-red-50 text-red-600"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> Sold Out</span>';
+            badgesContainer.innerHTML += '<span class="feature-badge bg-red-950 text-red-400 border-red-800"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> Sold Out</span>';
         }
         
         const featuresList = document.getElementById('featuresList');
@@ -514,9 +560,9 @@
         
         if (allImages.length > 0) {
             gallery.innerHTML = allImages.map(img => `
-                <div class="relative group cursor-pointer" onclick="openImageModal('${img.url}')">
-                    <img src="${img.url}" class="image-gallery-img w-full h-40 md:h-48 object-cover rounded-xl border border-gray-100" loading="lazy" onerror="this.src='https://placehold.co/400x300/f0f0f0/999?text=Image+Error'">
-                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <div class="relative group cursor-pointer" onclick="openImageModal('${img.url.replace(/'/g, "\\'")}')">
+                    <img src="${img.url}" class="image-gallery-img w-full h-40 md:h-48 object-cover rounded-xl border border-gray-800" loading="lazy" onerror="this.src='https://placehold.co/400x300/1a1a1a/666?text=Image+Error'">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <iconify-icon icon="mdi:magnify-plus" width="28" class="text-white drop-shadow-lg"></iconify-icon>
                     </div>
                 </div>
@@ -534,7 +580,7 @@
     window.openImageModal = (url) => {
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<img src="${url}" alt="Full size image" onerror="this.src='https://placehold.co/800x600/f0f0f0/999?text=Image+Error'"><div class="absolute top-4 right-4 text-white text-2xl cursor-pointer bg-black/50 rounded-full p-2">&times;</div>`;
+        modal.innerHTML = `<img src="${url}" alt="Full size image" onerror="this.src='https://placehold.co/800x600/1a1a1a/666?text=Image+Error'"><div class="absolute top-4 right-4 text-white text-2xl cursor-pointer bg-black/60 rounded-full p-2 hover:bg-black/80 transition">&times;</div>`;
         modal.addEventListener('click', (e) => {
             if (e.target === modal) modal.remove();
         });
