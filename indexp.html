@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
-        * { font-family: 'Poppins', sans-serif; }
-        body { background: #fafafc; }
+        * { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #fafafc; -webkit-tap-highlight-color: transparent; }
         .glass-card { background: white; border: 1px solid #f0f0f0; transition: all 0.2s ease; cursor: pointer; border-radius: 20px; }
         .glass-card:active { transform: scale(0.98); }
         .btn-sleek { transition: all 0.2s ease; }
@@ -22,39 +22,34 @@
         .status-available { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         .status-sold { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         
-        /* Horizontal scroll for suggestions - smooth and slow */
-        .suggestions-container {
-            overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scroll-behavior: smooth;
-        }
-        .suggestions-container::-webkit-scrollbar {
-            height: 3px;
-        }
-        .suggestions-container::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 10px;
-        }
-        .suggestions-container::-webkit-scrollbar-thumb {
-            background: #c7c9ce;
-            border-radius: 10px;
+        /* Continuous infinite scrolling carousel - very slow */
+        .suggestions-wrapper {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
         }
         .suggestions-track {
             display: flex;
-            gap: 12px;
-            padding-bottom: 8px;
             width: fit-content;
+            animation: scrollSuggestionsSlow 280s linear infinite;
+        }
+        .suggestions-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scrollSuggestionsSlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
         .suggestion-item {
             flex: 0 0 auto;
-            width: 260px;
+            width: 270px;
+            margin-right: 14px;
             background: white;
             border-radius: 16px;
             padding: 12px;
             border: 1px solid #f0f0f0;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .suggestion-item:active {
             transform: scale(0.98);
@@ -82,7 +77,6 @@
             transform: scale(0.97);
         }
         
-        /* Hide number input spinners */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -91,9 +85,14 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-20" style="overflow-x: hidden;">
 
 <div class="px-4 py-5 max-w-md mx-auto">
     <!-- HEADER -->
@@ -143,16 +142,14 @@
         <iconify-icon icon="logos:linkedin-icon" width="24" class="text-gray-400"></iconify-icon>
     </div>
 
-    <!-- Suggestions Carousel -->
+    <!-- Continuous Infinite Suggestions Carousel -->
     <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
             <iconify-icon icon="mdi:lightbulb" width="16" class="text-amber-500"></iconify-icon>
             <h3 class="text-sm font-semibold text-gray-700">Suggested for you</h3>
         </div>
-        <div class="suggestions-container overflow-x-auto">
-            <div id="suggestionsTrackM" class="suggestions-track">
-                <div class="text-center py-8 text-gray-400 text-sm w-full">Loading suggestions...</div>
-            </div>
+        <div class="suggestions-wrapper">
+            <div id="suggestionsTrackM" class="suggestions-track"></div>
         </div>
     </div>
 
@@ -164,7 +161,7 @@
         </div>
     </div>
 
-    <!-- Platform Filters - Horizontal Scroll -->
+    <!-- Platform Filters -->
     <div class="filter-scroll mb-4">
         <div class="flex gap-2 pb-1">
             <button data-platform="all" class="platform-chip-m category-active px-4 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">All</button>
@@ -193,7 +190,7 @@
         </div>
     </div>
 
-    <!-- Pagination Info & Controls -->
+    <!-- Pagination -->
     <div class="flex justify-between items-center mb-4">
         <div id="paginationInfoM" class="text-xs text-gray-500"></div>
         <div class="flex gap-2">
@@ -242,7 +239,7 @@
     let filteredAccounts = [];
     const ITEMS_PER_PAGE = 10;
     
-    // Get time-based greeting
+    // Time-based greeting
     function getTimeBasedGreeting() {
         const hour = new Date().getHours();
         if (hour >= 5 && hour < 12) return "Good Morning!";
@@ -250,11 +247,10 @@
         if (hour >= 17 && hour < 22) return "Good Evening!";
         return "Good Night!";
     }
-    
     document.getElementById('mobileGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="14" class="inline mr-1"></iconify-icon> ${getTimeBasedGreeting()}`;
     
     // User profile for recommendations
-    let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
+    let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile_mobile')) || {
         viewedPlatforms: {},
         viewedCategories: {},
         priceRange: { min: 0, max: Infinity },
@@ -278,7 +274,7 @@
         for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) {
             if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
         }
-        localStorage.setItem('socialMarketProfile', JSON.stringify(userProfile));
+        localStorage.setItem('socialMarketProfile_mobile', JSON.stringify(userProfile));
     }
     
     function getWeightedRandom(accounts, weights) {
@@ -291,7 +287,7 @@
         return accounts[0];
     }
     
-    function generateSuggestions(accounts, count = 20) {
+    function generateSuggestions(accounts, count = 25) {
         if (!accounts.length) return [];
         const pool = [...accounts.filter(a => a.status !== 'sold'), ...accounts.filter(a => a.status === 'sold')];
         if (!pool.length) return [];
@@ -319,11 +315,11 @@
     
     function renderSuggestions() {
         if (!allAccounts.length) return;
-        const batch = generateSuggestions(allAccounts, 15);
+        const batch = generateSuggestions(allAccounts, 22);
         const track = document.getElementById('suggestionsTrackM');
         if (!track) return;
         
-        track.innerHTML = batch.map(acc => {
+        const createItemHtml = (acc) => {
             let icon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
             else if (acc.socialMedia?.toLowerCase() === 'tiktok') icon = "logos:tiktok-icon";
@@ -347,11 +343,20 @@
                     </div>
                     <div class="mt-2 flex justify-between items-center">
                         <span class="font-bold text-sm">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
-                        <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0}</span>
+                        <div class="flex items-center gap-1">
+                            <iconify-icon icon="mdi:account-group-outline" width="12" class="text-gray-400"></iconify-icon>
+                            <span class="text-xs text-gray-500">${acc.followers?.toLocaleString() || 0}</span>
+                        </div>
                     </div>
                 </div>
             `;
-        }).join('');
+        };
+        
+        let itemsHtml = '';
+        for (let i = 0; i < 2; i++) {
+            batch.forEach(acc => { itemsHtml += createItemHtml(acc); });
+        }
+        track.innerHTML = itemsHtml;
         
         track.querySelectorAll('.suggestion-item').forEach(el => {
             el.addEventListener('click', () => {
@@ -361,6 +366,10 @@
                 window.location.href = `view.html?id=${id}`;
             });
         });
+        
+        track.style.animation = 'none';
+        track.offsetHeight;
+        track.style.animation = 'scrollSuggestionsSlow 280s linear infinite';
     }
     
     async function loadAccounts() {
@@ -378,7 +387,7 @@
             
             applyFilters();
             renderSuggestions();
-            setInterval(() => { if (allAccounts.length) renderSuggestions(); }, 45000);
+            setInterval(() => { if (allAccounts.length) renderSuggestions(); }, 60000);
         } catch(e) {
             console.error("Error:", e);
             document.getElementById('listings-grid-mobile').innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">Unable to load accounts. Please refresh.</div>';
@@ -486,6 +495,12 @@
                                     <iconify-icon icon="mdi:eye-outline" width="12"></iconify-icon> View
                                 </button>
                             </div>
+                            <div class="flex items-center gap-3 mt-2 pt-1 border-t border-gray-50">
+                                <div class="flex items-center gap-1">
+                                    <iconify-icon icon="mdi:account-group-outline" width="12" class="text-gray-400"></iconify-icon>
+                                    <span class="text-xs text-gray-600">${acc.followers?.toLocaleString() || 0} followers</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -523,7 +538,7 @@
         if (currentPage > 1) {
             currentPage--;
             renderAccounts();
-            window.scrollTo({ top: 300, behavior: 'smooth' });
+            window.scrollTo({ top: 350, behavior: 'smooth' });
         }
     });
     
@@ -532,7 +547,7 @@
         if (currentPage < totalPages) {
             currentPage++;
             renderAccounts();
-            window.scrollTo({ top: 300, behavior: 'smooth' });
+            window.scrollTo({ top: 350, behavior: 'smooth' });
         }
     });
     
@@ -559,7 +574,6 @@
     document.getElementById('guidelinesLinkM')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('supportLinkM')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     
-    // Initialize
     loadAccounts();
 </script>
 </body>
