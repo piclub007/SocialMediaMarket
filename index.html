@@ -239,7 +239,7 @@
         headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
     }
     
-    // AI Recommendation Engine using localStorage
+    // AI Recommendation Engine using localStorage with safe defaults
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
         viewedPlatforms: {},
         viewedCategories: {},
@@ -250,8 +250,13 @@
         lastUpdated: Date.now()
     };
     
+    // Ensure priceRange exists
+    if (!userProfile.priceRange) {
+        userProfile.priceRange = { min: 0, max: Infinity };
+    }
+    
     function updateUserProfile(account, action = 'view') {
-        if (action === 'view') {
+        if (action === 'view' && account) {
             userProfile.viewedPlatforms[account.socialMedia] = (userProfile.viewedPlatforms[account.socialMedia] || 0) + 1;
             if (account.category) userProfile.viewedCategories[account.category] = (userProfile.viewedCategories[account.category] || 0) + 1;
             const price = account.finalPrice || account.originalPrice || 0;
@@ -273,6 +278,7 @@
     }
     
     function getWeightedRandomAccount(accounts, weights) {
+        if (!accounts.length) return null;
         const totalWeight = weights.reduce((sum, w) => sum + w, 0);
         let random = Math.random() * totalWeight;
         for (let i = 0; i < accounts.length; i++) {
@@ -283,24 +289,33 @@
     }
     
     function generateInfiniteSuggestions(accounts, count = 50) {
-        if (accounts.length === 0) return [];
+        if (!accounts || accounts.length === 0) return [];
         const suggestions = [];
-        const availableAccounts = accounts.filter(a => a.status !== 'sold');
-        const soldAccounts = accounts.filter(a => a.status === 'sold');
+        const availableAccounts = accounts.filter(a => a && a.status !== 'sold');
+        const soldAccounts = accounts.filter(a => a && a.status === 'sold');
         const pool = [...availableAccounts, ...soldAccounts];
         if (pool.length === 0) return [];
         
+        // Safely get price range with fallbacks
+        const minPriceRange = userProfile.priceRange?.min || 0;
+        const maxPriceRange = userProfile.priceRange?.max || Infinity;
+        const interestedPrice = userProfile.interestedPrice || 0;
+        const interestedPlatform = userProfile.interestedPlatform || null;
+        const viewedPlatforms = userProfile.viewedPlatforms || {};
+        const viewedCategories = userProfile.viewedCategories || {};
+        
         for (let i = 0; i < count; i++) {
             let selected = null;
-            if (Math.random() < 0.6 && userProfile.clickedAccounts.length > 0) {
+            if (Math.random() < 0.6 && userProfile.clickedAccounts && userProfile.clickedAccounts.length > 0) {
                 const scores = pool.map(acc => {
-                    let score = 0;
-                    if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 40;
-                    else if (userProfile.viewedPlatforms[acc.socialMedia]) score += userProfile.viewedPlatforms[acc.socialMedia] * 8;
-                    if (acc.category && userProfile.viewedCategories[acc.category]) score += userProfile.viewedCategories[acc.category] * 6;
+                    if (!acc) return 0;
+                    let score = 10;
+                    if (interestedPlatform && acc.socialMedia === interestedPlatform) score += 40;
+                    else if (viewedPlatforms[acc.socialMedia]) score += viewedPlatforms[acc.socialMedia] * 8;
+                    if (acc.category && viewedCategories[acc.category]) score += viewedCategories[acc.category] * 6;
                     const price = acc.finalPrice || acc.originalPrice || 0;
-                    if (userProfile.interestedPrice && Math.abs(price - userProfile.interestedPrice) < 500) score += 15;
-                    if (price >= userProfile.priceRange.min && price <= userProfile.priceRange.max) score += 10;
+                    if (interestedPrice && Math.abs(price - interestedPrice) < 500) score += 15;
+                    if (price >= minPriceRange && price <= maxPriceRange) score += 10;
                     if (acc.status === 'available') score += 5;
                     score += Math.random() * 5;
                     return score;
@@ -310,7 +325,7 @@
                 const randomIndex = Math.floor(Math.random() * pool.length);
                 selected = pool[randomIndex];
             }
-            suggestions.push(selected);
+            if (selected) suggestions.push(selected);
         }
         return suggestions;
     }
@@ -322,6 +337,7 @@
         if (!track) return;
         
         const suggestionItems = suggestionBatch.map(acc => {
+            if (!acc) return '';
             let platformIcon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
             else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
@@ -337,9 +353,9 @@
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0"><iconify-icon icon="${platformIcon}" width="32"></iconify-icon></div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname)}</p>
+                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname || 'Unknown')}</p>
                             <div class="flex items-center flex-wrap gap-1">
-                                <p class="text-xs text-gray-400">${acc.socialMedia}</p>
+                                <p class="text-xs text-gray-400">${acc.socialMedia || 'Unknown'}</p>
                                 ${statusBadge}
                             </div>
                         </div>
@@ -358,7 +374,7 @@
                 e.stopPropagation();
                 const id = el.getAttribute('data-id');
                 if (id) {
-                    const account = allAccounts.find(a => a.id === id);
+                    const account = allAccounts.find(a => a && a.id === id);
                     if (account) updateUserProfile(account, 'view');
                     window.location.href = `view.html?id=${id}`;
                 }
@@ -376,7 +392,9 @@
             allAccounts = [];
             querySnapshot.forEach(doc => {
                 const data = doc.data();
-                allAccounts.push({ id: doc.id, ...data });
+                if (data) {
+                    allAccounts.push({ id: doc.id, ...data });
+                }
             });
             await loadCategories();
             applyFiltersAndRender();
@@ -397,7 +415,9 @@
                 categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
             }
             const categorySelect = document.getElementById('categoryFilter');
-            categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+            if (categorySelect) {
+                categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+            }
         } catch(e) {
             categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
         }
@@ -411,11 +431,12 @@
         const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
         const category = document.getElementById('categoryFilter')?.value || 'all';
         
-        const available = allAccounts.filter(a => a.status !== 'sold');
-        const sold = allAccounts.filter(a => a.status === 'sold');
+        const available = allAccounts.filter(a => a && a.status !== 'sold');
+        const sold = allAccounts.filter(a => a && a.status === 'sold');
         
         const filterFn = (acc) => {
-            const matchesSearch = !searchTerm || acc.nickname?.toLowerCase().includes(searchTerm) || acc.socialMedia?.toLowerCase().includes(searchTerm);
+            if (!acc) return false;
+            const matchesSearch = !searchTerm || (acc.nickname && acc.nickname.toLowerCase().includes(searchTerm)) || (acc.socialMedia && acc.socialMedia.toLowerCase().includes(searchTerm));
             const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
             const price = acc.finalPrice || acc.originalPrice || 0;
             const matchesPrice = price >= minPrice && price <= maxPrice;
@@ -451,17 +472,24 @@
         const pageAccounts = filteredAccounts.slice(start, end);
         const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
         
-        document.getElementById('paginationInfo').innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
-        document.getElementById('prevPage').disabled = currentPage === 1;
-        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
+        const paginationInfo = document.getElementById('paginationInfo');
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
+        }
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        if (prevBtn) prevBtn.disabled = currentPage === 1;
+        if (nextBtn) nextBtn.disabled = currentPage === totalPages || totalPages === 0;
         
         const container = document.getElementById('listings-grid');
+        if (!container) return;
         if (pageAccounts.length === 0) {
             container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">No accounts match your filters</div>';
             return;
         }
         
         container.innerHTML = pageAccounts.map(acc => {
+            if (!acc) return '';
             const displayPrice = acc.finalPrice || acc.originalPrice;
             const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
             const acceptDiscountChecked = acc.acceptDiscount === true;
@@ -493,7 +521,7 @@
                     <div class="p-4 pb-3 flex items-start gap-3">
                         ${profileImg && !isSold ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32" height="32"></iconify-icon></div>`}
                         <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800 text-base tracking-tight">${escapeHtml(acc.nickname)}</h3>
+                            <h3 class="font-semibold text-gray-800 text-base tracking-tight">${escapeHtml(acc.nickname || 'Unknown')}</h3>
                             <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                 <span class="text-[11px] font-medium uppercase tracking-wider text-gray-400">${acc.socialMedia || ''}</span>
                                 ${statusBadge}
@@ -519,7 +547,7 @@
                 e.stopPropagation();
                 const id = el.getAttribute('data-id');
                 if (id) {
-                    const account = allAccounts.find(a => a.id === id);
+                    const account = allAccounts.find(a => a && a.id === id);
                     if (account) updateUserProfile(account, 'view');
                     window.location.href = `view.html?id=${id}`;
                 }
