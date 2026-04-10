@@ -7,33 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-        import { getDatabase, ref, set, push, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
-            authDomain: "project-k21n.firebaseapp.com",
-            databaseURL: "https://project-k21n-default-rtdb.firebaseio.com",
-            projectId: "project-k21n",
-            storageBucket: "project-k21n.firebasestorage.app",
-            messagingSenderId: "266081318769",
-            appId: "1:266081318769:web:a7893c55b5b30a8dd768d0",
-            measurementId: "G-7XZ37QZQ39"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        
-        window.db = db;
-        window.ref = ref;
-        window.get = get;
-        window.child = child;
-        window.set = set;
-        window.push = push;
-        window.update = update;
-        window.remove = remove;
-    </script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
         body { background: #f7f7f9; }
@@ -196,7 +169,24 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getDatabase, ref, set, push, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
+        authDomain: "project-k21n.firebaseapp.com",
+        databaseURL: "https://project-k21n-default-rtdb.firebaseio.com",
+        projectId: "project-k21n",
+        storageBucket: "project-k21n.firebasestorage.app",
+        messagingSenderId: "266081318769",
+        appId: "1:266081318769:web:a7893c55b5b30a8dd768d0",
+        measurementId: "G-7XZ37QZQ39"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    
     const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
     async function uploadToImgBB(file) {
         if (!file) return null;
@@ -211,8 +201,8 @@
     let countriesArray = [], categoriesArray = [], premadeFeaturesArray = [];
 
     async function fetchSettings() {
-        const dbRef = ref(window.db);
         try {
+            const dbRef = ref(db);
             const snapshot = await get(child(dbRef, 'adminSettings'));
             if(snapshot.exists()) {
                 const data = snapshot.val();
@@ -223,7 +213,7 @@
                 countriesArray = [];
                 categoriesArray = [];
                 premadeFeaturesArray = [];
-                await set(ref(window.db, 'adminSettings'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray });
+                await set(ref(db, 'adminSettings'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray });
             }
         } catch(e) {
             console.error("Firebase error:", e);
@@ -254,14 +244,14 @@
         const container = document.getElementById('countriesList');
         if(container) {
             if(countriesArray.length === 0) container.innerHTML = '<div class="text-gray-400 text-sm italic">No countries added yet. Use the form above.</div>';
-            else container.innerHTML = countriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry(\'country\',\'${c.replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+            else container.innerHTML = countriesArray.map(c => `<div class="chip-feature">${escapeHtml(c)} <button onclick="window.removeEntry(\'country\',\'${escapeHtml(c).replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
         }
     }
     function renderCategoriesUI() {
         const container = document.getElementById('categoriesList');
         if(container) {
             if(categoriesArray.length === 0) container.innerHTML = '<div class="text-gray-400 text-sm italic">No categories added yet. Use the form above.</div>';
-            else container.innerHTML = categoriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry(\'category\',\'${c.replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+            else container.innerHTML = categoriesArray.map(c => `<div class="chip-feature">${escapeHtml(c)} <button onclick="window.removeEntry(\'category\',\'${escapeHtml(c).replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
         }
     }
     function renderPremadeFeaturesUI() {
@@ -269,28 +259,38 @@
         const formContainer = document.getElementById('premadeFeaturesContainer');
         if(manageDiv) {
             if(premadeFeaturesArray.length === 0) manageDiv.innerHTML = '<div class="text-gray-400 text-sm italic">No features added yet. Use the form above.</div>';
-            else manageDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature">${f} <button onclick="removeEntry(\'feature\',\'${f.replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+            else manageDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature">${escapeHtml(f)} <button onclick="window.removeEntry(\'feature\',\'${escapeHtml(f).replace(/'/g, "\\'")}\')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
         }
         if(formContainer) {
             if(premadeFeaturesArray.length === 0) formContainer.innerHTML = '<div class="text-gray-400 text-xs italic">No pre-made features. Add in Settings.</div>';
-            else formContainer.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature cursor-pointer hover:bg-gray-200 transition" data-feat="${f.replace(/"/g, '&quot;')}">${f}</span>`).join('');
+            else formContainer.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature cursor-pointer hover:bg-gray-200 transition" data-feat="${escapeHtml(f).replace(/"/g, '&quot;')}">${escapeHtml(f)}</span>`).join('');
         }
         document.querySelectorAll('#premadeFeaturesContainer .chip-feature').forEach(el => {
             el.addEventListener('click', () => { const ta = document.getElementById('featuresText'); let val = ta.value; if(val && !val.endsWith('\n')) val += '\n'; ta.value = val + `• ${el.getAttribute('data-feat') || el.innerText}`; });
         });
     }
     
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
     window.removeEntry = async (type, value) => {
-        if(type === 'country') { countriesArray = countriesArray.filter(c => c !== value); await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); renderCountriesUI(); populateSelects(); }
-        if(type === 'category') { categoriesArray = categoriesArray.filter(c => c !== value); await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); renderCategoriesUI(); populateSelects(); }
-        if(type === 'feature') { premadeFeaturesArray = premadeFeaturesArray.filter(f => f !== value); await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); renderPremadeFeaturesUI(); }
+        if(type === 'country') { countriesArray = countriesArray.filter(c => c !== value); await update(ref(db, 'adminSettings'), { countries: countriesArray }); renderCountriesUI(); populateSelects(); }
+        if(type === 'category') { categoriesArray = categoriesArray.filter(c => c !== value); await update(ref(db, 'adminSettings'), { categories: categoriesArray }); renderCategoriesUI(); populateSelects(); }
+        if(type === 'feature') { premadeFeaturesArray = premadeFeaturesArray.filter(f => f !== value); await update(ref(db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); renderPremadeFeaturesUI(); }
     };
 
     document.getElementById('addCountryBtn')?.addEventListener('click', async () => { 
         let inp = document.getElementById('newCountry'); 
         if(inp.value.trim() && !countriesArray.includes(inp.value.trim())) { 
             countriesArray.push(inp.value.trim()); 
-            await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); 
+            await update(ref(db, 'adminSettings'), { countries: countriesArray }); 
             renderCountriesUI(); 
             populateSelects(); 
             inp.value = ''; 
@@ -300,7 +300,7 @@
         let inp = document.getElementById('newCategory'); 
         if(inp.value.trim() && !categoriesArray.includes(inp.value.trim())) { 
             categoriesArray.push(inp.value.trim()); 
-            await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); 
+            await update(ref(db, 'adminSettings'), { categories: categoriesArray }); 
             renderCategoriesUI(); 
             populateSelects(); 
             inp.value = ''; 
@@ -310,7 +310,7 @@
         let inp = document.getElementById('newFeature'); 
         if(inp.value.trim() && !premadeFeaturesArray.includes(inp.value.trim())) { 
             premadeFeaturesArray.push(inp.value.trim()); 
-            await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); 
+            await update(ref(db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); 
             renderPremadeFeaturesUI(); 
             inp.value = ''; 
         } 
@@ -411,7 +411,7 @@
                 images: { profile: profileUrl, front: frontUrl, dashboard: dashboardUrls, other: otherUrls }, 
                 features: featuresList, createdAt: Date.now() 
             };
-            const newRef = push(ref(window.db, 'marketplaceAccounts'));
+            const newRef = push(ref(db, 'marketplaceAccounts'));
             await set(newRef, accountData);
             document.getElementById('formMessage').innerHTML = '<span class="text-emerald-600 text-sm">✅ Account added successfully!</span>';
             document.getElementById('accountForm').reset();
@@ -449,6 +449,7 @@
     const addTab = document.getElementById('tab-add-account'); const settingsTab = document.getElementById('tab-settings'); const addPanel = document.getElementById('addAccountPanel'); const settingsPanel = document.getElementById('settingsPanel');
     addTab?.addEventListener('click', () => { addTab.classList.add('active'); settingsTab.classList.remove('active'); addPanel.classList.remove('hidden'); settingsPanel.classList.add('hidden'); closeSidebarFunc(); });
     settingsTab?.addEventListener('click', () => { settingsTab.classList.add('active'); addTab.classList.remove('active'); addPanel.classList.add('hidden'); settingsPanel.classList.remove('hidden'); fetchSettings(); closeSidebarFunc(); });
+    
     fetchSettings();
 </script>
 </body>
