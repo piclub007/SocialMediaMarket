@@ -3,115 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Browse Accounts — Social Market</title>
+    <title>Sell Your Account — Social Market</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
         body { background: #f7f9fc; }
-        .account-card { background: white; border-radius: 24px; border: 1px solid #eef2f6; transition: all 0.25s ease; cursor: pointer; overflow: hidden; }
-        .account-card:hover { transform: translateY(-4px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1); border-color: #e0e0e0; }
-        .category-chip { transition: all 0.2s; cursor: pointer; }
-        .category-active { background: #111111; color: white; border-color: #111111; }
-        .category-inactive { background: transparent; color: #2c2c2e; border-color: #e4e4e7; }
-        .category-inactive:hover { background: #f4f4f6; border-color: #c7c9ce; }
-        .status-available { background: #10b98120; color: #10b981; font-size: 10px; padding: 3px 10px; border-radius: 30px; font-weight: 500; }
-        .status-sold { background: #ef444420; color: #ef4444; font-size: 10px; padding: 3px 10px; border-radius: 30px; font-weight: 500; }
-        .original-price { text-decoration: line-through; color: #9ca3af; font-size: 12px; }
-        .discount-badge { background: #10b981; color: white; font-size: 9px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-left: 6px; }
-        .filter-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; scrollbar-width: thin; }
-        .filter-scroll::-webkit-scrollbar { height: 3px; }
-        .pagination-btn { transition: all 0.2s; }
-        .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
-        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .form-card { background: white; border-radius: 32px; border: 1px solid #eef2f6; box-shadow: 0 8px 30px rgba(0,0,0,0.02); }
+        .input-modern { transition: all 0.2s; border: 1px solid #eaeaef; background: #ffffff; border-radius: 14px; outline: none; }
+        .input-modern:focus { border-color: #9ca3af; box-shadow: 0 0 0 3px rgba(0,0,0,0.02); }
+        .btn-primary { background: #000000; transition: 0.2s; border-radius: 40px; }
+        .btn-primary:hover { background: #2c2c2e; transform: translateY(-1px); }
+        .step-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+        .step-number { width: 32px; height: 32px; background: #111111; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .image-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; border: 1px solid #eef2f6; }
         @media (max-width: 768px) {
-            .account-card { border-radius: 20px; }
+            .form-card { border-radius: 24px; }
+            .step-number { width: 28px; height: 28px; font-size: 12px; }
         }
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 12px; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .trust-badge { background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%); }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-<div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="flex flex-wrap justify-between items-center gap-4 mb-8 pb-4 border-b border-gray-200">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center shadow-sm">
-                <iconify-icon icon="ri:exchange-dollar-line" width="22" class="text-white"></iconify-icon>
-            </div>
-            <h1 class="text-xl md:text-2xl font-bold text-gray-800">Browse Accounts</h1>
-        </div>
-        <a href="index.html" class="text-gray-500 hover:text-black transition flex items-center gap-1 text-sm">
-            <iconify-icon icon="mdi:home" width="16"></iconify-icon> Back to Home
-        </a>
-    </div>
+<div class="max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 hover:text-black transition mb-6 group">
+        <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
+        <span class="text-sm font-medium">Back</span>
+    </a>
 
-    <!-- Search & Filters -->
-    <div class="bg-white rounded-2xl p-5 mb-8 shadow-sm border border-gray-100">
-        <div class="relative mb-5">
-            <iconify-icon icon="mdi:magnify" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18"></iconify-icon>
-            <input type="text" id="searchInput" placeholder="Search by nickname, platform, or ID..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-black focus:outline-none transition text-sm">
-        </div>
-        
-        <div class="filter-scroll mb-4">
-            <div class="flex gap-2 pb-1">
-                <button data-platform="all" class="platform-chip category-active px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap">All Platforms</button>
-                <button data-platform="Instagram" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap">Instagram</button>
-                <button data-platform="Tiktok" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap">TikTok</button>
-                <button data-platform="Youtube" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap">YouTube</button>
-                <button data-platform="Linkedin" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap">LinkedIn</button>
-                <button data-platform="X" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap">X (Twitter)</button>
+    <!-- Main Content -->
+    <div id="mainContent">
+        <!-- Step 1: Seller Identity (Local Storage) -->
+        <div id="identitySection" class="form-card p-6 md:p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="mdi:account-circle" width="24" class="text-white"></iconify-icon>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Seller Information</h2>
+            </div>
+            
+            <div id="identityForm">
+                <p class="text-gray-500 text-sm mb-6">Please tell us about yourself. Your information helps us verify and contact you about your account sale.</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                        <input type="text" id="sellerName" placeholder="Enter your full name" class="input-modern w-full px-4 py-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                        <input type="text" id="sellerAddress" placeholder="Your city and country" class="input-modern w-full px-4 py-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number *</label>
+                        <input type="tel" id="sellerWhatsapp" placeholder="+250 7XX XXX XXX" class="input-modern w-full px-4 py-3 text-sm">
+                    </div>
+                    <button id="saveIdentityBtn" class="btn-primary w-full py-3 text-white font-medium mt-4 flex items-center justify-center gap-2">
+                        <iconify-icon icon="mdi:check" width="18"></iconify-icon> Continue
+                    </button>
+                </div>
+            </div>
+            
+            <div id="welcomeBackSection" class="hidden">
+                <div class="bg-gray-50 rounded-2xl p-6 text-center">
+                    <iconify-icon icon="mdi:hand-wave" width="48" class="text-gray-400 mx-auto mb-3"></iconify-icon>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Welcome Back!</h3>
+                    <p class="text-gray-600 mb-4">Are you <strong id="displayName"></strong> from <strong id="displayAddress"></strong>?</p>
+                    <div class="flex gap-3">
+                        <button id="confirmYesBtn" class="flex-1 bg-black text-white py-2.5 rounded-xl font-medium">Yes, that's me</button>
+                        <button id="confirmNoBtn" class="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-xl font-medium hover:bg-gray-50">No, new seller</button>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="flex flex-wrap gap-4">
-            <div class="flex items-center gap-3 flex-1 min-w-[140px]">
-                <span class="text-xs text-gray-500 font-medium">Price:</span>
-                <input type="number" id="minPrice" placeholder="Min $" class="w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black">
-                <span class="text-gray-400">-</span>
-                <input type="number" id="maxPrice" placeholder="Max $" class="w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black">
-            </div>
-            <div class="flex items-center gap-2 flex-1 min-w-[160px]">
-                <span class="text-xs text-gray-500 font-medium">Category:</span>
-                <select id="categoryFilter" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:border-black">
-                    <option value="all">All Categories</option>
-                </select>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500 font-medium">Status:</span>
-                <select id="statusFilter" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:border-black">
-                    <option value="all">All</option>
-                    <option value="available">Available Only</option>
-                    <option value="sold">Sold Only</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
-    <!-- Results Count & Pagination -->
-    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <div id="resultsInfo" class="text-sm text-gray-500">Loading accounts...</div>
-        <div class="flex gap-2">
-            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white disabled:opacity-40">← Previous</button>
-            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white">Next →</button>
-        </div>
-    </div>
+        <!-- Step 2: Information & Trust Section (shown after identity is confirmed) -->
+        <div id="infoSection" class="hidden mt-6">
+            <!-- Trust & How It Works -->
+            <div class="form-card p-6 md:p-8 mb-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <iconify-icon icon="mdi:shield-check" width="28" class="text-green-600"></iconify-icon>
+                    <h2 class="text-2xl font-bold text-gray-900">Why Trust Social Market?</h2>
+                </div>
+                <div class="trust-badge rounded-2xl p-5 mb-6">
+                    <p class="text-gray-700 text-sm leading-relaxed">We are a verified marketplace with over 500+ successful transactions. Your account and personal information are safe with us. We use secure escrow and provide 24/7 support to ensure a smooth selling experience.</p>
+                </div>
+                
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:information-outline" width="20"></iconify-icon> How It Works</h3>
+                <div class="space-y-3">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div><p class="font-medium text-gray-800">Fill the Account Form</p><p class="text-sm text-gray-500">Provide your account username, link, price, and upload verification images.</p></div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div><p class="font-medium text-gray-800">Submit for Review</p><p class="text-sm text-gray-500">Our team reviews your account within 24-48 hours to verify authenticity.</p></div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div><p class="font-medium text-gray-800">Get Contacted & Make the Deal</p><p class="text-sm text-gray-500">We'll reach out via WhatsApp to discuss pricing, negotiate, and finalize the sale.</p></div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div><p class="font-medium text-gray-800">Receive Payment</p><p class="text-sm text-gray-500">Once the account is transferred, you get paid securely via mobile money or bank transfer.</p></div>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Accounts Grid -->
-    <div id="accountsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12">
-        <!-- Skeleton Loaders -->
-        <div class="skeleton h-64 rounded-2xl"></div>
-        <div class="skeleton h-64 rounded-2xl"></div>
-        <div class="skeleton h-64 rounded-2xl"></div>
-        <div class="skeleton h-64 rounded-2xl"></div>
+            <!-- Sell Account Button -->
+            <div class="text-center mb-6">
+                <button id="showSellFormBtn" class="btn-primary px-8 py-3 text-white font-medium flex items-center justify-center gap-2 mx-auto">
+                    <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon> SELL YOUR ACCOUNT
+                </button>
+            </div>
+
+            <!-- Account Submission Form (Hidden initially) -->
+            <div id="sellFormContainer" class="form-card p-6 md:p-8 hidden">
+                <div class="flex items-center gap-3 mb-6">
+                    <iconify-icon icon="mdi:instagram" width="28" class="text-black"></iconify-icon>
+                    <h2 class="text-2xl font-bold text-gray-900">Submit Your Account</h2>
+                </div>
+                <p class="text-gray-500 text-sm mb-6">Fill in the details below to list your account for sale.</p>
+                
+                <form id="sellAccountForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Username *</label>
+                        <input type="text" id="accountUsername" required placeholder="@username" class="input-modern w-full px-4 py-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Link/URL *</label>
+                        <input type="url" id="accountLink" required placeholder="https://instagram.com/username" class="input-modern w-full px-4 py-3 text-sm">
+                    </div>
+                    
+                    <!-- Image Uploads -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Photos (Followers Proof & Dashboard)</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 mb-2">Followers Screenshot (1 image)</p>
+                                <button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100" data-target="followersImage">
+                                    <iconify-icon icon="mdi:cloud-upload" width="18"></iconify-icon> Upload
+                                </button>
+                                <input type="file" id="followersImage" accept="image/*" class="hidden">
+                                <div id="followersPreview" class="mt-2"></div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 mb-2">Dashboard Images (3 images max)</p>
+                                <button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100" data-target="dashboardImages">
+                                    <iconify-icon icon="mdi:cloud-upload-multiple" width="18"></iconify-icon> Upload (up to 3)
+                                </button>
+                                <input type="file" id="dashboardImages" accept="image/*" multiple class="hidden">
+                                <div id="dashboardPreview" class="flex flex-wrap gap-2 mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Asking Price (USD) *</label>
+                        <input type="number" id="askingPrice" required step="0.01" placeholder="Enter your desired price" class="input-modern w-full px-4 py-3 text-sm">
+                    </div>
+                    
+                    <button type="submit" id="submitSellBtn" class="btn-primary w-full py-3 text-white font-medium flex items-center justify-center gap-2 mt-4">
+                        <iconify-icon icon="mdi:send" width="18"></iconify-icon> Submit for Review
+                    </button>
+                </form>
+                <div id="sellFormMessage" class="mt-4 text-sm"></div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -124,245 +191,243 @@
     
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
     
-    let allAccounts = [];
-    let categoriesArray = [];
-    let currentPage = 1;
-    let filteredAccounts = [];
-    const ITEMS_PER_PAGE = 16;
+    let sellerData = null;
+    let currentUploadedImages = { followers: null, dashboard: [] };
     
-    async function loadAccounts() {
-        try {
-            const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
-            allAccounts = [];
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                allAccounts.push({ id: doc.id, ...data });
-            });
-            
-            const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
-            categoriesArray = settingsDoc.exists() ? (settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle']) : ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            document.getElementById('categoryFilter').innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
-            
-            applyFilters();
-        } catch(e) {
-            console.error("Error loading accounts:", e);
-            document.getElementById('accountsGrid').innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">Unable to load accounts. Please refresh the page.</div>';
-            document.getElementById('resultsInfo').innerText = 'Error loading accounts';
+    // Load seller data from localStorage
+    function loadSellerData() {
+        const stored = localStorage.getItem('socialMarketSeller');
+        if (stored) {
+            try {
+                sellerData = JSON.parse(stored);
+                return true;
+            } catch(e) { return false; }
+        }
+        return false;
+    }
+    
+    function saveSellerData(name, address, whatsapp) {
+        sellerData = { name, address, whatsapp, timestamp: Date.now() };
+        localStorage.setItem('socialMarketSeller', JSON.stringify(sellerData));
+    }
+    
+    function clearSellerData() {
+        localStorage.removeItem('socialMarketSeller');
+        sellerData = null;
+    }
+    
+    // Setup image uploads
+    function setupImageUpload(inputId, previewId, isMultiple = false, maxFiles = 3) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        if (!input || !preview) return;
+        
+        input.addEventListener('change', (e) => {
+            if (!isMultiple) {
+                preview.innerHTML = '';
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.className = 'image-preview';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                const files = Array.from(e.target.files);
+                const newFiles = files.slice(0, maxFiles - preview.children.length);
+                newFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.className = 'image-preview';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    }
+    
+    async function uploadToImgBB(file) {
+        if (!file) return null;
+        const formData = new FormData();
+        formData.append("image", file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
+        const data = await res.json();
+        if (data.success) return data.data.url;
+        throw new Error("Upload failed");
+    }
+    
+    // Initialize page based on seller identity
+    function initPage() {
+        const identityForm = document.getElementById('identityForm');
+        const welcomeBackSection = document.getElementById('welcomeBackSection');
+        const infoSection = document.getElementById('infoSection');
+        const displayName = document.getElementById('displayName');
+        const displayAddress = document.getElementById('displayAddress');
+        
+        if (loadSellerData()) {
+            // Show welcome back
+            identityForm.classList.add('hidden');
+            welcomeBackSection.classList.remove('hidden');
+            displayName.textContent = sellerData.name;
+            displayAddress.textContent = sellerData.address;
+        } else {
+            // Show identity form
+            identityForm.classList.remove('hidden');
+            welcomeBackSection.classList.add('hidden');
+            infoSection.classList.add('hidden');
         }
     }
     
-    function applyFilters() {
-        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        const platform = document.querySelector('.platform-chip.category-active')?.dataset.platform || 'all';
-        const minPrice = parseFloat(document.getElementById('minPrice')?.value) || 0;
-        const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
-        const category = document.getElementById('categoryFilter')?.value || 'all';
-        const status = document.getElementById('statusFilter')?.value || 'all';
+    // Save identity button
+    document.getElementById('saveIdentityBtn')?.addEventListener('click', () => {
+        const name = document.getElementById('sellerName').value.trim();
+        const address = document.getElementById('sellerAddress').value.trim();
+        const whatsapp = document.getElementById('sellerWhatsapp').value.trim();
         
-        const filterFn = (acc) => {
-            const matchesSearch = !searchTerm || 
-                acc.nickname?.toLowerCase().includes(searchTerm) || 
-                acc.socialMedia?.toLowerCase().includes(searchTerm) ||
-                acc.id?.toLowerCase().includes(searchTerm);
-            const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
-            const price = acc.finalPrice || acc.originalPrice || 0;
-            const matchesPrice = price >= minPrice && price <= maxPrice;
-            const matchesCategory = category === 'all' || acc.category === category;
-            const matchesStatus = status === 'all' || 
-                (status === 'available' && acc.status !== 'sold') || 
-                (status === 'sold' && acc.status === 'sold');
-            return matchesSearch && matchesPlatform && matchesPrice && matchesCategory && matchesStatus;
-        };
-        
-        filteredAccounts = allAccounts.filter(filterFn);
-        currentPage = 1;
-        renderAccounts();
-    }
-    
-    function renderAccounts() {
-        const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE;
-        const pageAccounts = filteredAccounts.slice(start, end);
-        
-        // Update results info
-        const startNum = filteredAccounts.length === 0 ? 0 : start + 1;
-        const endNum = Math.min(end, filteredAccounts.length);
-        document.getElementById('resultsInfo').innerHTML = `Showing ${startNum}-${endNum} of ${filteredAccounts.length} accounts`;
-        
-        // Update pagination buttons
-        document.getElementById('prevPage').disabled = currentPage === 1;
-        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
-        
-        const container = document.getElementById('accountsGrid');
-        if (pageAccounts.length === 0) {
-            container.innerHTML = `
-                <div class="col-span-full text-center py-16">
-                    <iconify-icon icon="mdi:account-search" width="48" class="text-gray-300 mx-auto mb-3"></iconify-icon>
-                    <p class="text-gray-400">No accounts match your filters</p>
-                    <button id="clearFiltersBtn" class="mt-3 text-sm text-black underline">Clear all filters</button>
-                </div>
-            `;
-            const clearBtn = document.getElementById('clearFiltersBtn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    document.getElementById('searchInput').value = '';
-                    document.getElementById('minPrice').value = '';
-                    document.getElementById('maxPrice').value = '';
-                    document.getElementById('statusFilter').value = 'all';
-                    document.getElementById('categoryFilter').value = 'all';
-                    document.querySelectorAll('.platform-chip').forEach(c => {
-                        c.classList.remove('category-active');
-                        c.classList.add('category-inactive');
-                    });
-                    document.querySelector('.platform-chip[data-platform="all"]').classList.remove('category-inactive');
-                    document.querySelector('.platform-chip[data-platform="all"]').classList.add('category-active');
-                    applyFilters();
-                });
-            }
+        if (!name || !address || !whatsapp) {
+            alert('Please fill in all fields');
             return;
         }
         
-        container.innerHTML = pageAccounts.map(acc => {
-            const displayPrice = acc.finalPrice || acc.originalPrice;
-            const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
-            const acceptDiscount = acc.acceptDiscount === true;
-            const isSold = acc.status === 'sold';
-            
-            let originalDisplay = '';
-            let discountBadge = '';
-            if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) {
-                originalDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
-            }
-            if (acceptDiscount && !isSold) {
-                discountBadge = '<span class="discount-badge">✔ Discount</span>';
-            }
-            
-            let icon = "skill-icons:instagram";
-            if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
-            else if (acc.socialMedia?.toLowerCase() === 'tiktok') icon = "logos:tiktok-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'youtube') icon = "logos:youtube-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'linkedin') icon = "logos:linkedin-icon";
-            else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
-            
-            const statusBadge = isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>';
-            const priceHtml = acc.bargaining ? 
-                '<span class="text-sm text-gray-500">Negotiable</span>' : 
-                `<span class="text-lg font-bold">$${displayPrice?.toLocaleString()}</span> ${originalDisplay} ${discountBadge}`;
-            
-            const profileImg = acc.images?.profile || null;
-            
-            return `
-                <div class="account-card p-4" data-id="${acc.id}">
-                    <div class="flex items-start gap-3 mb-3">
-                        ${profileImg && !isSold ? 
-                            `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : 
-                            `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center"><iconify-icon icon="${icon}" width="28"></iconify-icon></div>`
-                        }
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-semibold text-gray-800 text-base truncate">${escapeHtml(acc.nickname)}</h3>
-                            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                                <span class="text-[11px] font-medium text-gray-400">${acc.socialMedia || ''}</span>
-                                ${statusBadge}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center mb-3 text-sm">
-                        <div class="flex items-center gap-1">
-                            <iconify-icon icon="mdi:account-group-outline" width="14" class="text-gray-400"></iconify-icon>
-                            <span class="text-gray-700">${acc.followers?.toLocaleString() || 0} followers</span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <iconify-icon icon="mdi:trending-up" width="14" class="text-emerald-500"></iconify-icon>
-                            <span class="text-gray-700">${acc.engagement || 'N/A'}</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                        <div>${priceHtml}</div>
-                        <button class="view-btn bg-black text-white px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1" data-id="${acc.id}">
-                            <iconify-icon icon="mdi:eye-outline" width="14"></iconify-icon> View Details
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        saveSellerData(name, address, whatsapp);
+        document.getElementById('identityForm').classList.add('hidden');
+        document.getElementById('welcomeBackSection').classList.remove('hidden');
+        document.getElementById('displayName').textContent = name;
+        document.getElementById('displayAddress').textContent = address;
+    });
+    
+    // Confirm Yes button
+    document.getElementById('confirmYesBtn')?.addEventListener('click', () => {
+        document.getElementById('identitySection').classList.add('hidden');
+        document.getElementById('infoSection').classList.remove('hidden');
+    });
+    
+    // Confirm No button (clear data and show form)
+    document.getElementById('confirmNoBtn')?.addEventListener('click', () => {
+        clearSellerData();
+        document.getElementById('welcomeBackSection').classList.add('hidden');
+        document.getElementById('identityForm').classList.remove('hidden');
+        document.getElementById('sellerName').value = '';
+        document.getElementById('sellerAddress').value = '';
+        document.getElementById('sellerWhatsapp').value = '';
+    });
+    
+    // Show sell form button
+    document.getElementById('showSellFormBtn')?.addEventListener('click', () => {
+        const sellForm = document.getElementById('sellFormContainer');
+        sellForm.classList.toggle('hidden');
+        if (!sellForm.classList.contains('hidden')) {
+            sellForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+    
+    // Setup upload triggers
+    document.querySelectorAll('.upload-trigger').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            document.getElementById(targetId)?.click();
+        });
+    });
+    
+    setupImageUpload('followersImage', 'followersPreview', false);
+    setupImageUpload('dashboardImages', 'dashboardPreview', true, 3);
+    
+    // Submit account for sale
+    document.getElementById('sellAccountForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        // Add click handlers
-        document.querySelectorAll('.account-card, .view-btn').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = el.getAttribute('data-id');
-                if (id) {
-                    // Update user profile for recommendations
-                    const account = allAccounts.find(a => a.id === id);
-                    if (account) updateUserProfile(account);
-                    window.location.href = `view.html?id=${id}`;
-                }
-            });
-        });
-    }
-    
-    function updateUserProfile(account) {
-        let profile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
-            viewedPlatforms: {},
-            viewedCategories: {},
-            clickedAccounts: []
-        };
-        profile.viewedPlatforms[account.socialMedia] = (profile.viewedPlatforms[account.socialMedia] || 0) + 1;
-        if (account.category) profile.viewedCategories[account.category] = (profile.viewedCategories[account.category] || 0) + 1;
-        profile.clickedAccounts.push({ id: account.id, timestamp: Date.now() });
-        if (profile.clickedAccounts.length > 20) profile.clickedAccounts.shift();
-        localStorage.setItem('socialMarketProfile', JSON.stringify(profile));
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    // Event Listeners
-    document.getElementById('searchInput')?.addEventListener('input', () => applyFilters());
-    document.getElementById('minPrice')?.addEventListener('input', () => applyFilters());
-    document.getElementById('maxPrice')?.addEventListener('input', () => applyFilters());
-    document.getElementById('categoryFilter')?.addEventListener('change', () => applyFilters());
-    document.getElementById('statusFilter')?.addEventListener('change', () => applyFilters());
-    
-    document.getElementById('prevPage')?.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderAccounts();
-            window.scrollTo({ top: 300, behavior: 'smooth' });
+        const username = document.getElementById('accountUsername').value.trim();
+        const link = document.getElementById('accountLink').value.trim();
+        const price = parseFloat(document.getElementById('askingPrice').value);
+        const followersFile = document.getElementById('followersImage').files[0];
+        const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []);
+        
+        if (!username || !link || isNaN(price) || price <= 0) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Please fill all required fields correctly</span>';
+            return;
+        }
+        
+        if (!followersFile) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Please upload a followers screenshot</span>';
+            return;
+        }
+        
+        if (dashboardFiles.length === 0) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Please upload at least one dashboard image</span>';
+            return;
+        }
+        
+        if (dashboardFiles.length > 3) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Maximum 3 dashboard images allowed</span>';
+            return;
+        }
+        
+        const submitBtn = document.getElementById('submitSellBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Uploading...';
+        
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading-overlay';
+        loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-6 shadow-xl flex items-center gap-3"><iconify-icon icon="line-md:uploading-loop" width="28"></iconify-icon><span>Submitting your account...</span></div>';
+        document.body.appendChild(loadingDiv);
+        
+        try {
+            // Upload images
+            const followersUrl = await uploadToImgBB(followersFile);
+            const dashboardUrls = await Promise.all(dashboardFiles.map(f => uploadToImgBB(f)));
+            
+            const sellerInfo = sellerData || {
+                name: document.getElementById('sellerName')?.value.trim() || 'Unknown',
+                address: document.getElementById('sellerAddress')?.value.trim() || 'Unknown',
+                whatsapp: document.getElementById('sellerWhatsapp')?.value.trim() || 'Unknown'
+            };
+            
+            const requestData = {
+                sellerName: sellerInfo.name,
+                sellerAddress: sellerInfo.address,
+                sellerWhatsapp: sellerInfo.whatsapp,
+                accountUsername: username,
+                accountLink: link,
+                askingPrice: price,
+                followersImage: followersUrl,
+                dashboardImages: dashboardUrls,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                type: 'sell_request'
+            };
+            
+            await addDoc(collection(db, 'sellerRequests'), requestData);
+            
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-green-600 text-sm">✅ Your account has been submitted for review! Our team will contact you within 24-48 hours.</span>';
+            document.getElementById('sellAccountForm').reset();
+            document.getElementById('followersPreview').innerHTML = '';
+            document.getElementById('dashboardPreview').innerHTML = '';
+            currentUploadedImages = { followers: null, dashboard: [] };
+            
+            setTimeout(() => {
+                document.getElementById('sellFormContainer').classList.add('hidden');
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Failed to submit. Please try again.</span>';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<iconify-icon icon="mdi:send" width="18"></iconify-icon> Submit for Review';
+            loadingDiv.remove();
         }
     });
     
-    document.getElementById('nextPage')?.addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderAccounts();
-            window.scrollTo({ top: 300, behavior: 'smooth' });
-        }
-    });
-    
-    document.querySelectorAll('.platform-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-            document.querySelectorAll('.platform-chip').forEach(c => {
-                c.classList.remove('category-active');
-                c.classList.add('category-inactive');
-            });
-            chip.classList.remove('category-inactive');
-            chip.classList.add('category-active');
-            applyFilters();
-        });
-    });
-    
-    loadAccounts();
+    initPage();
 </script>
 </body>
 </html>
