@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Admin Portal — Social Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import { getDatabase, ref, set, push, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
+            authDomain: "project-k21n.firebaseapp.com",
+            databaseURL: "https://project-k21n-default-rtdb.firebaseio.com",
+            projectId: "project-k21n",
+            storageBucket: "project-k21n.firebasestorage.app",
+            messagingSenderId: "266081318769",
+            appId: "1:266081318769:web:a7893c55b5b30a8dd768d0",
+            measurementId: "G-7XZ37QZQ39"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        window.db = db;
+        window.ref = ref;
+        window.get = get;
+        window.child = child;
+        window.set = set;
+        window.push = push;
+        window.update = update;
+        window.remove = remove;
+    </script>
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #f7f7f9; }
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; }
+        .sidebar-item.active { background: #111111; color: white; }
+        .sidebar-item.active iconify-icon { color: white; }
+        .sidebar-item:not(.active):hover { background: #f0f0f2; }
+        .form-card { background: white; border-radius: 28px; border: 1px solid #efeff1; box-shadow: 0 8px 30px rgba(0,0,0,0.02); }
+        .input-modern { transition: all 0.2s; border: 1px solid #eaeaef; background: #ffffff; border-radius: 14px; }
+        .input-modern:focus { border-color: #9ca3af; outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.02); }
+        .btn-primary { background: #000000; transition: 0.2s; border-radius: 40px; }
+        .btn-primary:hover { background: #2c2c2e; transform: translateY(-1px); }
+        .chip-feature { background: #f3f4f6; border-radius: 40px; padding: 4px 12px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+        .image-preview-circle { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .image-preview-rect { width: 80px; height: 80px; object-fit: cover; border-radius: 16px; border: 1px solid #eef2f6; }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .mobile-sidebar { transform: translateX(-100%); transition: transform 0.25s ease; position: fixed; top: 0; left: 0; bottom: 0; z-index: 60; width: 280px; background: white; border-right: 1px solid #efeff1; box-shadow: 20px 0 40px rgba(0,0,0,0.05); }
+        .mobile-sidebar.open { transform: translateX(0); }
+        .overlay-blur { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 50; display: none; }
+        .overlay-blur.active { display: block; }
+        @media (min-width: 768px) { .mobile-sidebar { transform: none !important; position: relative; width: 280px; display: block; } .overlay-blur { display: none !important; } .menu-toggle { display: none; } }
+    </style>
+</head>
+<body>
+
+<div id="passwordOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[200] flex items-center justify-center">
+    <div class="bg-white rounded-3xl p-8 w-96 max-w-[90%] shadow-2xl text-center">
+        <div class="w-14 h-14 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <iconify-icon icon="ri:exchange-dollar-line" width="28" class="text-white"></iconify-icon>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Admin Access</h3>
+        <p class="text-gray-400 text-sm mt-1">Enter credentials to continue</p>
+        <input type="password" id="passwordInput" placeholder="Password" class="input-modern w-full mt-6 px-4 py-3 text-center text-lg tracking-wider">
+        <button id="unlockBtn" class="btn-primary w-full mt-5 py-3 text-white font-medium">Unlock Dashboard</button>
+        <p id="passwordError" class="text-red-500 text-xs mt-3 hidden">Access denied</p>
+    </div>
+</div>
+
+<div id="mainApp" style="display: none;">
+    <div class="flex min-h-screen relative">
+        <div id="overlayBg" class="overlay-blur"></div>
+        <div id="mobileSidebar" class="mobile-sidebar overflow-y-auto p-6 flex flex-col gap-2 bg-white">
+            <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
+                        <iconify-icon icon="ri:exchange-dollar-line" width="18" class="text-white"></iconify-icon>
+                    </div>
+                </div>
+                <button id="closeSidebarBtn" class="md:hidden text-gray-500">
+                    <iconify-icon icon="mdi:close" width="24"></iconify-icon>
+                </button>
+            </div>
+            <div id="tab-add-account" class="sidebar-item active rounded-2xl px-4 py-3 flex items-center gap-3 text-gray-800 font-medium">
+                <iconify-icon icon="mdi:plus-circle-outline" width="22"></iconify-icon>
+                <span>Add Account</span>
+            </div>
+            <div id="tab-settings" class="sidebar-item rounded-2xl px-4 py-3 flex items-center gap-3 text-gray-800 font-medium">
+                <iconify-icon icon="mdi:tune" width="22"></iconify-icon>
+                <span>Settings</span>
+            </div>
+        </div>
+
+        <main class="flex-1 p-4 md:p-8 w-full">
+            <div class="flex items-center gap-3 mb-5 md:hidden">
+                <button id="menuToggle" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
+                    <iconify-icon icon="mdi:menu" width="26"></iconify-icon>
+                </button>
+                <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="ri:exchange-dollar-line" width="16" class="text-white"></iconify-icon>
+                </div>
+            </div>
+
+            <div id="addAccountPanel" class="max-w-4xl mx-auto">
+                <div class="form-card p-5 md:p-8">
+                    <h2 class="text-2xl font-semibold tracking-tight text-gray-800">Add new account</h2>
+                    <p class="text-gray-400 text-sm mb-6">Fill details, upload visuals & publish to marketplace</p>
+                    <form id="accountForm" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-5">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nickname *</label><input type="text" id="nickname" required class="input-modern w-full px-4 py-2.5 text-sm"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Current followers *</label><input type="number" id="followers" required class="input-modern w-full px-4 py-2.5 text-sm"></div>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-5">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Social Media *</label><select id="socialMedia" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="Instagram">Instagram</option><option value="Linkedin">Linkedin</option><option value="Tiktok">TikTok</option><option value="Youtube">YouTube</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Category *</label><select id="categorySelect" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="">Loading...</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Country *</label><select id="countrySelect" required class="input-modern w-full px-4 py-2.5 text-sm bg-white"><option value="">Loading...</option></select></div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-5">
+                            <div class="grid md:grid-cols-2 gap-5">
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Original Price (USD) *</label><input type="number" id="originalPrice" step="0.01" class="input-modern w-full px-4 py-2.5 text-sm"></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Discount Price (USD) <span class="text-gray-400 text-xs">(optional)</span></label><input type="number" id="discountPrice" step="0.01" class="input-modern w-full px-4 py-2.5 text-sm"></div>
+                            </div>
+                            <div class="flex flex-wrap gap-6 mt-4">
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" id="bargainingCheck"> <span>Bargaining (price negotiable)</span></label>
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" id="acceptDiscountCheck"> <span>Accept Discount (override)</span></label>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-5">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Account Images</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-wide">Profile (Circle) *optional</label>
+                                    <div class="mt-2 flex items-center gap-3 flex-wrap">
+                                        <label class="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1"><iconify-icon icon="mdi:cloud-upload"></iconify-icon> Upload</label>
+                                        <input type="file" id="profileImage" accept="image/*" class="hidden">
+                                        <div id="profilePreviewContainer" class="flex items-center"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-wide">Front Image *</label>
+                                    <div class="mt-2 flex items-center gap-3 flex-wrap">
+                                        <label class="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1"><iconify-icon icon="mdi:cloud-upload"></iconify-icon> Upload main</label>
+                                        <input type="file" id="frontImage" accept="image/*" class="hidden" required>
+                                        <div id="frontPreviewContainer" class="flex items-center"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-wide">Dashboard Images (max 5)</label>
+                                    <div class="mt-2 flex items-center gap-2 flex-wrap">
+                                        <label class="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1"><iconify-icon icon="mdi:cloud-upload-multiple"></iconify-icon> Add Images</label>
+                                        <input type="file" id="dashboardImages" accept="image/*" multiple class="hidden">
+                                        <div id="dashboardPreviewContainer" class="flex flex-wrap gap-2 mt-2 w-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="text-xs font-semibold uppercase tracking-wide">Other Images (max 5)</label>
+                                <div class="mt-2 flex items-center gap-2 flex-wrap">
+                                    <label class="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1"><iconify-icon icon="mdi:image-plus"></iconify-icon> Add other</label>
+                                    <input type="file" id="otherImages" accept="image/*" multiple class="hidden">
+                                    <div id="otherPreviewContainer" class="flex flex-wrap gap-2 mt-2 w-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Features (bullet list)</label>
+                            <textarea id="featuresText" rows="3" class="input-modern w-full px-4 py-2.5 text-sm" placeholder="e.g., High engagement, Verified badge..."></textarea>
+                            <div class="mt-2 flex flex-wrap gap-2" id="premadeFeaturesContainer"></div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" id="submitBtn" class="btn-primary w-full md:w-auto px-8 py-3 text-white font-medium flex items-center justify-center gap-2"><iconify-icon icon="mdi:cloud-upload" width="18"></iconify-icon> Upload Account</button>
+                        </div>
+                        <div id="formMessage" class="text-sm"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="settingsPanel" class="max-w-4xl mx-auto hidden">
+                <div class="form-card p-5 md:p-8 space-y-8">
+                    <h2 class="text-2xl font-semibold tracking-tight">Settings</h2>
+                    <div><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Countries</h3><div class="flex gap-2"><input type="text" id="newCountry" placeholder="Country name" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addCountryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="countriesList" class="flex flex-wrap gap-2"></div></div>
+                    <div class="border-t pt-6"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Categories</h3><div class="flex gap-2"><input type="text" id="newCategory" placeholder="Category" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addCategoryBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="categoriesList" class="flex flex-wrap gap-2"></div></div>
+                    <div class="border-t pt-6"><div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-medium">Pre-made Features</h3><div class="flex gap-2"><input type="text" id="newFeature" placeholder="Feature" class="input-modern rounded-xl px-3 py-1.5 text-sm"><button id="addFeatureBtn" class="bg-black text-white px-4 py-1.5 rounded-xl text-xs">+ Add</button></div></div><div id="premadeFeaturesManage" class="flex flex-wrap gap-2"></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
+    async function uploadToImgBB(file) {
+        if (!file) return null;
+        const formData = new FormData();
+        formData.append("image", file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
+        const data = await res.json();
+        if (data.success) return data.data.url;
+        throw new Error("ImgBB failed");
+    }
+
+    let countriesArray = [], categoriesArray = [], premadeFeaturesArray = [];
+
+    async function fetchSettings() {
+        const dbRef = ref(window.db);
+        const snapshot = await get(child(dbRef, 'adminSettings'));
+        if(snapshot.exists()) {
+            const data = snapshot.val();
+            countriesArray = data.countries || ['USA', 'UK', 'Canada', 'Australia'];
+            categoriesArray = data.categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
+            premadeFeaturesArray = data.premadeFeatures || ['High engagement', 'Verified badge', 'Fast delivery', 'Monetized'];
+        } else {
+            countriesArray = ['USA', 'UK', 'Canada', 'Australia'];
+            categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
+            premadeFeaturesArray = ['High engagement', 'Verified badge', 'Fast delivery', 'Monetized'];
+            await update(ref(window.db, 'adminSettings'), { countries: countriesArray, categories: categoriesArray, premadeFeatures: premadeFeaturesArray });
+        }
+        renderCountriesUI(); renderCategoriesUI(); renderPremadeFeaturesUI(); populateSelects();
+    }
+
+    function populateSelects() {
+        const catSel = document.getElementById('categorySelect');
+        const countrySel = document.getElementById('countrySelect');
+        if(catSel) catSel.innerHTML = categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+        if(countrySel) countrySel.innerHTML = countriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function renderCountriesUI() {
+        const container = document.getElementById('countriesList');
+        if(container) container.innerHTML = countriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry('country','${c}')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+    }
+    function renderCategoriesUI() {
+        const container = document.getElementById('categoriesList');
+        if(container) container.innerHTML = categoriesArray.map(c => `<div class="chip-feature">${c} <button onclick="removeEntry('category','${c}')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+    }
+    function renderPremadeFeaturesUI() {
+        const manageDiv = document.getElementById('premadeFeaturesManage');
+        const formContainer = document.getElementById('premadeFeaturesContainer');
+        if(manageDiv) manageDiv.innerHTML = premadeFeaturesArray.map(f => `<div class="chip-feature">${f} <button onclick="removeEntry('feature','${f}')" class="ml-1 text-gray-500"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon></button></div>`).join('');
+        if(formContainer) formContainer.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature cursor-pointer hover:bg-gray-200 transition" data-feat="${f}">${f}</span>`).join('');
+        document.querySelectorAll('#premadeFeaturesContainer .chip-feature').forEach(el => {
+            el.addEventListener('click', () => { const ta = document.getElementById('featuresText'); let val = ta.value; if(val && !val.endsWith('\n')) val += '\n'; ta.value = val + `• ${el.getAttribute('data-feat') || el.innerText}`; });
+        });
+    }
+    window.removeEntry = async (type, value) => {
+        if(type === 'country') { countriesArray = countriesArray.filter(c => c !== value); await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); renderCountriesUI(); populateSelects(); }
+        if(type === 'category') { categoriesArray = categoriesArray.filter(c => c !== value); await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); renderCategoriesUI(); populateSelects(); }
+        if(type === 'feature') { premadeFeaturesArray = premadeFeaturesArray.filter(f => f !== value); await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); renderPremadeFeaturesUI(); }
+    };
+
+    document.getElementById('addCountryBtn')?.addEventListener('click', async () => { let inp = document.getElementById('newCountry'); if(inp.value.trim() && !countriesArray.includes(inp.value.trim())) { countriesArray.push(inp.value.trim()); await update(ref(window.db, 'adminSettings'), { countries: countriesArray }); renderCountriesUI(); populateSelects(); inp.value = ''; } });
+    document.getElementById('addCategoryBtn')?.addEventListener('click', async () => { let inp = document.getElementById('newCategory'); if(inp.value.trim() && !categoriesArray.includes(inp.value.trim())) { categoriesArray.push(inp.value.trim()); await update(ref(window.db, 'adminSettings'), { categories: categoriesArray }); renderCategoriesUI(); populateSelects(); inp.value = ''; } });
+    document.getElementById('addFeatureBtn')?.addEventListener('click', async () => { let inp = document.getElementById('newFeature'); if(inp.value.trim() && !premadeFeaturesArray.includes(inp.value.trim())) { premadeFeaturesArray.push(inp.value.trim()); await update(ref(window.db, 'adminSettings'), { premadeFeatures: premadeFeaturesArray }); renderPremadeFeaturesUI(); inp.value = ''; } });
+
+    function setupImageUpload(inputId, previewContainerId, isCircle = false, maxFiles = 1, multiple = false) {
+        const input = document.getElementById(inputId);
+        if(!input) return;
+        input.addEventListener('change', (e) => {
+            const container = document.getElementById(previewContainerId);
+            if(!container) return;
+            if(!multiple) container.innerHTML = '';
+            const files = Array.from(e.target.files);
+            if(!multiple && files.length) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.className = isCircle ? 'image-preview-circle' : 'image-preview-rect';
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            } else if(multiple && maxFiles) {
+                const currentPreviews = container.children.length;
+                const newFiles = files.slice(0, maxFiles - currentPreviews);
+                newFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.className = 'image-preview-rect';
+                        container.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    }
+    setupImageUpload('profileImage', 'profilePreviewContainer', true, 1, false);
+    setupImageUpload('frontImage', 'frontPreviewContainer', false, 1, false);
+    setupImageUpload('dashboardImages', 'dashboardPreviewContainer', false, 5, true);
+    setupImageUpload('otherImages', 'otherPreviewContainer', false, 5, true);
+
+    document.getElementById('accountForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nickname = document.getElementById('nickname').value.trim();
+        const followers = document.getElementById('followers').value;
+        const socialMedia = document.getElementById('socialMedia').value;
+        const category = document.getElementById('categorySelect').value;
+        const country = document.getElementById('countrySelect').value;
+        const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+        let discountPrice = document.getElementById('discountPrice').value ? parseFloat(document.getElementById('discountPrice').value) : null;
+        const bargaining = document.getElementById('bargainingCheck').checked;
+        const acceptDiscount = document.getElementById('acceptDiscountCheck').checked;
+        if(!nickname || !followers || !socialMedia || !category || !country || isNaN(originalPrice)) { document.getElementById('formMessage').innerHTML = '<span class="text-red-500">❌ Required fields missing</span>'; return; }
+        const frontFile = document.getElementById('frontImage').files[0];
+        if(!frontFile) { document.getElementById('formMessage').innerHTML = '<span class="text-red-500">❌ Front image required</span>'; return; }
+        document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Processing...';
+        const loadingDiv = document.createElement('div'); loadingDiv.className = 'loading-overlay'; loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-4 shadow-xl"><iconify-icon icon="line-md:uploading-loop" width="28"></iconify-icon><span>Uploading assets...</span></div>'; document.body.appendChild(loadingDiv);
+        try {
+            const profileFile = document.getElementById('profileImage').files[0];
+            const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []);
+            const otherFiles = Array.from(document.getElementById('otherImages').files || []);
+            const [profileUrl, frontUrl] = await Promise.all([profileFile ? uploadToImgBB(profileFile) : null, uploadToImgBB(frontFile)]);
+            const dashboardUrls = await Promise.all(dashboardFiles.map(f => uploadToImgBB(f)));
+            const otherUrls = await Promise.all(otherFiles.map(f => uploadToImgBB(f)));
+            let finalPrice = originalPrice, hasDiscount = false;
+            if(!bargaining) { if((acceptDiscount && discountPrice) || (!acceptDiscount && discountPrice)) { finalPrice = discountPrice; hasDiscount = true; } else { finalPrice = originalPrice; } }
+            const featuresRaw = document.getElementById('featuresText').value;
+            const featuresList = featuresRaw.split('\n').filter(l => l.trim()).map(l => l.replace(/^•\s*/, '').trim());
+            const accountData = { nickname, followers: parseInt(followers), socialMedia, category, country, originalPrice, discountPrice: discountPrice || null, bargaining, acceptDiscount, finalPrice: bargaining ? null : finalPrice, hasDiscount: hasDiscount && !bargaining, images: { profile: profileUrl, front: frontUrl, dashboard: dashboardUrls, other: otherUrls }, features: featuresList, createdAt: Date.now() };
+            const newRef = push(ref(window.db, 'marketplaceAccounts'));
+            await set(newRef, accountData);
+            document.getElementById('formMessage').innerHTML = '<span class="text-emerald-600 text-sm">✅ Account added successfully!</span>';
+            document.getElementById('accountForm').reset();
+            document.getElementById('profilePreviewContainer').innerHTML = '';
+            document.getElementById('frontPreviewContainer').innerHTML = '';
+            document.getElementById('dashboardPreviewContainer').innerHTML = '';
+            document.getElementById('otherPreviewContainer').innerHTML = '';
+            document.getElementById('featuresText').value = '';
+            document.getElementById('bargainingCheck').checked = false;
+            document.getElementById('acceptDiscountCheck').checked = false;
+        } catch(err) { document.getElementById('formMessage').innerHTML = `<span class="text-red-500">❌ ${err.message}</span>`; }
+        finally { document.getElementById('submitBtn').disabled = false; document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:cloud-upload" width="18"></iconify-icon> Upload Account'; loadingDiv.remove(); }
+    });
+
+    const correctPasswordHash = btoa("MRkidda@12");
+    document.getElementById('unlockBtn')?.addEventListener('click', () => {
+        const pwd = document.getElementById('passwordInput').value;
+        if(btoa(pwd) === correctPasswordHash) {
+            document.getElementById('passwordOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        } else { document.getElementById('passwordError').classList.remove('hidden'); }
+    });
+    document.getElementById('passwordInput')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('unlockBtn').click(); });
+
+    const menuToggle = document.getElementById('menuToggle'); const mobileSidebar = document.getElementById('mobileSidebar'); const overlayBg = document.getElementById('overlayBg'); const closeSidebar = document.getElementById('closeSidebarBtn');
+    function openSidebar() { mobileSidebar.classList.add('open'); overlayBg.classList.add('active'); }
+    function closeSidebarFunc() { mobileSidebar.classList.remove('open'); overlayBg.classList.remove('active'); }
+    menuToggle?.addEventListener('click', openSidebar); closeSidebar?.addEventListener('click', closeSidebarFunc); overlayBg?.addEventListener('click', closeSidebarFunc);
+    const addTab = document.getElementById('tab-add-account'); const settingsTab = document.getElementById('tab-settings'); const addPanel = document.getElementById('addAccountPanel'); const settingsPanel = document.getElementById('settingsPanel');
+    addTab?.addEventListener('click', () => { addTab.classList.add('active'); settingsTab.classList.remove('active'); addPanel.classList.remove('hidden'); settingsPanel.classList.add('hidden'); closeSidebarFunc(); });
+    settingsTab?.addEventListener('click', () => { settingsTab.classList.add('active'); addTab.classList.remove('active'); addPanel.classList.add('hidden'); settingsPanel.classList.remove('hidden'); fetchSettings(); closeSidebarFunc(); });
+    fetchSettings();
+</script>
+</body>
+</html>
