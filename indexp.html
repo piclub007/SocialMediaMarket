@@ -2,100 +2,570 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Social Market — Buy & Sell Social Media Accounts</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
-        body { background: #fafafc; }
-        .glass-card { background: white; border: 1px solid #f0f0f0; transition: all 0.2s ease; cursor: pointer; border-radius: 20px; }
-        .glass-card:active { transform: scale(0.98); }
+        body { background: #fafafc; scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #f0f0f2; }
+        ::-webkit-scrollbar-thumb { background: #c7c9ce; border-radius: 10px; }
+        .glass-card { background: rgba(255, 255, 255, 0.96); border: 1px solid rgba(0, 0, 0, 0.04); transition: all 0.2s ease; cursor: pointer; }
+        .glass-card:hover { border-color: rgba(0, 0, 0, 0.08); box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.05); transform: translateY(-2px); }
         .btn-sleek { transition: all 0.2s ease; }
         .btn-sleek:active { transform: scale(0.97); }
         .category-chip { transition: all 0.2s; cursor: pointer; }
         .category-active { background: #111111; color: white; border-color: #111111; }
         .category-inactive { background: transparent; color: #2c2c2e; border-color: #e4e4e7; }
-        .original-price { text-decoration: line-through; color: #9ca3af; font-size: 12px; }
-        .discount-badge { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; display: inline-block; margin-left: 6px; }
-        .status-available { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
-        .status-sold { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
-        .suggestions-container { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
-        .suggestions-track { display: flex; gap: 12px; padding-bottom: 8px; }
-        .suggestion-item { flex: 0 0 auto; width: 260px; background: white; border-radius: 16px; padding: 12px; border: 1px solid #f0f0f0; }
-        .filter-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
-        .filter-scroll::-webkit-scrollbar { display: none; }
+        .category-inactive:hover { background: #f4f4f6; border-color: #c7c9ce; }
+        .original-price { text-decoration: line-through; color: #9ca3af; font-size: 13px; }
+        .discount-badge { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-left: 8px; }
+        .status-available { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+        .status-sold { background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+        .hero-image-container { background: transparent; box-shadow: none; border: none; }
+        
+        /* Slow infinite scrolling carousel */
+        .suggestions-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .suggestions-track {
+            display: flex;
+            width: fit-content;
+            animation: scrollSuggestions 180s linear infinite;
+        }
+        .suggestions-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scrollSuggestions {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .suggestion-item {
+            flex: 0 0 auto;
+            width: 280px;
+            margin-right: 20px;
+            transition: all 0.2s;
+        }
+        .suggestion-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15);
+        }
+        .pagination-btn { transition: all 0.2s; }
+        .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
+        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-explore, .btn-sell {
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        .btn-explore:hover, .btn-sell:hover {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-<body class="pb-20">
+<body>
 
-<div class="px-4 py-5">
-    <header class="flex items-center justify-between mb-5">
-        <div class="flex items-center gap-2">
-            <div class="w-9 h-9 bg-black rounded-xl flex items-center justify-center"><iconify-icon icon="ri:exchange-dollar-line" width="20" class="text-white"></iconify-icon></div>
-            <div id="mobileGreeting" class="text-xs font-medium text-gray-500"></div>
+<div class="max-w-7xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
+    <!-- HEADER -->
+    <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center shadow-sm">
+                    <iconify-icon icon="ri:exchange-dollar-line" width="24" height="24" class="text-white"></iconify-icon>
+                </div>
+                <div class="flex items-baseline">
+                    <span class="w-6 h-0.5 bg-gray-300 rounded-full block ml-1"></span>
+                    <span class="w-2 h-2 bg-gray-400 rounded-full ml-1"></span>
+                </div>
+            </div>
+            <div id="headerGreeting" class="text-sm font-medium text-gray-500"></div>
         </div>
-        <button id="startSellingBtnM" class="bg-black text-white px-4 py-2 rounded-full text-xs font-medium btn-sleek flex items-center gap-1"><iconify-icon icon="mdi:storefront-outline" width="14"></iconify-icon> Sell</button>
+        <button id="startSellingBtn" class="bg-black text-white px-6 py-2.5 rounded-full font-medium text-sm shadow-md shadow-black/10 btn-sleek flex items-center gap-2">
+            <iconify-icon icon="mdi:storefront-outline" width="18" height="18"></iconify-icon>
+            Start selling
+        </button>
     </header>
 
-    <div class="mb-6">
-        <div class="inline-flex items-center gap-1 bg-white/70 px-3 py-1 rounded-full border border-gray-200 mb-3"><iconify-icon icon="solar:graph-new-up-linear" width="12" class="text-emerald-600"></iconify-icon><span class="text-[10px] font-medium text-gray-700">TRUSTED</span></div>
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900">Swap & scale<br><span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500">social empires.</span></h1>
-        <p class="text-gray-500 text-sm mt-3">Buy or sell Instagram, TikTok, X, and more.</p>
-        <div class="flex gap-3 mt-5"><button id="exploreBtnM" class="bg-black text-white px-5 py-2.5 rounded-full text-sm flex-1 btn-sleek"><iconify-icon icon="mdi:cart-outline" width="16" class="inline mr-1"></iconify-icon> Explore</button><button id="startSellingBtnM2" class="border border-gray-300 bg-white text-gray-800 px-5 py-2.5 rounded-full text-sm flex-1 btn-sleek"><iconify-icon icon="mdi:storefront-outline" width="16" class="inline mr-1"></iconify-icon> Sell</button></div>
+    <!-- HERO SECTION -->
+    <section class="mb-16 flex flex-col md:flex-row md:justify-between md:items-center gap-10">
+        <div class="max-w-2xl">
+            <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mb-5">
+                <iconify-icon icon="solar:graph-new-up-linear" width="16" height="16" class="text-emerald-600"></iconify-icon>
+                <span class="text-xs font-medium text-gray-700 tracking-wide">TRUSTED MARKETPLACE</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2]">
+                Swap & scale<br>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500">social empires.</span>
+            </h1>
+            <p class="text-gray-500 text-lg mt-5 max-w-lg leading-relaxed">Seamless exchange. Verified accounts. Zero friction — buy or sell Instagram, TikTok, X, and more.</p>
+            <div class="flex flex-wrap gap-5 mt-8">
+                <button id="exploreBtn" class="btn-explore bg-black text-white px-8 py-3.5 rounded-full text-base font-semibold shadow-md shadow-black/10 flex-1 md:flex-none items-center justify-center">
+                    <iconify-icon icon="mdi:cart-outline" width="20" height="20"></iconify-icon>
+                    Explore Listings
+                </button>
+                <button id="startSellingBtn2" class="btn-sell border-2 border-gray-300 bg-white text-gray-800 px-8 py-3.5 rounded-full text-base font-semibold flex-1 md:flex-none items-center justify-center hover:bg-gray-50 transition">
+                    <iconify-icon icon="mdi:storefront-outline" width="20" height="20"></iconify-icon>
+                    Start Selling
+                </button>
+            </div>
+        </div>
+        <div class="hero-image-container flex-shrink-0">
+            <img src="Image/hero.png" alt="Social Market" class="w-full max-w-md mx-auto md:max-w-lg" onerror="this.src='https://placehold.co/500x400/f0f0f0/333?text=Social+Market'">
+            <div class="flex justify-center items-center gap-5 mt-5">
+                <iconify-icon icon="skill-icons:instagram" width="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:tiktok-icon" width="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:twitter" width="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:youtube-icon" width="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+                <iconify-icon icon="logos:linkedin-icon" width="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slow Infinite Suggestions Carousel -->
+    <div class="mb-10">
+        <h3 class="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you — always fresh</h3>
+        <div class="suggestions-container">
+            <div id="suggestionsTrack" class="suggestions-track"></div>
+        </div>
     </div>
 
-    <div class="mb-5"><h3 class="text-xs font-semibold text-gray-600 mb-2"><iconify-icon icon="mdi:lightbulb" width="14" class="inline mr-1"></iconify-icon> Suggested</h3><div class="suggestions-container overflow-x-auto"><div id="suggestionsTrackM" class="suggestions-track"></div></div></div>
+    <!-- Search Bar -->
+    <div class="mb-6">
+        <div class="relative max-w-md">
+            <iconify-icon icon="mdi:magnify" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="20"></iconify-icon>
+            <input type="text" id="searchInput" placeholder="Search by nickname or platform..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-black focus:outline-none transition">
+        </div>
+    </div>
 
-    <div class="mb-4"><div class="relative"><iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="16"></iconify-icon><input type="text" id="searchInputM" placeholder="Search accounts..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm"></div></div>
+    <!-- Filter Bar -->
+    <div class="flex flex-wrap items-center gap-4 mb-4 pb-3 border-b border-gray-100">
+        <div class="flex flex-wrap gap-2 items-center">
+            <span class="text-xs text-gray-400 font-medium mr-1">Platform:</span>
+            <button data-platform="all" class="platform-chip category-active px-4 py-1.5 rounded-full text-sm font-medium border">All</button>
+            <button data-platform="Instagram" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border">Instagram</button>
+            <button data-platform="Tiktok" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border">TikTok</button>
+            <button data-platform="Youtube" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border">YouTube</button>
+            <button data-platform="Linkedin" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border">LinkedIn</button>
+            <button data-platform="X" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border">X</button>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-gray-400 font-medium">Price:</span>
+            <input type="number" id="minPrice" placeholder="Min $" class="w-28 px-3 py-1.5 border border-gray-200 rounded-xl text-sm">
+            <span>-</span>
+            <input type="number" id="maxPrice" placeholder="Max $" class="w-28 px-3 py-1.5 border border-gray-200 rounded-xl text-sm">
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400 font-medium">Category:</span>
+            <select id="categoryFilter" class="px-3 py-1.5 border border-gray-200 rounded-xl text-sm bg-white">
+                <option value="all">All Categories</option>
+            </select>
+        </div>
+    </div>
 
-    <div class="filter-scroll mb-4 pb-2"><div class="flex gap-2"><button data-platform="all" class="platform-chip-m category-active px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">All</button><button data-platform="Instagram" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">Instagram</button><button data-platform="Tiktok" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">TikTok</button><button data-platform="Youtube" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">YouTube</button><button data-platform="Linkedin" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">LinkedIn</button><button data-platform="X" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">X</button></div></div>
+    <!-- Pagination Controls -->
+    <div class="flex justify-between items-center mb-5">
+        <div id="paginationInfo" class="text-sm text-gray-500"></div>
+        <div class="flex gap-2">
+            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm">← Previous</button>
+            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm">Next →</button>
+        </div>
+    </div>
 
-    <div class="flex flex-wrap gap-2 mb-4"><div class="flex items-center gap-2 flex-1"><span class="text-xs text-gray-500">Price:</span><input type="number" id="minPriceM" placeholder="Min" class="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-xs"><span>-</span><input type="number" id="maxPriceM" placeholder="Max" class="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-xs"></div><div class="flex-1"><select id="categoryFilterM" class="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs bg-white"><option value="all">All Categories</option></select></div></div>
-
-    <div class="flex justify-between items-center mb-4"><div id="paginationInfoM" class="text-xs text-gray-500"></div><div class="flex gap-2"><button id="prevPageM" class="px-3 py-1.5 border border-gray-200 rounded-lg text-xs">← Prev</button><button id="nextPageM" class="px-3 py-1.5 border border-gray-200 rounded-lg text-xs">Next →</button></div></div>
-
-    <div id="listings-grid-mobile" class="grid grid-cols-1 gap-4 pb-16"><div class="text-center py-10 text-gray-400 text-sm">Loading accounts...</div></div>
-
-    <footer class="pt-8 pb-4 border-t border-gray-200 mt-6"><div class="flex flex-wrap justify-center gap-5 text-gray-400 text-xs"><a href="#" id="trustLinkM" class="hover:text-gray-800"><iconify-icon icon="mdi:shield-check-outline" width="14" class="inline mr-1"></iconify-icon> Trust</a><a href="#" id="guidelinesLinkM" class="hover:text-gray-800"><iconify-icon icon="mdi:file-document-outline" width="14" class="inline mr-1"></iconify-icon> Guidelines</a><a href="#" id="supportLinkM" class="hover:text-gray-800"><iconify-icon icon="mdi:help-circle-outline" width="14" class="inline mr-1"></iconify-icon> Support</a></div><div class="text-center text-gray-300 text-[10px] mt-4"><iconify-icon icon="ph:copyright" width="10" class="inline"></iconify-icon> 2026 Social Market</div></footer>
+    <!-- Products Grid (4 columns, 6 rows = 24 per page) -->
+    <div id="listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
+        <div class="col-span-full text-center py-12 text-gray-400">Loading accounts...</div>
+    </div>
 </div>
 
+<!-- Footer -->
+<footer class="max-w-7xl mx-auto px-5 sm:px-8 pt-16 pb-8 border-t border-gray-200 mt-10">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-5">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
+                <iconify-icon icon="ri:exchange-dollar-line" width="16" class="text-white"></iconify-icon>
+            </div>
+        </div>
+        <div class="flex gap-7 text-gray-400 text-sm">
+            <a href="#" id="trustLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18"></iconify-icon> Trust</a>
+            <a href="#" id="guidelinesLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18"></iconify-icon> Guidelines</a>
+            <a href="#" id="supportLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18"></iconify-icon> Support</a>
+        </div>
+        <div class="text-gray-300 text-xs flex items-center gap-2">
+            <iconify-icon icon="ph:copyright" width="12"></iconify-icon> 2026 — all digital rights
+        </div>
+    </div>
+</footer>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-const firebaseConfig = { apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0", authDomain: "project-k21n.firebaseapp.com", projectId: "project-k21n", storageBucket: "project-k21n.firebasestorage.app", messagingSenderId: "266081318769", appId: "1:266081318769:web:a7893c55b5b30a8dd768d0" };
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-let allAccounts = [], categoriesArray = [], currentPage = 1, filteredAccounts = [];
-const ITEMS_PER_PAGE = 10;
-function getGreeting() { const h = new Date().getHours(); if (h>=5 && h<12) return "Good Morning!"; if (h>=12 && h<17) return "Good Afternoon!"; if (h>=17 && h<22) return "Good Evening!"; return "Good Night!"; }
-document.getElementById('mobileGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="12" class="inline mr-1"></iconify-icon> ${getGreeting()}`;
-let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || { viewedPlatforms: {}, viewedCategories: {}, priceRange: { min: 0, max: Infinity }, clickedAccounts: [], interestedPlatform: null };
-function updateUserProfile(acc) { if(!acc) return; userProfile.viewedPlatforms[acc.socialMedia] = (userProfile.viewedPlatforms[acc.socialMedia]||0)+1; if(acc.category) userProfile.viewedCategories[acc.category] = (userProfile.viewedCategories[acc.category]||0)+1; const p = acc.finalPrice||acc.originalPrice||0; if(p>0) { if(p<userProfile.priceRange.min||userProfile.priceRange.min===0) userProfile.priceRange.min=p; if(p>userProfile.priceRange.max) userProfile.priceRange.max=p; } userProfile.clickedAccounts.push({ id: acc.id, timestamp: Date.now() }); if(userProfile.clickedAccounts.length>20) userProfile.clickedAccounts.shift(); let max=0; for(const [plat,count] of Object.entries(userProfile.viewedPlatforms)) if(count>max) { max=count; userProfile.interestedPlatform=plat; } localStorage.setItem('socialMarketProfile',JSON.stringify(userProfile)); }
-function getWeightedRandom(accounts, weights) { const total = weights.reduce((a,b)=>a+b,0); let r = Math.random()*total; for(let i=0;i<accounts.length;i++) { if(r<weights[i]) return accounts[i]; r-=weights[i]; } return accounts[0]; }
-function generateSuggestions(accounts, count=20) { if(!accounts.length) return []; const pool = [...accounts.filter(a=>a.status!=='sold'), ...accounts.filter(a=>a.status==='sold')]; if(!pool.length) return []; const suggestions = []; for(let i=0;i<count;i++) { if(Math.random()<0.5 && userProfile.clickedAccounts.length) { const scores = pool.map(acc=>{ let s=0; if(userProfile.interestedPlatform && acc.socialMedia===userProfile.interestedPlatform) s+=30; else if(userProfile.viewedPlatforms[acc.socialMedia]) s+=userProfile.viewedPlatforms[acc.socialMedia]*6; if(acc.category && userProfile.viewedCategories[acc.category]) s+=userProfile.viewedCategories[acc.category]*5; const price = acc.finalPrice||acc.originalPrice||0; if(price>=userProfile.priceRange.min && price<=userProfile.priceRange.max) s+=10; if(acc.status==='available') s+=5; s+=Math.random()*5; return s; }); suggestions.push(getWeightedRandom(pool,scores)); } else { suggestions.push(pool[Math.floor(Math.random()*pool.length)]); } } return suggestions; }
-function renderSuggestions() { if(!allAccounts.length) return; const batch = generateSuggestions(allAccounts, 15); const track = document.getElementById('suggestionsTrackM'); if(!track) return; track.innerHTML = batch.map(acc=>{ let icon = "skill-icons:instagram"; if(acc.socialMedia?.toLowerCase()==='instagram') icon="skill-icons:instagram"; else if(acc.socialMedia?.toLowerCase()==='tiktok') icon="logos:tiktok-icon"; else if(acc.socialMedia?.toLowerCase()==='youtube') icon="logos:youtube-icon"; else if(acc.socialMedia?.toLowerCase()==='linkedin') icon="logos:linkedin-icon"; else if(acc.socialMedia?.toLowerCase()==='x') icon="logos:twitter"; const soldBadge = acc.status==='sold' ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAIL</span>'; return `<div class="suggestion-item" data-id="${acc.id}"><div class="flex items-center gap-2"><div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center"><iconify-icon icon="${icon}" width="24"></iconify-icon></div><div><p class="font-semibold text-sm">${escapeHtml(acc.nickname)}</p><div class="flex items-center gap-1"><p class="text-xs text-gray-400">${acc.socialMedia}</p>${soldBadge}</div></div></div><div class="mt-2 flex justify-between items-center"><span class="font-bold text-sm">$${(acc.finalPrice||acc.originalPrice||0).toLocaleString()}</span><span class="text-xs text-gray-400">${acc.followers?.toLocaleString()||0}</span></div></div>`; }).join('');
-track.querySelectorAll('.suggestion-item').forEach(el=>el.addEventListener('click',()=>{ const id=el.dataset.id; const acc=allAccounts.find(a=>a.id===id); if(acc) updateUserProfile(acc); window.location.href=`view.html?id=${id}`; })); }
-async function loadAccounts() { try { const snap = await getDocs(collection(db,'marketplaceAccounts')); allAccounts=[]; snap.forEach(d=>allAccounts.push({id:d.id,...d.data()})); const settings = await getDoc(doc(db,'adminSettings','config')); categoriesArray = settings.exists() ? (settings.data().categories||['Fashion','Tech','Gaming','Lifestyle']) : ['Fashion','Tech','Gaming','Lifestyle']; document.getElementById('categoryFilterM').innerHTML = '<option value="all">All Categories</option>'+categoriesArray.map(c=>`<option value="${c}">${c}</option>`).join(''); applyFilters(); renderSuggestions(); setInterval(()=>{if(allAccounts.length) renderSuggestions();},30000); } catch(e){ console.error(e); document.getElementById('listings-grid-mobile').innerHTML='<div class="text-center py-10 text-gray-400 text-sm">Unable to load accounts.</div>'; } }
-function applyFilters() { const term = document.getElementById('searchInputM')?.value.toLowerCase()||''; const platform = document.querySelector('.platform-chip-m.category-active')?.dataset.platform||'all'; const min = parseFloat(document.getElementById('minPriceM')?.value)||0; const max = parseFloat(document.getElementById('maxPriceM')?.value)||Infinity; const cat = document.getElementById('categoryFilterM')?.value||'all'; const avail = allAccounts.filter(a=>a.status!=='sold'); const sold = allAccounts.filter(a=>a.status==='sold'); const filter = a => (!term || a.nickname?.toLowerCase().includes(term) || a.socialMedia?.toLowerCase().includes(term)) && (platform==='all' || a.socialMedia?.toLowerCase()===platform.toLowerCase()) && ((a.finalPrice||a.originalPrice||0)>=min && (a.finalPrice||a.originalPrice||0)<=max) && (cat==='all' || a.category===cat); let fAvail = avail.filter(filter); let fSold = sold.filter(filter); const toShow = []; for(let i=0;i<Math.min(1,fSold.length) && fSold.length;i++) toShow.push(fSold.splice(Math.floor(Math.random()*fSold.length),1)[0]); let combined = [...fAvail,...toShow]; for(let i=combined.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [combined[i],combined[j]]=[combined[j],combined[i]]; } filteredAccounts=combined; currentPage=1; renderAccounts(); }
-function renderAccounts() { const start=(currentPage-1)*ITEMS_PER_PAGE; const end=start+ITEMS_PER_PAGE; const page=filteredAccounts.slice(start,end); const total=Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE); document.getElementById('paginationInfoM').innerHTML=`${start+1}-${Math.min(end,filteredAccounts.length)} of ${filteredAccounts.length}`; document.getElementById('prevPageM').disabled=currentPage===1; document.getElementById('nextPageM').disabled=currentPage===total||total===0; const container=document.getElementById('listings-grid-mobile'); if(!page.length){ container.innerHTML='<div class="text-center py-10 text-gray-400 text-sm">No accounts match</div>'; return; }
-container.innerHTML=page.map(acc=>{ const price=acc.finalPrice||acc.originalPrice; const hasDiscount=acc.hasDiscount||(acc.discountPrice&&!acc.bargaining); const acceptDiscount=acc.acceptDiscount===true; const isSold=acc.status==='sold'; let og='', badge=''; if(hasDiscount && acc.originalPrice && acc.originalPrice!==price) og=`<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`; if(acceptDiscount && !isSold) badge='<span class="discount-badge">✔ Discount</span>'; let icon="skill-icons:instagram"; if(acc.socialMedia?.toLowerCase()==='instagram') icon="skill-icons:instagram"; else if(acc.socialMedia?.toLowerCase()==='tiktok') icon="logos:tiktok-icon"; else if(acc.socialMedia?.toLowerCase()==='youtube') icon="logos:youtube-icon"; else if(acc.socialMedia?.toLowerCase()==='linkedin') icon="logos:linkedin-icon"; else if(acc.socialMedia?.toLowerCase()==='x') icon="logos:twitter"; return `<div class="glass-card p-3 product-card-m" data-id="${acc.id}"><div class="flex gap-3"><div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"><iconify-icon icon="${icon}" width="28"></iconify-icon></div><div class="flex-1"><div class="flex justify-between items-start"><div><h3 class="font-semibold text-gray-800 text-sm">${escapeHtml(acc.nickname)}</h3><div class="flex items-center gap-1 mt-0.5 flex-wrap"><span class="text-[10px] font-medium text-gray-400">${acc.socialMedia||''}</span>${isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>'}</div></div></div><div class="flex justify-between items-center mt-2"><div>${acc.bargaining ? '<span class="text-xs text-gray-500">Negotiable</span>' : `<span class="text-base font-bold">$${price?.toLocaleString()}</span> ${og} ${badge}`}</div><button class="view-details-btn-m bg-black text-white px-3 py-1 rounded-lg text-xs" data-id="${acc.id}"><iconify-icon icon="mdi:eye-outline" width="12" class="inline mr-1"></iconify-icon> View</button></div></div></div></div>`; }).join('');
-document.querySelectorAll('.product-card-m, .view-details-btn-m').forEach(el=>el.addEventListener('click',(e)=>{ e.stopPropagation(); const id=el.dataset.id; const acc=allAccounts.find(a=>a.id===id); if(acc) updateUserProfile(acc); window.location.href=`view.html?id=${id}`; })); }
-function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g,m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-document.getElementById('searchInputM')?.addEventListener('input',()=>applyFilters());
-document.getElementById('minPriceM')?.addEventListener('input',()=>applyFilters());
-document.getElementById('maxPriceM')?.addEventListener('input',()=>applyFilters());
-document.getElementById('categoryFilterM')?.addEventListener('change',()=>applyFilters());
-document.getElementById('prevPageM')?.addEventListener('click',()=>{ if(currentPage>1){ currentPage--; renderAccounts(); window.scrollTo({top:300}); } });
-document.getElementById('nextPageM')?.addEventListener('click',()=>{ if(currentPage<Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE)){ currentPage++; renderAccounts(); window.scrollTo({top:300}); } });
-document.querySelectorAll('.platform-chip-m').forEach(chip=>{ chip.addEventListener('click',()=>{ document.querySelectorAll('.platform-chip-m').forEach(c=>{ c.classList.remove('category-active'); c.classList.add('category-inactive'); }); chip.classList.remove('category-inactive'); chip.classList.add('category-active'); applyFilters(); }); });
-document.getElementById('exploreBtnM')?.addEventListener('click',()=>document.getElementById('listings-grid-mobile').scrollIntoView({behavior:'smooth'}));
-document.querySelectorAll('#startSellingBtnM, #startSellingBtnM2').forEach(btn=>btn?.addEventListener('click',()=>window.location.href='sell.html'));
-document.getElementById('trustLinkM')?.addEventListener('click',e=>{e.preventDefault(); window.location.href='info.html';});
-document.getElementById('guidelinesLinkM')?.addEventListener('click',e=>{e.preventDefault(); window.location.href='info.html';});
-document.getElementById('supportLinkM')?.addEventListener('click',e=>{e.preventDefault(); window.location.href='info.html';});
-loadAccounts();
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    
+    // Mobile redirect
+    if (window.innerWidth < 768) window.location.href = "indexp.html";
+    window.addEventListener('resize', () => { if (window.innerWidth < 768) window.location.href = "indexp.html"; });
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
+        authDomain: "project-k21n.firebaseapp.com",
+        projectId: "project-k21n",
+        storageBucket: "project-k21n.firebasestorage.app",
+        messagingSenderId: "266081318769",
+        appId: "1:266081318769:web:a7893c55b5b30a8dd768d0"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    let allAccounts = [];
+    let categoriesArray = [];
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 24;
+    let filteredAccounts = [];
+    
+    // Get greeting based on time of day
+    function getTimeBasedGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return "Good Morning!";
+        if (hour >= 12 && hour < 17) return "Good Afternoon!";
+        if (hour >= 17 && hour < 22) return "Good Evening!";
+        return "Good Night!";
+    }
+    
+    const greeting = getTimeBasedGreeting();
+    const headerGreeting = document.getElementById('headerGreeting');
+    if (headerGreeting) {
+        headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
+    }
+    
+    // AI Recommendation Engine using localStorage
+    let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
+        viewedPlatforms: {},
+        viewedCategories: {},
+        priceRange: { min: 0, max: Infinity },
+        clickedAccounts: [],
+        interestedPlatform: null,
+        interestedPrice: null,
+        lastUpdated: Date.now()
+    };
+    
+    function updateUserProfile(account, action = 'view') {
+        if (action === 'view') {
+            userProfile.viewedPlatforms[account.socialMedia] = (userProfile.viewedPlatforms[account.socialMedia] || 0) + 1;
+            if (account.category) userProfile.viewedCategories[account.category] = (userProfile.viewedCategories[account.category] || 0) + 1;
+            const price = account.finalPrice || account.originalPrice || 0;
+            if (price > 0) {
+                if (price < userProfile.priceRange.min || userProfile.priceRange.min === 0) userProfile.priceRange.min = price;
+                if (price > userProfile.priceRange.max) userProfile.priceRange.max = price;
+                userProfile.interestedPrice = price;
+            }
+            userProfile.clickedAccounts.push({ id: account.id, platform: account.socialMedia, price, timestamp: Date.now() });
+            if (userProfile.clickedAccounts.length > 20) userProfile.clickedAccounts.shift();
+            
+            let maxViews = 0;
+            for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) {
+                if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
+            }
+            userProfile.lastUpdated = Date.now();
+            localStorage.setItem('socialMarketProfile', JSON.stringify(userProfile));
+        }
+    }
+    
+    function getWeightedRandomAccount(accounts, weights) {
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+        let random = Math.random() * totalWeight;
+        for (let i = 0; i < accounts.length; i++) {
+            if (random < weights[i]) return accounts[i];
+            random -= weights[i];
+        }
+        return accounts[0];
+    }
+    
+    function generateInfiniteSuggestions(accounts, count = 60) {
+        if (accounts.length === 0) return [];
+        const suggestions = [];
+        const availableAccounts = accounts.filter(a => a.status !== 'sold');
+        const soldAccounts = accounts.filter(a => a.status === 'sold');
+        const pool = [...availableAccounts, ...soldAccounts];
+        if (pool.length === 0) return [];
+        
+        for (let i = 0; i < count; i++) {
+            let selected = null;
+            if (Math.random() < 0.6 && userProfile.clickedAccounts.length > 0) {
+                const scores = pool.map(acc => {
+                    let score = 0;
+                    if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 40;
+                    else if (userProfile.viewedPlatforms[acc.socialMedia]) score += userProfile.viewedPlatforms[acc.socialMedia] * 8;
+                    if (acc.category && userProfile.viewedCategories[acc.category]) score += userProfile.viewedCategories[acc.category] * 6;
+                    const price = acc.finalPrice || acc.originalPrice || 0;
+                    if (userProfile.interestedPrice && Math.abs(price - userProfile.interestedPrice) < 500) score += 15;
+                    if (price >= userProfile.priceRange.min && price <= userProfile.priceRange.max) score += 10;
+                    if (acc.status === 'available') score += 5;
+                    score += Math.random() * 5;
+                    return score;
+                });
+                selected = getWeightedRandomAccount(pool, scores);
+            } else {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                selected = pool[randomIndex];
+            }
+            suggestions.push(selected);
+        }
+        return suggestions;
+    }
+    
+    function renderInfiniteSuggestions() {
+        if (allAccounts.length === 0) return;
+        const suggestionBatch = generateInfiniteSuggestions(allAccounts, 50);
+        const track = document.getElementById('suggestionsTrack');
+        if (!track) return;
+        
+        const suggestionItems = suggestionBatch.map(acc => {
+            let platformIcon = "skill-icons:instagram";
+            if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
+            else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
+            
+            const isSold = acc.status === 'sold';
+            const statusBadge = isSold ? '<span class="status-sold text-[8px] px-1.5 py-0.5 ml-1">SOLD</span>' : '<span class="status-available text-[8px] px-1.5 py-0.5 ml-1">AVAIL</span>';
+            
+            return `
+                <div class="suggestion-item bg-white rounded-xl p-3 border border-gray-100 cursor-pointer hover:shadow-lg transition" data-id="${acc.id}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0"><iconify-icon icon="${platformIcon}" width="32"></iconify-icon></div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-sm truncate">${escapeHtml(acc.nickname)}</p>
+                            <div class="flex items-center flex-wrap gap-1">
+                                <p class="text-xs text-gray-400">${acc.socialMedia}</p>
+                                ${statusBadge}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="font-bold text-sm">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span>
+                        <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        // Double the items for seamless infinite loop
+        track.innerHTML = suggestionItems + suggestionItems;
+        track.querySelectorAll('.suggestion-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = el.getAttribute('data-id');
+                if (id) {
+                    const account = allAccounts.find(a => a.id === id);
+                    if (account) updateUserProfile(account, 'view');
+                    window.location.href = `view.html?id=${id}`;
+                }
+            });
+        });
+        
+        // Reset animation for slower speed
+        track.style.animation = 'none';
+        track.offsetHeight;
+        track.style.animation = 'scrollSuggestions 180s linear infinite';
+    }
+    
+    async function loadAccounts() {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
+            allAccounts = [];
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                allAccounts.push({ id: doc.id, ...data });
+            });
+            await loadCategories();
+            applyFiltersAndRender();
+            renderInfiniteSuggestions();
+            setInterval(() => { if (allAccounts.length > 0) renderInfiniteSuggestions(); }, 40000);
+        } catch(e) {
+            console.error("Firebase error:", e);
+            document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Unable to load accounts. Please try again later.</div>';
+        }
+    }
+    
+    async function loadCategories() {
+        try {
+            const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
+            if (settingsDoc.exists()) {
+                categoriesArray = settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
+            } else {
+                categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
+            }
+            const categorySelect = document.getElementById('categoryFilter');
+            categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+        } catch(e) {
+            categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
+        }
+        applyFiltersAndRender();
+    }
+    
+    function applyFiltersAndRender() {
+        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        const platform = document.querySelector('.platform-chip.category-active')?.getAttribute('data-platform') || 'all';
+        const minPrice = parseFloat(document.getElementById('minPrice')?.value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
+        const category = document.getElementById('categoryFilter')?.value || 'all';
+        
+        const available = allAccounts.filter(a => a.status !== 'sold');
+        const sold = allAccounts.filter(a => a.status === 'sold');
+        
+        const filterFn = (acc) => {
+            const matchesSearch = !searchTerm || acc.nickname?.toLowerCase().includes(searchTerm) || acc.socialMedia?.toLowerCase().includes(searchTerm);
+            const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
+            const price = acc.finalPrice || acc.originalPrice || 0;
+            const matchesPrice = price >= minPrice && price <= maxPrice;
+            const matchesCategory = category === 'all' || acc.category === category;
+            return matchesSearch && matchesPlatform && matchesPrice && matchesCategory;
+        };
+        
+        let filteredAvailable = available.filter(filterFn);
+        let filteredSold = sold.filter(filterFn);
+        
+        const soldToShow = [];
+        const soldPerPage = Math.min(2, filteredSold.length);
+        for (let i = 0; i < soldPerPage && filteredSold.length > 0; i++) {
+            const randomIndex = Math.floor(Math.random() * filteredSold.length);
+            soldToShow.push(filteredSold[randomIndex]);
+            filteredSold.splice(randomIndex, 1);
+        }
+        
+        let combined = [...filteredAvailable, ...soldToShow];
+        for (let i = combined.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [combined[i], combined[j]] = [combined[j], combined[i]];
+        }
+        
+        filteredAccounts = combined;
+        currentPage = 1;
+        renderAccounts();
+    }
+    
+    function renderAccounts() {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageAccounts = filteredAccounts.slice(start, end);
+        const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
+        
+        document.getElementById('paginationInfo').innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
+        
+        const container = document.getElementById('listings-grid');
+        if (pageAccounts.length === 0) {
+            container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">No accounts match your filters</div>';
+            return;
+        }
+        
+        container.innerHTML = pageAccounts.map(acc => {
+            const displayPrice = acc.finalPrice || acc.originalPrice;
+            const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
+            const acceptDiscountChecked = acc.acceptDiscount === true;
+            const isSold = acc.status === 'sold';
+            
+            let originalPriceDisplay = '';
+            let discountBadge = '';
+            if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) {
+                originalPriceDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
+            }
+            if (acceptDiscountChecked && !isSold) {
+                discountBadge = `<span class="discount-badge">✔ Discount</span>`;
+            }
+            
+            const statusBadge = isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>';
+            const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-500">Negotiable</span>' : `<span class="text-xl font-bold">$${displayPrice?.toLocaleString()}</span> ${originalPriceDisplay} ${discountBadge}`;
+            
+            let platformIcon = "skill-icons:instagram";
+            if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
+            else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
+            
+            const profileImg = acc.images?.profile || null;
+            
+            return `
+                <div class="glass-card rounded-2xl overflow-hidden cursor-pointer product-card" data-id="${acc.id}">
+                    <div class="p-4 pb-3 flex items-start gap-3">
+                        ${profileImg && !isSold ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32" height="32"></iconify-icon></div>`}
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 text-base tracking-tight">${escapeHtml(acc.nickname)}</h3>
+                            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                <span class="text-[11px] font-medium uppercase tracking-wider text-gray-400">${acc.socialMedia || ''}</span>
+                                ${statusBadge}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-2 flex justify-between items-center border-y border-gray-50 bg-gray-50/30">
+                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:account-group-outline" width="14" class="text-gray-400"></iconify-icon><span class="text-sm font-medium text-gray-700">${acc.followers?.toLocaleString() || 0}</span></div>
+                        <div class="flex items-center gap-1"><iconify-icon icon="mdi:trending-up" width="14" class="text-emerald-500"></iconify-icon><span class="text-sm font-medium text-gray-700">${acc.engagement || 'N/A'}</span></div>
+                    </div>
+                    <div class="p-4 pt-3 flex items-center justify-between">
+                        <div>${priceHtml}</div>
+                        <button class="view-details-btn bg-black text-white px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1 shadow-sm btn-sleek" data-id="${acc.id}">
+                            <iconify-icon icon="mdi:eye-outline" width="14"></iconify-icon> View
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        document.querySelectorAll('.product-card, .view-details-btn').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = el.getAttribute('data-id');
+                if (id) {
+                    const account = allAccounts.find(a => a.id === id);
+                    if (account) updateUserProfile(account, 'view');
+                    window.location.href = `view.html?id=${id}`;
+                }
+            });
+        });
+    }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+    
+    // Event listeners
+    document.getElementById('searchInput')?.addEventListener('input', () => applyFiltersAndRender());
+    document.getElementById('minPrice')?.addEventListener('input', () => applyFiltersAndRender());
+    document.getElementById('maxPrice')?.addEventListener('input', () => applyFiltersAndRender());
+    document.getElementById('categoryFilter')?.addEventListener('change', () => applyFiltersAndRender());
+    document.getElementById('prevPage')?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
+    document.getElementById('nextPage')?.addEventListener('click', () => { const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE); if (currentPage < totalPages) { currentPage++; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
+    
+    document.querySelectorAll('.platform-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('.platform-chip').forEach(c => {
+                c.classList.remove('category-active');
+                c.classList.add('category-inactive');
+            });
+            chip.classList.remove('category-inactive');
+            chip.classList.add('category-active');
+            applyFiltersAndRender();
+        });
+    });
+    
+    document.getElementById('exploreBtn')?.addEventListener('click', () => { document.getElementById('listings-grid').scrollIntoView({ behavior: 'smooth' }); });
+    const startSellingBtns = [document.getElementById('startSellingBtn'), document.getElementById('startSellingBtn2')];
+    startSellingBtns.forEach(btn => { btn?.addEventListener('click', () => { window.location.href = 'sell.html'; }); });
+    
+    document.getElementById('trustLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    
+    loadAccounts();
 </script>
 </body>
 </html>
