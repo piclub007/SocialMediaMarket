@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Social Market — Buy & Sell Social Media Accounts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #fafafc; }
+        .glass-card { background: white; border: 1px solid #f0f0f0; transition: all 0.2s ease; cursor: pointer; border-radius: 20px; }
+        .glass-card:active { transform: scale(0.98); }
+        .btn-sleek { transition: all 0.2s ease; }
+        .btn-sleek:active { transform: scale(0.97); }
+        .category-chip { transition: all 0.2s; cursor: pointer; }
+        .category-active { background: #111111; color: white; border-color: #111111; }
+        .category-inactive { background: transparent; color: #2c2c2e; border-color: #e4e4e7; }
+        .original-price { text-decoration: line-through; color: #9ca3af; font-size: 12px; }
+        .discount-badge { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; display: inline-block; margin-left: 6px; }
+        .status-available { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
+        .status-sold { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
+        .suggestions-container { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+        .suggestions-track { display: flex; gap: 12px; padding-bottom: 8px; }
+        .suggestion-item { flex: 0 0 auto; width: 260px; background: white; border-radius: 16px; padding: 12px; border: 1px solid #f0f0f0; }
+        .filter-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="pb-20">
+
+<div class="px-4 py-5">
+    <header class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+            <div class="w-9 h-9 bg-black rounded-xl flex items-center justify-center"><iconify-icon icon="ri:exchange-dollar-line" width="20" class="text-white"></iconify-icon></div>
+            <div id="mobileGreeting" class="text-xs font-medium text-gray-500"></div>
+        </div>
+        <button id="startSellingBtnM" class="bg-black text-white px-4 py-2 rounded-full text-xs font-medium btn-sleek flex items-center gap-1"><iconify-icon icon="mdi:storefront-outline" width="14"></iconify-icon> Sell</button>
+    </header>
+
+    <div class="mb-6">
+        <div class="inline-flex items-center gap-1 bg-white/70 px-3 py-1 rounded-full border border-gray-200 mb-3"><iconify-icon icon="solar:graph-new-up-linear" width="12" class="text-emerald-600"></iconify-icon><span class="text-[10px] font-medium text-gray-700">TRUSTED</span></div>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">Swap & scale<br><span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500">social empires.</span></h1>
+        <p class="text-gray-500 text-sm mt-3">Buy or sell Instagram, TikTok, X, and more.</p>
+        <div class="flex gap-3 mt-5"><button id="exploreBtnM" class="bg-black text-white px-5 py-2.5 rounded-full text-sm flex-1 btn-sleek"><iconify-icon icon="mdi:cart-outline" width="16" class="inline mr-1"></iconify-icon> Explore</button><button id="startSellingBtnM2" class="border border-gray-300 bg-white text-gray-800 px-5 py-2.5 rounded-full text-sm flex-1 btn-sleek"><iconify-icon icon="mdi:storefront-outline" width="16" class="inline mr-1"></iconify-icon> Sell</button></div>
+    </div>
+
+    <div class="mb-5"><h3 class="text-xs font-semibold text-gray-600 mb-2"><iconify-icon icon="mdi:lightbulb" width="14" class="inline mr-1"></iconify-icon> Suggested</h3><div class="suggestions-container overflow-x-auto"><div id="suggestionsTrackM" class="suggestions-track"></div></div></div>
+
+    <div class="mb-4"><div class="relative"><iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="16"></iconify-icon><input type="text" id="searchInputM" placeholder="Search accounts..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm"></div></div>
+
+    <div class="filter-scroll mb-4 pb-2"><div class="flex gap-2"><button data-platform="all" class="platform-chip-m category-active px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">All</button><button data-platform="Instagram" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">Instagram</button><button data-platform="Tiktok" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">TikTok</button><button data-platform="Youtube" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">YouTube</button><button data-platform="Linkedin" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">LinkedIn</button><button data-platform="X" class="platform-chip-m category-inactive px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">X</button></div></div>
+
+    <div class="flex flex-wrap gap-2 mb-4"><div class="flex items-center gap-2 flex-1"><span class="text-xs text-gray-500">Price:</span><input type="number" id="minPriceM" placeholder="Min" class="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-xs"><span>-</span><input type="number" id="maxPriceM" placeholder="Max" class="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-xs"></div><div class="flex-1"><select id="categoryFilterM" class="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs bg-white"><option value="all">All Categories</option></select></div></div>
+
+    <div class="flex justify-between items-center mb-4"><div id="paginationInfoM" class="text-xs text-gray-500"></div><div class="flex gap-2"><button id="prevPageM" class="px-3 py-1.5 border border-gray-200 rounded-lg text-xs">← Prev</button><button id="nextPageM" class="px-3 py-1.5 border border-gray-200 rounded-lg text-xs">Next →</button></div></div>
+
+    <div id="listings-grid-mobile" class="grid grid-cols-1 gap-4 pb-16"><div class="text-center py-10 text-gray-400 text-sm">Loading accounts...</div></div>
+
+    <footer class="pt-8 pb-4 border-t border-gray-200 mt-6"><div class="flex flex-wrap justify-center gap-5 text-gray-400 text-xs"><a href="#" id="trustLinkM" class="hover:text-gray-800"><iconify-icon icon="mdi:shield-check-outline" width="14" class="inline mr-1"></iconify-icon> Trust</a><a href="#" id="guidelinesLinkM" class="hover:text-gray-800"><iconify-icon icon="mdi:file-document-outline" width="14" class="inline mr-1"></iconify-icon> Guidelines</a><a href="#" id="supportLinkM" class="hover:text-gray-800"><iconify-icon icon="mdi:help-circle-outline" width="14" class="inline mr-1"></iconify-icon> Support</a></div><div class="text-center text-gray-300 text-[10px] mt-4"><iconify-icon icon="ph:copyright" width="10" class="inline"></iconify-icon> 2026 Social Market</div></footer>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0", authDomain: "project-k21n.firebaseapp.com", projectId: "project-k21n", storageBucket: "project-k21n.firebasestorage.app", messagingSenderId: "266081318769", appId: "1:266081318769:web:a7893c55b5b30a8dd768d0" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let allAccounts = [], categoriesArray = [], currentPage = 1, filteredAccounts = [];
+const ITEMS_PER_PAGE = 10;
+function getGreeting() { const h = new Date().getHours(); if (h>=5 && h<12) return "Good Morning!"; if (h>=12 && h<17) return "Good Afternoon!"; if (h>=17 && h<22) return "Good Evening!"; return "Good Night!"; }
+document.getElementById('mobileGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="12" class="inline mr-1"></iconify-icon> ${getGreeting()}`;
+let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || { viewedPlatforms: {}, viewedCategories: {}, priceRange: { min: 0, max: Infinity }, clickedAccounts: [], interestedPlatform: null };
+function updateUserProfile(acc) { if(!acc) return; userProfile.viewedPlatforms[acc.socialMedia] = (userProfile.viewedPlatforms[acc.socialMedia]||0)+1; if(acc.category) userProfile.viewedCategories[acc.category] = (userProfile.viewedCategories[acc.category]||0)+1; const p = acc.finalPrice||acc.originalPrice||0; if(p>0) { if(p<userProfile.priceRange.min||userProfile.priceRange.min===0) userProfile.priceRange.min=p; if(p>userProfile.priceRange.max) userProfile.priceRange.max=p; } userProfile.clickedAccounts.push({ id: acc.id, timestamp: Date.now() }); if(userProfile.clickedAccounts.length>20) userProfile.clickedAccounts.shift(); let max=0; for(const [plat,count] of Object.entries(userProfile.viewedPlatforms)) if(count>max) { max=count; userProfile.interestedPlatform=plat; } localStorage.setItem('socialMarketProfile',JSON.stringify(userProfile)); }
+function getWeightedRandom(accounts, weights) { const total = weights.reduce((a,b)=>a+b,0); let r = Math.random()*total; for(let i=0;i<accounts.length;i++) { if(r<weights[i]) return accounts[i]; r-=weights[i]; } return accounts[0]; }
+function generateSuggestions(accounts, count=20) { if(!accounts.length) return []; const pool = [...accounts.filter(a=>a.status!=='sold'), ...accounts.filter(a=>a.status==='sold')]; if(!pool.length) return []; const suggestions = []; for(let i=0;i<count;i++) { if(Math.random()<0.5 && userProfile.clickedAccounts.length) { const scores = pool.map(acc=>{ let s=0; if(userProfile.interestedPlatform && acc.socialMedia===userProfile.interestedPlatform) s+=30; else if(userProfile.viewedPlatforms[acc.socialMedia]) s+=userProfile.viewedPlatforms[acc.socialMedia]*6; if(acc.category && userProfile.viewedCategories[acc.category]) s+=userProfile.viewedCategories[acc.category]*5; const price = acc.finalPrice||acc.originalPrice||0; if(price>=userProfile.priceRange.min && price<=userProfile.priceRange.max) s+=10; if(acc.status==='available') s+=5; s+=Math.random()*5; return s; }); suggestions.push(getWeightedRandom(pool,scores)); } else { suggestions.push(pool[Math.floor(Math.random()*pool.length)]); } } return suggestions; }
+function renderSuggestions() { if(!allAccounts.length) return; const batch = generateSuggestions(allAccounts, 15); const track = document.getElementById('suggestionsTrackM'); if(!track) return; track.innerHTML = batch.map(acc=>{ let icon = "skill-icons:instagram"; if(acc.socialMedia?.toLowerCase()==='instagram') icon="skill-icons:instagram"; else if(acc.socialMedia?.toLowerCase()==='tiktok') icon="logos:tiktok-icon"; else if(acc.socialMedia?.toLowerCase()==='youtube') icon="logos:youtube-icon"; else if(acc.socialMedia?.toLowerCase()==='linkedin') icon="logos:linkedin-icon"; else if(acc.socialMedia?.toLowerCase()==='x') icon="logos:twitter"; const soldBadge = acc.status==='sold' ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAIL</span>'; return `<div class="suggestion-item" data-id="${acc.id}"><div class="flex items-center gap-2"><div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center"><iconify-icon icon="${icon}" width="24"></iconify-icon></div><div><p class="font-semibold text-sm">${escapeHtml(acc.nickname)}</p><div class="flex items-center gap-1"><p class="text-xs text-gray-400">${acc.socialMedia}</p>${soldBadge}</div></div></div><div class="mt-2 flex justify-between items-center"><span class="font-bold text-sm">$${(acc.finalPrice||acc.originalPrice||0).toLocaleString()}</span><span class="text-xs text-gray-400">${acc.followers?.toLocaleString()||0}</span></div></div>`; }).join('');
+track.querySelectorAll('.suggestion-item').forEach(el=>el.addEventListener('click',()=>{ const id=el.dataset.id; const acc=allAccounts.find(a=>a.id===id); if(acc) updateUserProfile(acc); window.location.href=`view.html?id=${id}`; })); }
+async function loadAccounts() { try { const snap = await getDocs(collection(db,'marketplaceAccounts')); allAccounts=[]; snap.forEach(d=>allAccounts.push({id:d.id,...d.data()})); const settings = await getDoc(doc(db,'adminSettings','config')); categoriesArray = settings.exists() ? (settings.data().categories||['Fashion','Tech','Gaming','Lifestyle']) : ['Fashion','Tech','Gaming','Lifestyle']; document.getElementById('categoryFilterM').innerHTML = '<option value="all">All Categories</option>'+categoriesArray.map(c=>`<option value="${c}">${c}</option>`).join(''); applyFilters(); renderSuggestions(); setInterval(()=>{if(allAccounts.length) renderSuggestions();},30000); } catch(e){ console.error(e); document.getElementById('listings-grid-mobile').innerHTML='<div class="text-center py-10 text-gray-400 text-sm">Unable to load accounts.</div>'; } }
+function applyFilters() { const term = document.getElementById('searchInputM')?.value.toLowerCase()||''; const platform = document.querySelector('.platform-chip-m.category-active')?.dataset.platform||'all'; const min = parseFloat(document.getElementById('minPriceM')?.value)||0; const max = parseFloat(document.getElementById('maxPriceM')?.value)||Infinity; const cat = document.getElementById('categoryFilterM')?.value||'all'; const avail = allAccounts.filter(a=>a.status!=='sold'); const sold = allAccounts.filter(a=>a.status==='sold'); const filter = a => (!term || a.nickname?.toLowerCase().includes(term) || a.socialMedia?.toLowerCase().includes(term)) && (platform==='all' || a.socialMedia?.toLowerCase()===platform.toLowerCase()) && ((a.finalPrice||a.originalPrice||0)>=min && (a.finalPrice||a.originalPrice||0)<=max) && (cat==='all' || a.category===cat); let fAvail = avail.filter(filter); let fSold = sold.filter(filter); const toShow = []; for(let i=0;i<Math.min(1,fSold.length) && fSold.length;i++) toShow.push(fSold.splice(Math.floor(Math.random()*fSold.length),1)[0]); let combined = [...fAvail,...toShow]; for(let i=combined.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [combined[i],combined[j]]=[combined[j],combined[i]]; } filteredAccounts=combined; currentPage=1; renderAccounts(); }
+function renderAccounts() { const start=(currentPage-1)*ITEMS_PER_PAGE; const end=start+ITEMS_PER_PAGE; const page=filteredAccounts.slice(start,end); const total=Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE); document.getElementById('paginationInfoM').innerHTML=`${start+1}-${Math.min(end,filteredAccounts.length)} of ${filteredAccounts.length}`; document.getElementById('prevPageM').disabled=currentPage===1; document.getElementById('nextPageM').disabled=currentPage===total||total===0; const container=document.getElementById('listings-grid-mobile'); if(!page.length){ container.innerHTML='<div class="text-center py-10 text-gray-400 text-sm">No accounts match</div>'; return; }
+container.innerHTML=page.map(acc=>{ const price=acc.finalPrice||acc.originalPrice; const hasDiscount=acc.hasDiscount||(acc.discountPrice&&!acc.bargaining); const acceptDiscount=acc.acceptDiscount===true; const isSold=acc.status==='sold'; let og='', badge=''; if(hasDiscount && acc.originalPrice && acc.originalPrice!==price) og=`<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`; if(acceptDiscount && !isSold) badge='<span class="discount-badge">✔ Discount</span>'; let icon="skill-icons:instagram"; if(acc.socialMedia?.toLowerCase()==='instagram') icon="skill-icons:instagram"; else if(acc.socialMedia?.toLowerCase()==='tiktok') icon="logos:tiktok-icon"; else if(acc.socialMedia?.toLowerCase()==='youtube') icon="logos:youtube-icon"; else if(acc.socialMedia?.toLowerCase()==='linkedin') icon="logos:linkedin-icon"; else if(acc.socialMedia?.toLowerCase()==='x') icon="logos:twitter"; return `<div class="glass-card p-3 product-card-m" data-id="${acc.id}"><div class="flex gap-3"><div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"><iconify-icon icon="${icon}" width="28"></iconify-icon></div><div class="flex-1"><div class="flex justify-between items-start"><div><h3 class="font-semibold text-gray-800 text-sm">${escapeHtml(acc.nickname)}</h3><div class="flex items-center gap-1 mt-0.5 flex-wrap"><span class="text-[10px] font-medium text-gray-400">${acc.socialMedia||''}</span>${isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>'}</div></div></div><div class="flex justify-between items-center mt-2"><div>${acc.bargaining ? '<span class="text-xs text-gray-500">Negotiable</span>' : `<span class="text-base font-bold">$${price?.toLocaleString()}</span> ${og} ${badge}`}</div><button class="view-details-btn-m bg-black text-white px-3 py-1 rounded-lg text-xs" data-id="${acc.id}"><iconify-icon icon="mdi:eye-outline" width="12" class="inline mr-1"></iconify-icon> View</button></div></div></div></div>`; }).join('');
+document.querySelectorAll('.product-card-m, .view-details-btn-m').forEach(el=>el.addEventListener('click',(e)=>{ e.stopPropagation(); const id=el.dataset.id; const acc=allAccounts.find(a=>a.id===id); if(acc) updateUserProfile(acc); window.location.href=`view.html?id=${id}`; })); }
+function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g,m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+document.getElementById('searchInputM')?.addEventListener('input',()=>applyFilters());
+document.getElementById('minPriceM')?.addEventListener('input',()=>applyFilters());
+document.getElementById('maxPriceM')?.addEventListener('input',()=>applyFilters());
+document.getElementById('categoryFilterM')?.addEventListener('change',()=>applyFilters());
+document.getElementById('prevPageM')?.addEventListener('click',()=>{ if(currentPage>1){ currentPage--; renderAccounts(); window.scrollTo({top:300}); } });
+document.getElementById('nextPageM')?.addEventListener('click',()=>{ if(currentPage<Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE)){ currentPage++; renderAccounts(); window.scrollTo({top:300}); } });
+document.querySelectorAll('.platform-chip-m').forEach(chip=>{ chip.addEventListener('click',()=>{ document.querySelectorAll('.platform-chip-m').forEach(c=>{ c.classList.remove('category-active'); c.classList.add('category-inactive'); }); chip.classList.remove('category-inactive'); chip.classList.add('category-active'); applyFilters(); }); });
+document.getElementById('exploreBtnM')?.addEventListener('click',()=>document.getElementById('listings-grid-mobile').scrollIntoView({behavior:'smooth'}));
+document.querySelectorAll('#startSellingBtnM, #startSellingBtnM2').forEach(btn=>btn?.addEventListener('click',()=>window.location.href='sell.html'));
+document.getElementById('trustLinkM')?.addEventListener('click',e=>{e.preventDefault(); window.location.href='info.html';});
+document.getElementById('guidelinesLinkM')?.addEventListener('click',e=>{e.preventDefault(); window.location.href='info.html';});
+document.getElementById('supportLinkM')?.addEventListener('click',e=>{e.preventDefault(); window.location.href='info.html';});
+loadAccounts();
+</script>
+</body>
+</html>
