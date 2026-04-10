@@ -1,0 +1,38 @@
+# robots.txt for Imbuga Store
+# Optimized for SEO – allows full crawling of public pages,
+# blocks admin and system files.
+
+User-agent: *
+Allow: /
+
+# ---------- Public pages (allow) ----------
+Allow: /index.html
+Allow: /indexp.html
+Allow: /view.html
+Allow: /sell.html
+Allow: /info.html
+Allow: /see.html
+
+# ---------- Block admin & system files ----------
+Disallow: /admin.html
+Disallow: /add.html
+Disallow: /edit.html
+Disallow: /request.html
+Disallow: /requests.html
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+
+# ---------- Block assets that don't need indexing ----------
+Disallow: /Image/
+Disallow: /css/
+Disallow: /js/
+Disallow: /fonts/
+Disallow: /*.json$
+Disallow: /*.log$
+
+# ---------- Sitemap location ----------
+Sitemap: https://imbuga.vercel.app/sitemap.xml
+
+# Crawl delay to be gentle on the server (optional)
+Crawl-delay: 1
