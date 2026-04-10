@@ -21,16 +21,24 @@
         .category-active { background: #111111; color: white; border-color: #111111; }
         .category-inactive { background: transparent; color: #2c2c2e; border-color: #e4e4e7; }
         .category-inactive:hover { background: #f4f4f6; border-color: #c7c9ce; }
-        .price-badge { background: #f8f9fc; border-radius: 12px; padding: 2px 8px; font-size: 12px; }
         .original-price { text-decoration: line-through; color: #9ca3af; font-size: 13px; }
         .discount-badge { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-left: 8px; }
+        .status-available { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+        .status-sold { background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
         .hero-image-container { background: transparent; box-shadow: none; border: none; }
+        @keyframes scrollSuggestions { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
+        .suggestions-track { display: flex; animation: scrollSuggestions 30s linear infinite; width: fit-content; }
+        .suggestions-track:hover { animation-play-state: paused; }
+        .suggestion-item { flex: 0 0 auto; width: 280px; margin-right: 20px; }
+        .pagination-btn { transition: all 0.2s; }
+        .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
+        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     </style>
 </head>
 <body class="antialiased">
 
 <div class="max-w-7xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
-    <!-- HEADER: Logo + Start Selling button -->
+    <!-- HEADER -->
     <header class="flex items-center justify-between mb-10 pb-4 border-b border-gray-100">
         <div class="flex items-center gap-2">
             <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center shadow-sm">
@@ -47,7 +55,7 @@
         </button>
     </header>
 
-    <!-- HERO SECTION with image (no shadows/borders) + social logos at bottom -->
+    <!-- HERO SECTION -->
     <section class="mb-16 flex flex-col md:flex-row md:justify-between md:items-center gap-10">
         <div class="max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mb-5">
@@ -74,7 +82,6 @@
         </div>
         <div class="hero-image-container flex-shrink-0">
             <img src="Image/hero.png" alt="Social Market" class="w-full max-w-md mx-auto md:max-w-lg" onerror="this.src='https://placehold.co/500x400/f0f0f0/333?text=Social+Market'">
-            <!-- Social Media Logos at bottom of image -->
             <div class="flex justify-center items-center gap-5 mt-5">
                 <iconify-icon icon="skill-icons:instagram" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
                 <iconify-icon icon="logos:tiktok-icon" width="28" height="28" class="text-gray-500 hover:text-black transition cursor-pointer"></iconify-icon>
@@ -85,6 +92,14 @@
         </div>
     </section>
 
+    <!-- Suggestions Carousel -->
+    <div class="mb-10 overflow-hidden">
+        <h3 class="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you</h3>
+        <div class="relative overflow-hidden">
+            <div id="suggestionsTrack" class="suggestions-track"></div>
+        </div>
+    </div>
+
     <!-- Search Bar -->
     <div class="mb-6">
         <div class="relative max-w-md">
@@ -93,8 +108,8 @@
         </div>
     </div>
 
-    <!-- Filter Bar: Platform, Price Range, Category -->
-    <div class="flex flex-wrap items-center gap-4 mb-6 pb-3 border-b border-gray-100">
+    <!-- Filter Bar -->
+    <div class="flex flex-wrap items-center gap-4 mb-4 pb-3 border-b border-gray-100">
         <div class="flex flex-wrap gap-2 items-center">
             <span class="text-xs text-gray-400 font-medium mr-1">Platform:</span>
             <button data-platform="all" class="platform-chip category-active px-4 py-1.5 rounded-full text-sm font-medium border transition-all">All</button>
@@ -118,46 +133,47 @@
         </div>
     </div>
 
-    <!-- Products Grid -->
-    <div id="listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 pb-20">
-        <div class="col-span-full text-center py-12 text-gray-400">Loading accounts...</div>
+    <!-- Pagination Controls -->
+    <div class="flex justify-between items-center mb-5">
+        <div id="paginationInfo" class="text-sm text-gray-500"></div>
+        <div class="flex gap-2">
+            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm disabled:opacity-40">← Previous</button>
+            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-200 rounded-xl text-sm">Next →</button>
+        </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="pt-16 pb-8 border-t border-gray-200 mt-10">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-5">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
-                    <iconify-icon icon="ri:exchange-dollar-line" width="16" height="16" class="text-white"></iconify-icon>
-                </div>
-                <span class="text-[0px]">social market</span>
-            </div>
-            <div class="flex gap-7 text-gray-400 text-sm">
-                <a href="#" id="trustLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18" height="18"></iconify-icon> Trust</a>
-                <a href="#" id="guidelinesLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18" height="18"></iconify-icon> Guidelines</a>
-                <a href="#" id="supportLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18" height="18"></iconify-icon> Support</a>
-            </div>
-            <div class="text-gray-300 text-xs flex items-center gap-2">
-                <iconify-icon icon="ph:copyright" width="12"></iconify-icon> 2026 — all digital rights
+    <!-- Products Grid (4 columns, 6 rows = 24 per page) -->
+    <div id="listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
+        <div class="col-span-full text-center py-12 text-gray-400">Loading accounts...</div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="max-w-7xl mx-auto px-5 sm:px-8 pt-16 pb-8 border-t border-gray-200 mt-10">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-5">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
+                <iconify-icon icon="ri:exchange-dollar-line" width="16" height="16" class="text-white"></iconify-icon>
             </div>
         </div>
-    </footer>
-</div>
+        <div class="flex gap-7 text-gray-400 text-sm">
+            <a href="#" id="trustLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18"></iconify-icon> Trust</a>
+            <a href="#" id="guidelinesLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18"></iconify-icon> Guidelines</a>
+            <a href="#" id="supportLink" class="hover:text-gray-800 transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18"></iconify-icon> Support</a>
+        </div>
+        <div class="text-gray-300 text-xs flex items-center gap-2">
+            <iconify-icon icon="ph:copyright" width="12"></iconify-icon> 2026 — all digital rights
+        </div>
+    </div>
+</footer>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
-    // Mobile detection - redirect to indexp.html
-    if (window.innerWidth < 768) {
-        window.location.href = "indexp.html";
-    }
-    
-    window.addEventListener('resize', () => {
-        if (window.innerWidth < 768) {
-            window.location.href = "indexp.html";
-        }
-    });
+    // Mobile redirect
+    if (window.innerWidth < 768) window.location.href = "indexp.html";
+    window.addEventListener('resize', () => { if (window.innerWidth < 768) window.location.href = "indexp.html"; });
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -173,6 +189,114 @@
     
     let allAccounts = [];
     let categoriesArray = [];
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 24; // 4 columns x 6 rows
+    let filteredAccounts = [];
+    
+    // AI Recommendation Engine using localStorage
+    let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
+        viewedPlatforms: {},
+        viewedCategories: {},
+        priceRange: { min: 0, max: Infinity },
+        clickedAccounts: [],
+        interestedPlatform: null,
+        lastUpdated: Date.now()
+    };
+    
+    function updateUserProfile(account, action = 'view') {
+        if (action === 'view') {
+            userProfile.viewedPlatforms[account.socialMedia] = (userProfile.viewedPlatforms[account.socialMedia] || 0) + 1;
+            if (account.category) userProfile.viewedCategories[account.category] = (userProfile.viewedCategories[account.category] || 0) + 1;
+            const price = account.finalPrice || account.originalPrice || 0;
+            if (price > 0) {
+                if (price < userProfile.priceRange.min || userProfile.priceRange.min === 0) userProfile.priceRange.min = price;
+                if (price > userProfile.priceRange.max) userProfile.priceRange.max = price;
+            }
+            userProfile.clickedAccounts.push({ id: account.id, platform: account.socialMedia, price, timestamp: Date.now() });
+            if (userProfile.clickedAccounts.length > 20) userProfile.clickedAccounts.shift();
+            
+            // Determine interested platform
+            let maxViews = 0;
+            for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) {
+                if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
+            }
+            userProfile.lastUpdated = Date.now();
+            localStorage.setItem('socialMarketProfile', JSON.stringify(userProfile));
+        }
+    }
+    
+    function getRecommendedAccounts(accounts, limit = 13) {
+        if (accounts.length === 0) return [];
+        
+        // Score each account based on user profile
+        const scored = accounts.map(acc => {
+            let score = 0;
+            // Platform match
+            if (userProfile.interestedPlatform && acc.socialMedia === userProfile.interestedPlatform) score += 50;
+            else if (userProfile.viewedPlatforms[acc.socialMedia]) score += userProfile.viewedPlatforms[acc.socialMedia] * 10;
+            // Category match
+            if (acc.category && userProfile.viewedCategories[acc.category]) score += userProfile.viewedCategories[acc.category] * 8;
+            // Price preference
+            const price = acc.finalPrice || acc.originalPrice || 0;
+            if (price >= userProfile.priceRange.min && price <= userProfile.priceRange.max) score += 15;
+            // Recently added bonus (fresh accounts)
+            if (acc.createdAt) {
+                const daysOld = (Date.now() - new Date(acc.createdAt).getTime()) / (1000 * 3600 * 24);
+                if (daysOld < 7) score += 5;
+            }
+            // Random factor to avoid always same (5% randomness)
+            score += Math.random() * 3;
+            return { acc, score };
+        });
+        
+        scored.sort((a, b) => b.score - a.score);
+        let recommended = scored.slice(0, limit).map(s => s.acc);
+        
+        // If not enough recommendations, fill with random recent accounts
+        if (recommended.length < limit) {
+            const remaining = accounts.filter(a => !recommended.includes(a));
+            const randomFill = remaining.sort(() => 0.5 - Math.random()).slice(0, limit - recommended.length);
+            recommended = [...recommended, ...randomFill];
+        }
+        
+        return recommended;
+    }
+    
+    // Render suggestions carousel
+    function renderSuggestions() {
+        const availableAccounts = allAccounts.filter(a => a.status !== 'sold');
+        const recommended = getRecommendedAccounts(availableAccounts, 13);
+        const track = document.getElementById('suggestionsTrack');
+        if (!track || recommended.length === 0) return;
+        
+        const suggestionItems = recommended.map(acc => {
+            let platformIcon = "skill-icons:instagram";
+            if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
+            else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
+            else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
+            
+            return `
+                <div class="suggestion-item bg-white rounded-xl p-3 border border-gray-100 cursor-pointer hover:shadow-md transition" data-id="${acc.id}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32"></iconify-icon></div>
+                        <div><p class="font-semibold text-sm">${escapeHtml(acc.nickname)}</p><p class="text-xs text-gray-400">${acc.socialMedia} • ${acc.followers?.toLocaleString() || 0} followers</p></div>
+                    </div>
+                    <div class="mt-2 text-right"><span class="font-bold">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span></div>
+                </div>
+            `;
+        }).join('');
+        
+        // Duplicate for seamless loop
+        track.innerHTML = suggestionItems + suggestionItems;
+        track.querySelectorAll('.suggestion-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.getAttribute('data-id');
+                if (id) window.location.href = `view.html?id=${id}`;
+            });
+        });
+    }
     
     async function loadAccounts() {
         try {
@@ -180,12 +304,11 @@
             allAccounts = [];
             querySnapshot.forEach(doc => {
                 const data = doc.data();
-                if (data.status !== 'sold') {
-                    allAccounts.push({ id: doc.id, ...data });
-                }
+                allAccounts.push({ id: doc.id, ...data });
             });
             await loadCategories();
-            renderAccounts();
+            applyFiltersAndRender();
+            renderSuggestions();
         } catch(e) {
             console.error("Firebase error:", e);
             document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Unable to load accounts. Please try again later.</div>';
@@ -204,58 +327,91 @@
             categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
         } catch(e) {
             categoriesArray = ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            const categorySelect = document.getElementById('categoryFilter');
-            categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
         }
-        renderAccounts();
+        applyFiltersAndRender();
     }
     
-    function getCurrentFilters() {
+    function applyFiltersAndRender() {
         const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
         const platform = document.querySelector('.platform-chip.category-active')?.getAttribute('data-platform') || 'all';
         const minPrice = parseFloat(document.getElementById('minPrice')?.value) || 0;
         const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
         const category = document.getElementById('categoryFilter')?.value || 'all';
-        return { searchTerm, platform, minPrice, maxPrice, category };
-    }
-    
-    function renderAccounts() {
-        const { searchTerm, platform, minPrice, maxPrice, category } = getCurrentFilters();
         
-        let filtered = allAccounts.filter(acc => {
+        // Separate available and sold accounts
+        const available = allAccounts.filter(a => a.status !== 'sold');
+        const sold = allAccounts.filter(a => a.status === 'sold');
+        
+        // Filter both
+        const filterFn = (acc) => {
             const matchesSearch = !searchTerm || acc.nickname?.toLowerCase().includes(searchTerm) || acc.socialMedia?.toLowerCase().includes(searchTerm);
             const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
             const price = acc.finalPrice || acc.originalPrice || 0;
             const matchesPrice = price >= minPrice && price <= maxPrice;
             const matchesCategory = category === 'all' || acc.category === category;
             return matchesSearch && matchesPlatform && matchesPrice && matchesCategory;
-        });
+        };
+        
+        let filteredAvailable = available.filter(filterFn);
+        let filteredSold = sold.filter(filterFn);
+        
+        // Mix sold accounts (1-2 per page, but don't duplicate)
+        const soldToShow = [];
+        const soldPerPage = Math.min(2, filteredSold.length);
+        for (let i = 0; i < soldPerPage && filteredSold.length > 0; i++) {
+            const randomIndex = Math.floor(Math.random() * filteredSold.length);
+            soldToShow.push(filteredSold[randomIndex]);
+            filteredSold.splice(randomIndex, 1);
+        }
+        
+        // Combine: show available first, then mix sold
+        let combined = [...filteredAvailable, ...soldToShow];
+        // Shuffle slightly to mix sold within
+        for (let i = combined.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [combined[i], combined[j]] = [combined[j], combined[i]];
+        }
+        
+        filteredAccounts = combined;
+        currentPage = 1;
+        renderAccounts();
+    }
+    
+    function renderAccounts() {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageAccounts = filteredAccounts.slice(start, end);
+        const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
+        
+        document.getElementById('paginationInfo').innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
         
         const container = document.getElementById('listings-grid');
-        if (filtered.length === 0) {
+        if (pageAccounts.length === 0) {
             container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">No accounts match your filters</div>';
             return;
         }
         
-        container.innerHTML = filtered.map(acc => {
+        container.innerHTML = pageAccounts.map(acc => {
             const displayPrice = acc.finalPrice || acc.originalPrice;
             const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
             const acceptDiscountChecked = acc.acceptDiscount === true;
+            const isSold = acc.status === 'sold';
             
             let originalPriceDisplay = '';
             let discountBadge = '';
-            
             if (hasDiscount && acc.originalPrice && acc.originalPrice !== displayPrice) {
                 originalPriceDisplay = `<span class="original-price">$${acc.originalPrice?.toLocaleString()}</span>`;
             }
-            
-            if (acceptDiscountChecked) {
+            if (acceptDiscountChecked && !isSold) {
                 discountBadge = `<span class="discount-badge">✔ Discount</span>`;
             }
             
+            const statusBadge = isSold ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAILABLE</span>';
             const priceHtml = acc.bargaining ? '<span class="text-sm text-gray-500">Negotiable</span>' : `<span class="text-xl font-bold">$${displayPrice?.toLocaleString()}</span> ${originalPriceDisplay} ${discountBadge}`;
             
-            let platformIcon = "mdi:instagram";
+            let platformIcon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
             else if (acc.socialMedia?.toLowerCase() === 'tiktok') platformIcon = "logos:tiktok-icon";
             else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
@@ -266,24 +422,24 @@
             
             return `
                 <div class="glass-card rounded-2xl overflow-hidden cursor-pointer product-card" data-id="${acc.id}">
-                    <div class="p-5 pb-3 flex items-start gap-3">
-                        ${profileImg ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32" height="32"></iconify-icon></div>`}
+                    <div class="p-4 pb-3 flex items-start gap-3">
+                        ${profileImg && !isSold ? `<img src="${profileImg}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center"><iconify-icon icon="${platformIcon}" width="32" height="32"></iconify-icon></div>`}
                         <div class="flex-1">
                             <h3 class="font-semibold text-gray-800 text-base tracking-tight">${escapeHtml(acc.nickname)}</h3>
-                            <div class="flex items-center gap-1.5 mt-0.5">
+                            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                 <span class="text-[11px] font-medium uppercase tracking-wider text-gray-400">${acc.socialMedia || ''}</span>
-                                ${acc.verified ? '<iconify-icon icon="mdi:check-decagram" width="12" height="12" class="text-blue-500"></iconify-icon>' : ''}
+                                ${statusBadge}
                             </div>
                         </div>
                     </div>
-                    <div class="px-5 py-2 flex justify-between items-center border-y border-gray-50 bg-gray-50/30">
+                    <div class="px-4 py-2 flex justify-between items-center border-y border-gray-50 bg-gray-50/30">
                         <div class="flex items-center gap-1"><iconify-icon icon="mdi:account-group-outline" width="14" class="text-gray-400"></iconify-icon><span class="text-sm font-medium text-gray-700">${acc.followers?.toLocaleString() || 0}</span></div>
                         <div class="flex items-center gap-1"><iconify-icon icon="mdi:trending-up" width="14" class="text-emerald-500"></iconify-icon><span class="text-sm font-medium text-gray-700">${acc.engagement || 'N/A'}</span></div>
                     </div>
-                    <div class="p-5 pt-4 flex items-center justify-between">
+                    <div class="p-4 pt-3 flex items-center justify-between">
                         <div>${priceHtml}</div>
-                        <button class="view-details-btn bg-black text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-1.5 shadow-sm btn-sleek" data-id="${acc.id}">
-                            <iconify-icon icon="mdi:eye-outline" width="16"></iconify-icon> View
+                        <button class="view-details-btn bg-black text-white px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1 shadow-sm btn-sleek" data-id="${acc.id}">
+                            <iconify-icon icon="mdi:eye-outline" width="14"></iconify-icon> View
                         </button>
                     </div>
                 </div>
@@ -294,18 +450,24 @@
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const id = el.getAttribute('data-id');
-                if (id) window.location.href = `view.html?id=${id}`;
+                if (id) {
+                    const account = allAccounts.find(a => a.id === id);
+                    if (account) updateUserProfile(account, 'view');
+                    window.location.href = `view.html?id=${id}`;
+                }
             });
         });
     }
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
     
-    // Filter event listeners
-    document.getElementById('searchInput')?.addEventListener('input', () => renderAccounts());
-    document.getElementById('minPrice')?.addEventListener('input', () => renderAccounts());
-    document.getElementById('maxPrice')?.addEventListener('input', () => renderAccounts());
-    document.getElementById('categoryFilter')?.addEventListener('change', () => renderAccounts());
+    // Event listeners
+    document.getElementById('searchInput')?.addEventListener('input', () => applyFiltersAndRender());
+    document.getElementById('minPrice')?.addEventListener('input', () => applyFiltersAndRender());
+    document.getElementById('maxPrice')?.addEventListener('input', () => applyFiltersAndRender());
+    document.getElementById('categoryFilter')?.addEventListener('change', () => applyFiltersAndRender());
+    document.getElementById('prevPage')?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
+    document.getElementById('nextPage')?.addEventListener('click', () => { const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE); if (currentPage < totalPages) { currentPage++; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
     
     document.querySelectorAll('.platform-chip').forEach(chip => {
         chip.addEventListener('click', () => {
@@ -315,33 +477,17 @@
             });
             chip.classList.remove('category-inactive');
             chip.classList.add('category-active');
-            renderAccounts();
+            applyFiltersAndRender();
         });
     });
     
-    // Button actions
-    document.getElementById('exploreBtn')?.addEventListener('click', () => {
-        document.getElementById('listings-grid').scrollIntoView({ behavior: 'smooth' });
-    });
-    
+    document.getElementById('exploreBtn')?.addEventListener('click', () => { document.getElementById('listings-grid').scrollIntoView({ behavior: 'smooth' }); });
     const startSellingBtns = [document.getElementById('startSellingBtn'), document.getElementById('startSellingBtn2')];
-    startSellingBtns.forEach(btn => {
-        btn?.addEventListener('click', () => { window.location.href = 'sell.html'; });
-    });
+    startSellingBtns.forEach(btn => { btn?.addEventListener('click', () => { window.location.href = 'sell.html'; }); });
     
-    // Trust, Guidelines, Support - open info.html
-    document.getElementById('trustLink')?.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        window.location.href = 'info.html'; 
-    });
-    document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        window.location.href = 'info.html'; 
-    });
-    document.getElementById('supportLink')?.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        window.location.href = 'info.html'; 
-    });
+    document.getElementById('trustLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     
     loadAccounts();
 </script>
