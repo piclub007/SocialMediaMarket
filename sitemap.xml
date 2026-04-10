@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- Main entry pages (priority high) -->
+    <url>
+        <loc>https://imbuga.vercel.app/</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://imbuga.vercel.app/index.html</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://imbuga.vercel.app/indexp.html</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Core user pages -->
+    <url>
+        <loc>https://imbuga.vercel.app/view.html</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://imbuga.vercel.app/sell.html</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://imbuga.vercel.app/info.html</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://imbuga.vercel.app/see.html</loc>
+        <lastmod>2026-04-10</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+</urlset>
