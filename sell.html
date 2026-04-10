@@ -3,34 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sell Your Account — Social Market</title>
+    <title>Sell Your Account — Social Market | Dark Theme</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
-        body { background: #f7f9fc; }
-        .form-card { background: white; border-radius: 32px; border: 1px solid #eef2f6; box-shadow: 0 8px 30px rgba(0,0,0,0.02); }
-        .input-modern { transition: all 0.2s; border: 1px solid #eaeaef; background: #ffffff; border-radius: 14px; outline: none; }
-        .input-modern:focus { border-color: #9ca3af; box-shadow: 0 0 0 3px rgba(0,0,0,0.02); }
-        .btn-primary { background: #000000; transition: 0.2s; border-radius: 40px; }
-        .btn-primary:hover { background: #2c2c2e; transform: translateY(-1px); }
-        .step-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
-        .step-number { width: 32px; height: 32px; background: #111111; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
-        .image-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; border: 1px solid #eef2f6; }
-        @media (max-width: 768px) {
-            .form-card { border-radius: 24px; }
-            .step-number { width: 28px; height: 28px; font-size: 12px; }
+        
+        /* Dark Theme Global Styles */
+        body {
+            background: #0a0c10;
+            color: #eef2ff;
         }
-        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .trust-badge { background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%); }
+        
+        /* Custom Dark Form Card */
+        .form-card {
+            background: #11161c;
+            border: 1px solid #2a2f36;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .input-modern {
+            background: #0f1217;
+            border: 1px solid #2c3138;
+            color: #f0f3fa;
+            transition: all 0.2s;
+        }
+        
+        .input-modern:focus {
+            border-color: #6b7280;
+            box-shadow: 0 0 0 3px rgba(139, 148, 165, 0.2);
+            outline: none;
+            background: #171c24;
+        }
+        
+        .input-modern::placeholder {
+            color: #5b6370;
+        }
+        
+        .btn-primary {
+            background: #1f2937;
+            transition: 0.2s;
+            border-radius: 40px;
+            border: 1px solid #374151;
+        }
+        
+        .btn-primary:hover {
+            background: #2d3a4b;
+            transform: translateY(-1px);
+            border-color: #5a6e8a;
+        }
+        
+        .step-number {
+            background: #1e2a3a;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+        
+        .trust-badge {
+            background: linear-gradient(135deg, #10161e 0%, #0b0f14 100%);
+            border: 1px solid #2a2f38;
+        }
+        
+        .image-preview {
+            background: #0f1319;
+            border: 1px solid #2a2f38;
+            border-radius: 14px;
+        }
+        
+        label {
+            color: #cbd5e6;
+        }
+        
+        .text-gray-500, .text-gray-600, .text-gray-700 {
+            color: #9ca3af !important;
+        }
+        
+        .text-gray-800, .text-gray-900 {
+            color: #eef2ff !important;
+        }
+        
+        .bg-gray-50, .bg-gray-100 {
+            background-color: #0f1319 !important;
+        }
+        
+        .border-gray-200, .border-gray-300 {
+            border-color: #2a2f38 !important;
+        }
+        
+        button.border-gray-300 {
+            border-color: #3a3f48;
+            color: #e2e8f0;
+        }
+        
+        button.border-gray-300:hover {
+            background: #1a202a;
+        }
+        
+        .loading-overlay {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+        }
+        
+        select.input-modern {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+        
+        .btn-secondary-outline {
+            background: transparent;
+            border: 1px solid #3a4050;
+            color: #d1d5db;
+        }
+        
+        .btn-secondary-outline:hover {
+            background: #1f2937;
+            border-color: #6b7280;
+        }
+        
+        /* custom focus ring */
+        *:focus-visible {
+            outline: 2px solid #6c8fb3;
+            outline-offset: 2px;
+        }
+        
+        a.text-gray-500:hover {
+            color: #b9c7d9 !important;
+        }
+        
+        /* restrict field styles */
+        .input-modern:read-only, .input-modern:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: #0a0d12;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
 <div class="max-w-4xl mx-auto">
     <!-- Back Button -->
-    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 hover:text-black transition mb-6 group">
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition mb-6 group">
         <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
         <span class="text-sm font-medium">Back</span>
     </a>
@@ -38,28 +155,28 @@
     <!-- Main Content -->
     <div id="mainContent">
         <!-- Step 1: Seller Identity (Local Storage) -->
-        <div id="identitySection" class="form-card p-6 md:p-8">
+        <div id="identitySection" class="form-card p-6 md:p-8 rounded-2xl">
             <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center border border-gray-700">
                     <iconify-icon icon="mdi:account-circle" width="24" class="text-white"></iconify-icon>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900">Seller Information</h2>
+                <h2 class="text-2xl font-bold text-white">Seller Information</h2>
             </div>
             
             <div id="identityForm">
-                <p class="text-gray-500 text-sm mb-6">Please tell us about yourself. Your information helps us verify and contact you about your account sale.</p>
+                <p class="text-gray-400 text-sm mb-6">Please tell us about yourself. Your information helps us verify and contact you about your account sale.</p>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="sellerName" placeholder="Enter your full name" class="input-modern w-full px-4 py-3 text-sm">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Full Name *</label>
+                        <input type="text" id="sellerName" placeholder="Enter your full name" class="input-modern w-full px-4 py-3 text-sm rounded-xl" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Address *</label>
-                        <input type="text" id="sellerAddress" placeholder="Your city and country" class="input-modern w-full px-4 py-3 text-sm">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Address *</label>
+                        <input type="text" id="sellerAddress" placeholder="Your city and country" class="input-modern w-full px-4 py-3 text-sm rounded-xl" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number *</label>
-                        <input type="tel" id="sellerWhatsapp" placeholder="+250 7XX XXX XXX" class="input-modern w-full px-4 py-3 text-sm">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">WhatsApp Number *</label>
+                        <input type="tel" id="sellerWhatsapp" placeholder="+250 7XX XXX XXX" class="input-modern w-full px-4 py-3 text-sm rounded-xl" required>
                     </div>
                     <button id="saveIdentityBtn" class="btn-primary w-full py-3 text-white font-medium mt-4 flex items-center justify-center gap-2">
                         <iconify-icon icon="mdi:check" width="18"></iconify-icon> Continue
@@ -68,13 +185,13 @@
             </div>
             
             <div id="welcomeBackSection" class="hidden">
-                <div class="bg-gray-50 rounded-2xl p-6 text-center">
+                <div class="bg-gray-800/60 rounded-2xl p-6 text-center border border-gray-700">
                     <iconify-icon icon="mdi:hand-wave" width="48" class="text-gray-400 mx-auto mb-3"></iconify-icon>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Welcome Back!</h3>
-                    <p class="text-gray-600 mb-4">Are you <strong id="displayName"></strong> from <strong id="displayAddress"></strong>?</p>
+                    <h3 class="text-xl font-semibold text-white mb-2">Welcome Back!</h3>
+                    <p class="text-gray-300 mb-4">Are you <strong id="displayName" class="text-white"></strong> from <strong id="displayAddress" class="text-white"></strong>?</p>
                     <div class="flex gap-3">
-                        <button id="confirmYesBtn" class="flex-1 bg-black text-white py-2.5 rounded-xl font-medium">Yes, that's me</button>
-                        <button id="confirmNoBtn" class="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-xl font-medium hover:bg-gray-50">No, new seller</button>
+                        <button id="confirmYesBtn" class="flex-1 bg-white text-black py-2.5 rounded-xl font-medium hover:bg-gray-200 transition">Yes, that's me</button>
+                        <button id="confirmNoBtn" class="flex-1 border border-gray-600 text-gray-200 py-2.5 rounded-xl font-medium hover:bg-gray-800 transition">No, new seller</button>
                     </div>
                 </div>
             </div>
@@ -83,32 +200,32 @@
         <!-- Step 2: Information & Trust Section (shown after identity is confirmed) -->
         <div id="infoSection" class="hidden mt-6">
             <!-- Trust & How It Works -->
-            <div class="form-card p-6 md:p-8 mb-6">
+            <div class="form-card p-6 md:p-8 rounded-2xl mb-6">
                 <div class="flex items-center gap-3 mb-6">
-                    <iconify-icon icon="mdi:shield-check" width="28" class="text-green-600"></iconify-icon>
-                    <h2 class="text-2xl font-bold text-gray-900">Why Trust Social Market?</h2>
+                    <iconify-icon icon="mdi:shield-check" width="28" class="text-emerald-400"></iconify-icon>
+                    <h2 class="text-2xl font-bold text-white">Why Trust Social Market?</h2>
                 </div>
                 <div class="trust-badge rounded-2xl p-5 mb-6">
-                    <p class="text-gray-700 text-sm leading-relaxed">We are a verified marketplace with over 500+ successful transactions. Your account and personal information are safe with us. We use secure escrow and provide 24/7 support to ensure a smooth selling experience.</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">We are a verified marketplace with over 500+ successful transactions. Your account and personal information are safe with us. We use secure escrow and provide 24/7 support to ensure a smooth selling experience.</p>
                 </div>
                 
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:information-outline" width="20"></iconify-icon> How It Works</h3>
+                <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2"><iconify-icon icon="mdi:information-outline" width="20"></iconify-icon> How It Works</h3>
                 <div class="space-y-3">
                     <div class="step-item">
                         <div class="step-number">1</div>
-                        <div><p class="font-medium text-gray-800">Fill the Account Form</p><p class="text-sm text-gray-500">Provide your account username, link, price, and upload verification images.</p></div>
+                        <div><p class="font-medium text-gray-200">Fill the Account Form</p><p class="text-sm text-gray-400">Provide your account username, link, price, social media platform, and upload verification images.</p></div>
                     </div>
                     <div class="step-item">
                         <div class="step-number">2</div>
-                        <div><p class="font-medium text-gray-800">Submit for Review</p><p class="text-sm text-gray-500">Our team reviews your account within 24-48 hours to verify authenticity.</p></div>
+                        <div><p class="font-medium text-gray-200">Submit for Review</p><p class="text-sm text-gray-400">Our team reviews your account within 24-48 hours to verify authenticity.</p></div>
                     </div>
                     <div class="step-item">
                         <div class="step-number">3</div>
-                        <div><p class="font-medium text-gray-800">Get Contacted & Make the Deal</p><p class="text-sm text-gray-500">We'll reach out via WhatsApp to discuss pricing, negotiate, and finalize the sale.</p></div>
+                        <div><p class="font-medium text-gray-200">Get Contacted & Make the Deal</p><p class="text-sm text-gray-400">We'll reach out via WhatsApp to discuss pricing, negotiate, and finalize the sale.</p></div>
                     </div>
                     <div class="step-item">
                         <div class="step-number">4</div>
-                        <div><p class="font-medium text-gray-800">Receive Payment</p><p class="text-sm text-gray-500">Once the account is transferred, you get paid securely via mobile money or bank transfer.</p></div>
+                        <div><p class="font-medium text-gray-200">Receive Payment</p><p class="text-sm text-gray-400">Once the account is transferred, you get paid securely via mobile money or bank transfer.</p></div>
                     </div>
                 </div>
             </div>
@@ -120,52 +237,67 @@
                 </button>
             </div>
 
-            <!-- Account Submission Form (Hidden initially) -->
-            <div id="sellFormContainer" class="form-card p-6 md:p-8 hidden">
+            <!-- Account Submission Form (with added social media & restrictions) -->
+            <div id="sellFormContainer" class="form-card p-6 md:p-8 rounded-2xl hidden">
                 <div class="flex items-center gap-3 mb-6">
-                    <iconify-icon icon="mdi:instagram" width="28" class="text-black"></iconify-icon>
-                    <h2 class="text-2xl font-bold text-gray-900">Submit Your Account</h2>
+                    <iconify-icon icon="mdi:social-media" width="28" class="text-cyan-400"></iconify-icon>
+                    <h2 class="text-2xl font-bold text-white">Submit Your Account</h2>
                 </div>
-                <p class="text-gray-500 text-sm mb-6">Fill in the details below to list your account for sale.</p>
+                <p class="text-gray-400 text-sm mb-6">Fill in the details below to list your account for sale. All fields are required.</p>
                 
                 <form id="sellAccountForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Username *</label>
-                        <input type="text" id="accountUsername" required placeholder="@username" class="input-modern w-full px-4 py-3 text-sm">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Account Username *</label>
+                        <input type="text" id="accountUsername" required placeholder="@username" class="input-modern w-full px-4 py-3 text-sm rounded-xl" maxlength="60">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Link/URL *</label>
-                        <input type="url" id="accountLink" required placeholder="https://instagram.com/username" class="input-modern w-full px-4 py-3 text-sm">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Account Link/URL *</label>
+                        <input type="url" id="accountLink" required placeholder="https://instagram.com/username" class="input-modern w-full px-4 py-3 text-sm rounded-xl">
                     </div>
                     
-                    <!-- Image Uploads -->
+                    <!-- NEW: Social Media Selection Field (below photos section but placed exactly there) -->
+                    <div id="socialMediaContainer" class="mt-2">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Social Media Platform *</label>
+                        <select id="socialMediaPlatform" required class="input-modern w-full px-4 py-3 text-sm rounded-xl bg-gray-800">
+                            <option value="" disabled selected>— Select your platform —</option>
+                            <option value="INSTAGRAM">📸 INSTAGRAM</option>
+                            <option value="LINKEDIN">🔗 LINKEDIN</option>
+                            <option value="TIKTOK">🎵 TIKTOK</option>
+                            <option value="FACEBOOK">📘 FACEBOOK</option>
+                            <option value="X">🐦 X (Twitter)</option>
+                            <option value="YOUTUBE">▶️ YOUTUBE</option>
+                        </select>
+                    </div>
+
+                    <!-- Image Uploads (Followers Proof & Dashboard) -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Photos (Followers Proof & Dashboard)</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-3">Photos (Followers Proof & Dashboard)</label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 mb-2">Followers Screenshot (1 image)</p>
-                                <button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100" data-target="followersImage">
+                                <p class="text-xs font-semibold text-gray-400 mb-2">Followers Screenshot (1 image)</p>
+                                <button type="button" class="upload-trigger bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-700 transition text-gray-200" data-target="followersImage">
                                     <iconify-icon icon="mdi:cloud-upload" width="18"></iconify-icon> Upload
                                 </button>
-                                <input type="file" id="followersImage" accept="image/*" class="hidden">
+                                <input type="file" id="followersImage" accept="image/*" class="hidden" required>
                                 <div id="followersPreview" class="mt-2"></div>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 mb-2">Dashboard Images (3 images max)</p>
-                                <button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100" data-target="dashboardImages">
+                                <p class="text-xs font-semibold text-gray-400 mb-2">Dashboard Images (3 images max)</p>
+                                <button type="button" class="upload-trigger bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-700 transition text-gray-200" data-target="dashboardImages">
                                     <iconify-icon icon="mdi:cloud-upload-multiple" width="18"></iconify-icon> Upload (up to 3)
                                 </button>
-                                <input type="file" id="dashboardImages" accept="image/*" multiple class="hidden">
+                                <input type="file" id="dashboardImages" accept="image/*" multiple class="hidden" required>
                                 <div id="dashboardPreview" class="flex flex-wrap gap-2 mt-2"></div>
                             </div>
                         </div>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Asking Price (USD) *</label>
-                        <input type="number" id="askingPrice" required step="0.01" placeholder="Enter your desired price" class="input-modern w-full px-4 py-3 text-sm">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Asking Price (USD) *</label>
+                        <input type="number" id="askingPrice" required step="0.01" placeholder="Enter your desired price" class="input-modern w-full px-4 py-3 text-sm rounded-xl" min="1">
                     </div>
                     
+                    <!-- All fields are restricted (HTML5 required + JS validation) -->
                     <button type="submit" id="submitSellBtn" class="btn-primary w-full py-3 text-white font-medium flex items-center justify-center gap-2 mt-4">
                         <iconify-icon icon="mdi:send" width="18"></iconify-icon> Submit for Review
                     </button>
@@ -194,7 +326,6 @@
     const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
     
     let sellerData = null;
-    let currentUploadedImages = { followers: null, dashboard: [] };
     
     // Load seller data from localStorage
     function loadSellerData() {
@@ -218,7 +349,7 @@
         sellerData = null;
     }
     
-    // Setup image uploads
+    // Setup image upload previews
     function setupImageUpload(inputId, previewId, isMultiple = false, maxFiles = 3) {
         const input = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
@@ -233,20 +364,20 @@
                     reader.onload = (ev) => {
                         const img = document.createElement('img');
                         img.src = ev.target.result;
-                        img.className = 'image-preview';
+                        img.className = 'image-preview w-20 h-20 object-cover rounded-xl border border-gray-700 shadow-sm';
                         preview.appendChild(img);
                     };
                     reader.readAsDataURL(file);
                 }
             } else {
                 const files = Array.from(e.target.files);
-                const newFiles = files.slice(0, maxFiles - preview.children.length);
-                newFiles.forEach(file => {
+                preview.innerHTML = '';
+                files.slice(0, maxFiles).forEach(file => {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                         const img = document.createElement('img');
                         img.src = ev.target.result;
-                        img.className = 'image-preview';
+                        img.className = 'image-preview w-20 h-20 object-cover rounded-xl border border-gray-700 shadow-sm';
                         preview.appendChild(img);
                     };
                     reader.readAsDataURL(file);
@@ -274,13 +405,11 @@
         const displayAddress = document.getElementById('displayAddress');
         
         if (loadSellerData()) {
-            // Show welcome back
             identityForm.classList.add('hidden');
             welcomeBackSection.classList.remove('hidden');
             displayName.textContent = sellerData.name;
             displayAddress.textContent = sellerData.address;
         } else {
-            // Show identity form
             identityForm.classList.remove('hidden');
             welcomeBackSection.classList.add('hidden');
             infoSection.classList.add('hidden');
@@ -294,10 +423,9 @@
         const whatsapp = document.getElementById('sellerWhatsapp').value.trim();
         
         if (!name || !address || !whatsapp) {
-            alert('Please fill in all fields');
+            alert('❌ Please fill in all fields: Name, Address, WhatsApp');
             return;
         }
-        
         saveSellerData(name, address, whatsapp);
         document.getElementById('identityForm').classList.add('hidden');
         document.getElementById('welcomeBackSection').classList.remove('hidden');
@@ -341,33 +469,45 @@
     setupImageUpload('followersImage', 'followersPreview', false);
     setupImageUpload('dashboardImages', 'dashboardPreview', true, 3);
     
-    // Submit account for sale
+    // Submit account for sale with social media field & all field restrictions enforced
     document.getElementById('sellAccountForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Gather all fields with full validation (restrict all)
         const username = document.getElementById('accountUsername').value.trim();
         const link = document.getElementById('accountLink').value.trim();
         const price = parseFloat(document.getElementById('askingPrice').value);
+        const socialPlatform = document.getElementById('socialMediaPlatform').value;
         const followersFile = document.getElementById('followersImage').files[0];
         const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []);
         
-        if (!username || !link || isNaN(price) || price <= 0) {
-            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Please fill all required fields correctly</span>';
+        // Restriction checks: all fields mandatory
+        if (!username) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Account Username is required.</span>';
             return;
         }
-        
+        if (!link) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Account Link is required.</span>';
+            return;
+        }
+        if (!socialPlatform || socialPlatform === "") {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Please select a Social Media platform (INSTAGRAM, LINKEDIN, etc.)</span>';
+            return;
+        }
+        if (isNaN(price) || price <= 0) {
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Valid Asking Price (USD) is required.</span>';
+            return;
+        }
         if (!followersFile) {
-            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Please upload a followers screenshot</span>';
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Followers screenshot is required.</span>';
             return;
         }
-        
         if (dashboardFiles.length === 0) {
-            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Please upload at least one dashboard image</span>';
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ At least one Dashboard image is required.</span>';
             return;
         }
-        
         if (dashboardFiles.length > 3) {
-            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Maximum 3 dashboard images allowed</span>';
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Maximum 3 dashboard images allowed.</span>';
             return;
         }
         
@@ -376,8 +516,8 @@
         submitBtn.innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Uploading...';
         
         const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'loading-overlay';
-        loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-6 shadow-xl flex items-center gap-3"><iconify-icon icon="line-md:uploading-loop" width="28"></iconify-icon><span>Submitting your account...</span></div>';
+        loadingDiv.className = 'loading-overlay fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[1000]';
+        loadingDiv.innerHTML = '<div class="bg-gray-900 rounded-2xl p-6 shadow-2xl flex items-center gap-3 border border-gray-700"><iconify-icon icon="line-md:uploading-loop" width="28" class="text-white"></iconify-icon><span class="text-white">Submitting your account...</span></div>';
         document.body.appendChild(loadingDiv);
         
         try {
@@ -397,6 +537,7 @@
                 sellerWhatsapp: sellerInfo.whatsapp,
                 accountUsername: username,
                 accountLink: link,
+                socialMediaPlatform: socialPlatform,   // NEW FIELD ADDED
                 askingPrice: price,
                 followersImage: followersUrl,
                 dashboardImages: dashboardUrls,
@@ -407,19 +548,23 @@
             
             await addDoc(collection(db, 'sellerRequests'), requestData);
             
-            document.getElementById('sellFormMessage').innerHTML = '<span class="text-green-600 text-sm">✅ Your account has been submitted for review! Our team will contact you within 24-48 hours.</span>';
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-green-400 text-sm">✅ Your account has been submitted for review! Our team will contact you within 24-48 hours.</span>';
+            // Reset all form fields (restricted fields cleared)
             document.getElementById('sellAccountForm').reset();
             document.getElementById('followersPreview').innerHTML = '';
             document.getElementById('dashboardPreview').innerHTML = '';
-            currentUploadedImages = { followers: null, dashboard: [] };
+            // Reset social media select to placeholder
+            const socialSelect = document.getElementById('socialMediaPlatform');
+            if(socialSelect) socialSelect.value = "";
             
             setTimeout(() => {
                 document.getElementById('sellFormContainer').classList.add('hidden');
+                document.getElementById('sellFormMessage').innerHTML = '';
             }, 3000);
             
         } catch (error) {
             console.error('Error:', error);
-            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-500 text-sm">❌ Failed to submit. Please try again.</span>';
+            document.getElementById('sellFormMessage').innerHTML = '<span class="text-red-400 text-sm">❌ Failed to submit. Please check your images or network.</span>';
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<iconify-icon icon="mdi:send" width="18"></iconify-icon> Submit for Review';
