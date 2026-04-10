@@ -20,6 +20,11 @@
         .status-available { background: #10b98120; color: #10b981; border: 1px solid #10b98130; }
         .status-sold { background: #ef444420; color: #ef4444; border: 1px solid #ef444430; }
         .original-price-small { text-decoration: line-through; color: #9ca3af; font-size: 14px; }
+        .currency-card { background: #f8f9fc; border-radius: 16px; transition: all 0.2s; cursor: pointer; }
+        .currency-card:hover { background: #f0f2f5; transform: translateY(-2px); }
+        .currency-active { background: #111111; color: white; }
+        .currency-active .currency-symbol, .currency-active .currency-amount { color: white; }
+        .currency-active .currency-label { color: #9ca3af; }
         @media (max-width: 768px) {
             .detail-card { border-radius: 24px; }
             .image-gallery-img { height: 160px; }
@@ -27,7 +32,7 @@
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        /* Suggestions Carousel - Speed 1.2x (faster) */
+        /* Suggestions Carousel - Speed 1.7x */
         .suggestions-container {
             overflow: hidden;
             position: relative;
@@ -36,7 +41,7 @@
         .suggestions-track {
             display: flex;
             width: fit-content;
-            animation: scrollSuggestions 100s linear infinite;
+            animation: scrollSuggestions 70s linear infinite;
         }
         .suggestions-track:hover {
             animation-play-state: paused;
@@ -84,6 +89,8 @@
         @media (max-width: 640px) {
             .buy-modal-content { border-radius: 24px; margin: 16px; }
             .suggestion-item { width: 220px; }
+            .currency-grid { gap: 8px; }
+            .currency-card { padding: 10px !important; }
         }
     </style>
 </head>
@@ -131,7 +138,7 @@
                 <p id="noImagesMsg" class="text-gray-400 text-sm hidden">No images available for this account</p>
             </div>
 
-            <!-- Main Info Grid (without Document ID) -->
+            <!-- Main Info Grid -->
             <div class="grid md:grid-cols-2 gap-8 mb-6">
                 <div class="space-y-4">
                     <div class="bg-gray-50 rounded-2xl p-4">
@@ -159,20 +166,53 @@
                 </div>
             </div>
 
-            <!-- Key Features (below followers) -->
+            <!-- Key Features -->
             <div class="mb-8">
                 <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
                 <div id="featuresList" class="flex flex-wrap gap-2"></div>
                 <p id="noFeaturesMsg" class="text-gray-400 text-sm hidden">No features listed</p>
             </div>
 
-            <!-- Simplified Pricing -->
+            <!-- Pricing with Currency Converter -->
             <div class="mb-8 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
-                <div id="pricingBadges" class="flex flex-wrap gap-2 mb-3"></div>
+                <div class="flex flex-wrap justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
+                    <div class="text-xs text-gray-400">Click any currency to convert</div>
+                </div>
+                
+                <!-- Currency Converter Grid -->
+                <div id="currencyGrid" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+                    <div data-currency="USD" class="currency-card currency-active p-3 rounded-xl text-center transition">
+                        <div class="currency-symbol text-sm font-medium">USD</div>
+                        <div class="currency-amount text-lg font-bold">$0</div>
+                        <div class="currency-label text-xs text-gray-400">US Dollar</div>
+                    </div>
+                    <div data-currency="RWF" class="currency-card p-3 rounded-xl text-center transition">
+                        <div class="currency-symbol text-sm font-medium">RWF</div>
+                        <div class="currency-amount text-lg font-bold">0 Frw</div>
+                        <div class="currency-label text-xs text-gray-400">Rwandan Franc</div>
+                    </div>
+                    <div data-currency="EUR" class="currency-card p-3 rounded-xl text-center transition">
+                        <div class="currency-symbol text-sm font-medium">EUR</div>
+                        <div class="currency-amount text-lg font-bold">€0</div>
+                        <div class="currency-label text-xs text-gray-400">Euro</div>
+                    </div>
+                    <div data-currency="UGX" class="currency-card p-3 rounded-xl text-center transition">
+                        <div class="currency-symbol text-sm font-medium">UGX</div>
+                        <div class="currency-amount text-lg font-bold">0 USh</div>
+                        <div class="currency-label text-xs text-gray-400">Ugandan Shilling</div>
+                    </div>
+                    <div data-currency="NGN" class="currency-card p-3 rounded-xl text-center transition">
+                        <div class="currency-symbol text-sm font-medium">NGN</div>
+                        <div class="currency-amount text-lg font-bold">₦0</div>
+                        <div class="currency-label text-xs text-gray-400">Nigerian Naira</div>
+                    </div>
+                </div>
+                
+                <div id="pricingBadges" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <!-- Action Buttons: BUY & Share -->
+            <!-- Action Buttons -->
             <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
                 <button id="buyBtn" class="flex-1 bg-black text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition">
                     <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon> BUY NOW
@@ -221,6 +261,70 @@
     const accountId = urlParams.get('id');
     let currentAccount = null;
     let allAccounts = [];
+    let currentUSDPrice = 0;
+    let exchangeRates = {
+        USD: 1,
+        RWF: 1450,
+        EUR: 0.92,
+        UGX: 3700,
+        NGN: 1550
+    };
+    
+    // Fetch real exchange rates from API
+    async function fetchExchangeRates() {
+        try {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const data = await response.json();
+            if (data && data.rates) {
+                exchangeRates = {
+                    USD: 1,
+                    RWF: data.rates.RWF || 1450,
+                    EUR: data.rates.EUR || 0.92,
+                    UGX: data.rates.UGX || 3700,
+                    NGN: data.rates.NGN || 1550
+                };
+            }
+        } catch (error) {
+            console.log("Using fallback exchange rates");
+            // Keep fallback rates
+        }
+        updateAllCurrencies();
+    }
+    
+    function updateAllCurrencies() {
+        if (!currentUSDPrice) return;
+        
+        const currencies = [
+            { code: 'USD', symbol: '$', suffix: '', rate: 1, format: (v) => `$${v.toLocaleString()}` },
+            { code: 'RWF', symbol: '', suffix: ' Frw', rate: exchangeRates.RWF, format: (v) => `${Math.round(v).toLocaleString()} Frw` },
+            { code: 'EUR', symbol: '€', suffix: '', rate: exchangeRates.EUR, format: (v) => `€${v.toLocaleString()}` },
+            { code: 'UGX', symbol: '', suffix: ' USh', rate: exchangeRates.UGX, format: (v) => `${Math.round(v).toLocaleString()} USh` },
+            { code: 'NGN', symbol: '₦', suffix: '', rate: exchangeRates.NGN, format: (v) => `₦${Math.round(v).toLocaleString()}` }
+        ];
+        
+        currencies.forEach(currency => {
+            const convertedValue = currentUSDPrice * currency.rate;
+            const element = document.querySelector(`[data-currency="${currency.code}"] .currency-amount`);
+            if (element) {
+                if (currency.code === 'RWF' || currency.code === 'UGX') {
+                    element.textContent = `${Math.round(convertedValue).toLocaleString()}${currency.suffix}${currency.suffix ? '' : currency.suffix}`;
+                } else {
+                    element.textContent = currency.format(convertedValue);
+                }
+            }
+        });
+    }
+    
+    function setupCurrencySelector() {
+        const currencyCards = document.querySelectorAll('.currency-card');
+        currencyCards.forEach(card => {
+            card.addEventListener('click', () => {
+                currencyCards.forEach(c => c.classList.remove('currency-active'));
+                card.classList.add('currency-active');
+                // Visual feedback only - all currencies are already displayed
+            });
+        });
+    }
     
     if (!accountId) {
         document.getElementById('loadingState').classList.add('hidden');
@@ -228,6 +332,7 @@
     } else {
         loadAccount();
         loadAllAccountsForSuggestions();
+        fetchExchangeRates();
     }
     
     async function loadAllAccountsForSuggestions() {
@@ -303,7 +408,7 @@
         
         track.style.animation = 'none';
         track.offsetHeight;
-        track.style.animation = 'scrollSuggestions 100s linear infinite';
+        track.style.animation = 'scrollSuggestions 70s linear infinite';
     }
     
     async function loadAccount() {
@@ -316,8 +421,10 @@
             }
             
             currentAccount = { id: docSnap.id, ...docSnap.data() };
+            currentUSDPrice = currentAccount.finalPrice || currentAccount.originalPrice || 0;
             displayAccount(currentAccount);
-            
+            updateAllCurrencies();
+            setupCurrencySelector();
             updateUserProfile(currentAccount);
             
         } catch (error) {
@@ -361,6 +468,10 @@
             document.getElementById('originalPriceSmall').classList.add('hidden');
         }
         document.getElementById('finalPriceDisplay').innerHTML = `$${finalPrice.toLocaleString()}`;
+        
+        // Update USD display in currency grid
+        const usdElement = document.querySelector('[data-currency="USD"] .currency-amount');
+        if (usdElement) usdElement.textContent = `$${finalPrice.toLocaleString()}`;
         
         document.getElementById('detailNickname').innerText = account.nickname || '-';
         document.getElementById('detailFollowers').innerText = account.followers?.toLocaleString() || '0';
@@ -469,7 +580,8 @@
         const productName = currentAccount.nickname || 'Social Media Account';
         const followers = currentAccount.followers?.toLocaleString() || 'N/A';
         const platform = currentAccount.socialMedia || 'Unknown';
-        const price = currentAccount.finalPrice || currentAccount.originalPrice || 0;
+        const priceUSD = currentAccount.finalPrice || currentAccount.originalPrice || 0;
+        const priceRWF = Math.round(priceUSD * exchangeRates.RWF);
         const fullReferenceId = currentAccount.id;
         const category = currentAccount.category || 'Not specified';
         const country = currentAccount.country || 'Not specified';
@@ -481,7 +593,7 @@
             `• Followers: ${followers}%0A` +
             `• Category: ${category}%0A` +
             `• Country: ${country}%0A` +
-            `• Price: $${price.toLocaleString()}%0A` +
+            `• Price: $${priceUSD.toLocaleString()} USD / ${priceRWF.toLocaleString()} RWF%0A` +
             `• Reference ID: ${fullReferenceId}%0A%0A` +
             `I found this on Social Market and would like to proceed with the purchase. Please let me know the next steps.%0A%0A` +
             `Thank you! 🙏`;
