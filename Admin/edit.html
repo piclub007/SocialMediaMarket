@@ -77,19 +77,18 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, get, update, remove, child } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
         authDomain: "project-k21n.firebaseapp.com",
-        databaseURL: "https://project-k21n-default-rtdb.firebaseio.com",
         projectId: "project-k21n",
         storageBucket: "project-k21n.firebasestorage.app",
         messagingSenderId: "266081318769",
         appId: "1:266081318769:web:a7893c55b5b30a8dd768d0"
     };
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getFirestore(app);
     const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -102,10 +101,10 @@
     async function uploadToImgBB(file) { if(!file) return null; const fd = new FormData(); fd.append("image", file); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd }); const data = await res.json(); return data.success ? data.data.url : null; }
 
     async function loadAccount() {
-        const accountRef = ref(db, `marketplaceAccounts/${accountId}`);
-        const snapshot = await get(accountRef);
+        const accountRef = doc(db, 'marketplaceAccounts', accountId);
+        const snapshot = await getDoc(accountRef);
         if(!snapshot.exists()) { alert('Account not found'); window.location.href = 'admin.html'; return; }
-        currentData = snapshot.val();
+        currentData = snapshot.data();
         document.getElementById('docIdDisplay').innerHTML = `<iconify-icon icon="mdi:identifier" width="14" class="inline mr-1"></iconify-icon> ID: ${accountId}`;
         document.getElementById('nickname').value = currentData.nickname || '';
         document.getElementById('followers').value = currentData.followers || '';
@@ -122,42 +121,128 @@
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('editFormContainer').classList.remove('hidden');
     }
+    
     function showExistingImage(url, containerId, isCircle) { const container = document.getElementById(containerId); if(container) { const img = document.createElement('img'); img.src = url; img.className = isCircle ? 'image-preview-circle' : 'image-preview-rect'; container.appendChild(img); } }
 
-    async function fetchSettings() { try { const snap = await get(child(ref(db), 'adminSettings')); if(snap.exists()) { const data = snap.val(); countriesArray = data.countries || []; categoriesArray = data.categories || []; premadeFeaturesArray = data.premadeFeatures || []; } populateSelects(); renderPremadeFeatures(); } catch(e) { console.error(e); } }
-    function populateSelects() { const catSel = document.getElementById('categorySelect'); const countrySel = document.getElementById('countrySelect'); if(catSel) catSel.innerHTML = categoriesArray.length ? categoriesArray.map(c => `<option value="${c}" ${currentData.category === c ? 'selected' : ''}>${c}</option>`).join('') : '<option>General</option>'; if(countrySel) countrySel.innerHTML = countriesArray.length ? countriesArray.map(c => `<option value="${c}" ${currentData.country === c ? 'selected' : ''}>${c}</option>`).join('') : '<option>Global</option>'; }
-    function renderPremadeFeatures() { const container = document.getElementById('premadeFeaturesContainer'); if(container) { container.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature" data-feat="${f.replace(/"/g, '&quot;')}">+ ${f}</span>`).join(''); document.querySelectorAll('#premadeFeaturesContainer .chip-feature').forEach(el => { el.addEventListener('click', () => { const ta = document.getElementById('featuresText'); let val = ta.value; if(val && !val.endsWith('\n')) val += '\n'; ta.value = val + `• ${el.getAttribute('data-feat')}`; }); }); } }
+    async function fetchSettings() { 
+        try { 
+            const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
+            if(settingsDoc.exists()) { 
+                const data = settingsDoc.data(); 
+                countriesArray = data.countries || []; 
+                categoriesArray = data.categories || []; 
+                premadeFeaturesArray = data.premadeFeatures || []; 
+            } else {
+                countriesArray = []; categoriesArray = []; premadeFeaturesArray = [];
+                await setDoc(doc(db, 'adminSettings', 'config'), { countries: [], categories: [], premadeFeatures: [] });
+            }
+            populateSelects(); 
+            renderPremadeFeatures(); 
+        } catch(e) { console.error(e); } 
+    }
+    
+    function populateSelects() { 
+        const catSel = document.getElementById('categorySelect'); 
+        const countrySel = document.getElementById('countrySelect'); 
+        if(catSel) catSel.innerHTML = categoriesArray.length ? categoriesArray.map(c => `<option value="${c}" ${currentData.category === c ? 'selected' : ''}>${c}</option>`).join('') : '<option>General</option>'; 
+        if(countrySel) countrySel.innerHTML = countriesArray.length ? countriesArray.map(c => `<option value="${c}" ${currentData.country === c ? 'selected' : ''}>${c}</option>`).join('') : '<option>Global</option>'; 
+    }
+    
+    function renderPremadeFeatures() { 
+        const container = document.getElementById('premadeFeaturesContainer'); 
+        if(container) { 
+            container.innerHTML = premadeFeaturesArray.map(f => `<span class="chip-feature" data-feat="${f.replace(/"/g, '&quot;')}">+ ${f}</span>`).join(''); 
+            document.querySelectorAll('#premadeFeaturesContainer .chip-feature').forEach(el => { 
+                el.addEventListener('click', () => { 
+                    const ta = document.getElementById('featuresText'); 
+                    let val = ta.value; 
+                    if(val && !val.endsWith('\n')) val += '\n'; 
+                    ta.value = val + `• ${el.getAttribute('data-feat')}`; 
+                }); 
+            }); 
+        } 
+    }
 
     document.querySelectorAll('.upload-trigger').forEach(btn => { btn.addEventListener('click', () => { const targetId = btn.getAttribute('data-target'); document.getElementById(targetId)?.click(); }); });
-    function setupPreview(inputId, containerId, isCircle = false, multiple = false) { const input = document.getElementById(inputId); if(!input) return; input.addEventListener('change', (e) => { const container = document.getElementById(containerId); if(!container) return; if(!multiple) container.innerHTML = ''; const files = Array.from(e.target.files); if(!multiple && files[0]) { const reader = new FileReader(); reader.onload = (ev) => { const img = document.createElement('img'); img.src = ev.target.result; img.className = isCircle ? 'image-preview-circle' : 'image-preview-rect'; container.innerHTML = ''; container.appendChild(img); }; reader.readAsDataURL(files[0]); } else if(multiple) { files.slice(0,5).forEach(file => { const reader = new FileReader(); reader.onload = (ev) => { const img = document.createElement('img'); img.src = ev.target.result; img.className = 'image-preview-rect'; container.appendChild(img); }; reader.readAsDataURL(file); }); } }); }
-    setupPreview('profileImage', 'profilePreviewContainer', true, false); setupPreview('frontImage', 'frontPreviewContainer', false, false); setupPreview('dashboardImages', 'dashboardPreviewContainer', false, true); setupPreview('otherImages', 'otherPreviewContainer', false, true);
+    
+    function setupPreview(inputId, containerId, isCircle = false, multiple = false) { 
+        const input = document.getElementById(inputId); if(!input) return; 
+        input.addEventListener('change', (e) => { const container = document.getElementById(containerId); if(!container) return; if(!multiple) container.innerHTML = ''; const files = Array.from(e.target.files); if(!multiple && files[0]) { const reader = new FileReader(); reader.onload = (ev) => { const img = document.createElement('img'); img.src = ev.target.result; img.className = isCircle ? 'image-preview-circle' : 'image-preview-rect'; container.innerHTML = ''; container.appendChild(img); }; reader.readAsDataURL(files[0]); } else if(multiple) { files.slice(0,5).forEach(file => { const reader = new FileReader(); reader.onload = (ev) => { const img = document.createElement('img'); img.src = ev.target.result; img.className = 'image-preview-rect'; container.appendChild(img); }; reader.readAsDataURL(file); }); } }); 
+    }
+    setupPreview('profileImage', 'profilePreviewContainer', true, false); 
+    setupPreview('frontImage', 'frontPreviewContainer', false, false); 
+    setupPreview('dashboardImages', 'dashboardPreviewContainer', false, true); 
+    setupPreview('otherImages', 'otherPreviewContainer', false, true);
 
     document.getElementById('accountForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const updatedData = { nickname: document.getElementById('nickname').value, followers: parseInt(document.getElementById('followers').value), socialMedia: document.getElementById('socialMedia').value, category: document.getElementById('categorySelect').value, country: document.getElementById('countrySelect').value, originalPrice: parseFloat(document.getElementById('originalPrice').value), discountPrice: document.getElementById('discountPrice').value ? parseFloat(document.getElementById('discountPrice').value) : null, bargaining: document.getElementById('bargainingCheck').checked, acceptDiscount: document.getElementById('acceptDiscountCheck').checked };
+        const updatedData = { 
+            nickname: document.getElementById('nickname').value, 
+            followers: parseInt(document.getElementById('followers').value), 
+            socialMedia: document.getElementById('socialMedia').value, 
+            category: document.getElementById('categorySelect').value, 
+            country: document.getElementById('countrySelect').value, 
+            originalPrice: parseFloat(document.getElementById('originalPrice').value), 
+            discountPrice: document.getElementById('discountPrice').value ? parseFloat(document.getElementById('discountPrice').value) : null, 
+            bargaining: document.getElementById('bargainingCheck').checked, 
+            acceptDiscount: document.getElementById('acceptDiscountCheck').checked,
+            updatedAt: new Date().toISOString()
+        };
+        
         let finalPrice = updatedData.originalPrice, hasDiscount = false;
-        if(!updatedData.bargaining) { if((updatedData.acceptDiscount && updatedData.discountPrice) || (!updatedData.acceptDiscount && updatedData.discountPrice)) { finalPrice = updatedData.discountPrice; hasDiscount = true; } }
-        updatedData.finalPrice = updatedData.bargaining ? null : finalPrice; updatedData.hasDiscount = hasDiscount && !updatedData.bargaining;
-        const featuresRaw = document.getElementById('featuresText').value; updatedData.features = featuresRaw.split('\n').filter(l => l.trim()).map(l => l.replace(/^•\s*/, '').trim());
+        if(!updatedData.bargaining) { 
+            if((updatedData.acceptDiscount && updatedData.discountPrice) || (!updatedData.acceptDiscount && updatedData.discountPrice)) { 
+                finalPrice = updatedData.discountPrice; 
+                hasDiscount = true; 
+            } 
+        }
+        updatedData.finalPrice = updatedData.bargaining ? null : finalPrice; 
+        updatedData.hasDiscount = hasDiscount && !updatedData.bargaining;
         
-        const profileFile = document.getElementById('profileImage').files[0]; const frontFile = document.getElementById('frontImage').files[0];
-        const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []); const otherFiles = Array.from(document.getElementById('otherImages').files || []);
+        const featuresRaw = document.getElementById('featuresText').value; 
+        updatedData.features = featuresRaw.split('\n').filter(l => l.trim()).map(l => l.replace(/^•\s*/, '').trim());
         
-        document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Saving...';
+        const profileFile = document.getElementById('profileImage').files[0]; 
+        const frontFile = document.getElementById('frontImage').files[0];
+        const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []); 
+        const otherFiles = Array.from(document.getElementById('otherImages').files || []);
+        
+        document.getElementById('submitBtn').disabled = true; 
+        document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon> Saving...';
         const loadingDiv = document.createElement('div'); loadingDiv.className = 'loading-overlay'; loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-4 shadow-xl">Updating...</div>'; document.body.appendChild(loadingDiv);
+        
         try {
             const [profileUrl, frontUrl] = await Promise.all([profileFile ? uploadToImgBB(profileFile) : null, frontFile ? uploadToImgBB(frontFile) : null]);
-            const dashboardUrls = await Promise.all(dashboardFiles.map(f => uploadToImgBB(f))); const otherUrls = await Promise.all(otherFiles.map(f => uploadToImgBB(f)));
-            const images = { profile: profileUrl || currentData.images?.profile || null, front: frontUrl || currentData.images?.front || null, dashboard: [...(currentData.images?.dashboard || []), ...dashboardUrls].slice(0,5), other: [...(currentData.images?.other || []), ...otherUrls].slice(0,5) };
-            updatedData.images = images; updatedData.updatedAt = Date.now();
-            await update(ref(db, `marketplaceAccounts/${accountId}`), updatedData);
+            const dashboardUrls = await Promise.all(dashboardFiles.map(f => uploadToImgBB(f))); 
+            const otherUrls = await Promise.all(otherFiles.map(f => uploadToImgBB(f)));
+            const images = { 
+                profile: profileUrl || currentData.images?.profile || null, 
+                front: frontUrl || currentData.images?.front || null, 
+                dashboard: [...(currentData.images?.dashboard || []), ...dashboardUrls].slice(0,5), 
+                other: [...(currentData.images?.other || []), ...otherUrls].slice(0,5) 
+            };
+            updatedData.images = images;
+            const accountRef = doc(db, 'marketplaceAccounts', accountId);
+            await updateDoc(accountRef, updatedData);
             document.getElementById('formMessage').innerHTML = '<span class="text-emerald-600 text-sm">✅ Account updated! <a href="admin.html">Back to dashboard</a></span>';
-        } catch(err) { document.getElementById('formMessage').innerHTML = `<span class="text-red-500">❌ ${err.message}</span>`; }
-        finally { document.getElementById('submitBtn').disabled = false; document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:content-save" width="18"></iconify-icon> Save Changes'; loadingDiv.remove(); }
+        } catch(err) { 
+            document.getElementById('formMessage').innerHTML = `<span class="text-red-500">❌ ${err.message}</span>`; 
+        } finally { 
+            document.getElementById('submitBtn').disabled = false; 
+            document.getElementById('submitBtn').innerHTML = '<iconify-icon icon="mdi:content-save" width="18"></iconify-icon> Save Changes'; 
+            loadingDiv.remove(); 
+        }
     });
 
-    document.getElementById('deleteBtn').addEventListener('click', async () => { if(confirm('⚠️ PERMANENT DELETE: This action cannot be undone. Are you sure?')) { await remove(ref(db, `marketplaceAccounts/${accountId}`)); window.location.href = 'admin.html'; } });
-    await fetchSettings(); await loadAccount();
+    document.getElementById('deleteBtn').addEventListener('click', async () => { 
+        if(confirm('⚠️ PERMANENT DELETE: This action cannot be undone. Are you sure?')) { 
+            await deleteDoc(doc(db, 'marketplaceAccounts', accountId)); 
+            window.location.href = 'admin.html'; 
+        } 
+    });
+    
+    await fetchSettings(); 
+    await loadAccount();
 </script>
 </body>
 </html>
