@@ -37,9 +37,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.2s ease-out; }
         .chart-container { max-height: 280px; }
-        .metric-value { font-size: 28px; font-weight: 700; }
-        .trend-up { color: #10b981; }
-        .trend-down { color: #ef4444; }
         .payout-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
     </style>
 </head>
@@ -72,7 +69,7 @@
                 <button id="menuToggle" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100"><iconify-icon icon="mdi:menu" width="26"></iconify-icon></button>
             </div>
 
-            <!-- DASHBOARD PANEL with Advanced Analytics -->
+            <!-- DASHBOARD PANEL with Analytics -->
             <div id="dashboardPanel" class="max-w-7xl mx-auto fade-in">
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -80,14 +77,6 @@
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:sale" width="28" class="text-green-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Sold</p><p id="soldAccounts" class="text-2xl font-bold">0</p></div></div></div>
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:currency-usd" width="28" class="text-amber-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Active Listings</p><p id="activeAccounts" class="text-2xl font-bold">0</p></div></div></div>
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:trending-up" width="28" class="text-blue-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Value</p><p id="totalValue" class="text-2xl font-bold">$0</p></div></div></div>
-                </div>
-
-                <!-- Money Analytics Row -->
-                <div class="grid md:grid-cols-4 gap-5 mb-6">
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Total Revenue</p><p id="totalRevenue" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:cash" width="28" class="text-emerald-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">From all sold accounts</span></div></div>
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Avg. Sold Price</p><p id="avgSoldPrice" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:chart-line" width="28" class="text-purple-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Per sold account</span></div></div>
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Highest Sale</p><p id="highestSale" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:trophy" width="28" class="text-yellow-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">Most expensive sold</span></div></div>
-                    <div class="stat-card p-5"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs uppercase">Est. Platform Fee</p><p id="platformFee" class="text-2xl font-bold">$0</p></div><iconify-icon icon="mdi:percent-box" width="28" class="text-orange-600"></iconify-icon></div><div class="mt-2"><span class="text-xs text-gray-400">10% of total revenue</span></div></div>
                 </div>
 
                 <!-- Charts Row -->
@@ -134,13 +123,19 @@
                 </div>
             </div>
 
-            <!-- REQUESTS PANEL (Redirect) -->
-            <div id="requestsPanel" class="max-w-4xl mx-auto hidden fade-in">
-                <div class="form-card p-8 text-center">
-                    <iconify-icon icon="mdi:message-processing" width="64" class="text-gray-300 mx-auto mb-4"></iconify-icon>
-                    <h3 class="text-xl font-semibold mb-2">Customer Requests</h3>
-                    <p class="text-gray-500 mb-6">Manage all buyer inquiries and bargaining requests</p>
-                    <button id="redirectRequestsBtn" class="btn-primary px-8 py-3 text-white font-medium">Open Requests Dashboard →</button>
+            <!-- REQUESTS PANEL (For sellers who want to sell their accounts) -->
+            <div id="requestsPanel" class="max-w-5xl mx-auto hidden fade-in">
+                <div class="form-card p-6 md:p-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <iconify-icon icon="mdi:message-processing" width="32" class="text-black"></iconify-icon>
+                        <h2 class="text-2xl font-semibold">Seller Requests</h2>
+                    </div>
+                    <p class="text-gray-500 mb-6">People who want to sell their social media accounts submit requests here. Review, approve, or reject each request.</p>
+                    
+                    <div id="requestsList" class="space-y-4 max-h-[600px] overflow-y-auto">
+                        <!-- Requests will be loaded dynamically -->
+                        <div class="text-center text-gray-400 py-8">Loading seller requests...</div>
+                    </div>
                 </div>
             </div>
 
@@ -160,7 +155,6 @@
                     <h2 class="text-2xl font-semibold mb-2 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="28"></iconify-icon> Payout & Earnings</h2>
                     <p class="text-gray-400 text-sm mb-6">Financial overview of all sold accounts and revenue calculation</p>
                     
-                    <!-- Main Payout Cards -->
                     <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <div class="payout-card rounded-2xl p-6 text-white">
                             <p class="text-gray-300 text-sm mb-1">Total Earnings</p>
@@ -174,14 +168,12 @@
                         </div>
                     </div>
 
-                    <!-- Detailed Money Analytics -->
                     <div class="grid md:grid-cols-3 gap-5 mb-6">
                         <div class="stat-card p-4"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs">Total Sold Value</p><p id="payoutSoldValue" class="text-xl font-bold">$0</p></div><iconify-icon icon="mdi:cart-check" width="24" class="text-green-600"></iconify-icon></div></div>
                         <div class="stat-card p-4"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs">Platform Fee (10%)</p><p id="payoutFeeAmount" class="text-xl font-bold">$0</p></div><iconify-icon icon="mdi:bank" width="24" class="text-orange-600"></iconify-icon></div></div>
                         <div class="stat-card p-4"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-xs">Number of Sold</p><p id="payoutSoldCount" class="text-xl font-bold">0</p></div><iconify-icon icon="mdi:sale" width="24" class="text-purple-600"></iconify-icon></div></div>
                     </div>
 
-                    <!-- Sold Accounts List -->
                     <h3 class="font-semibold text-gray-800 mb-3 mt-4 flex items-center gap-2"><iconify-icon icon="mdi:history" width="20"></iconify-icon> Sold Accounts History</h3>
                     <div id="soldAccountsList" class="space-y-2 max-h-96 overflow-y-auto"></div>
                 </div>
@@ -192,7 +184,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -206,6 +198,7 @@
     const db = getFirestore(app);
 
     let allAccounts = [];
+    let sellerRequests = [];
     let searchTimeout = null;
     let quickSearchTimeout = null;
     let categoriesArray = [], countriesArray = [], premadeFeaturesArray = [];
@@ -221,6 +214,73 @@
         renderAccountsGrid();
     }
 
+    async function loadSellerRequests() {
+        try {
+            const requestsSnapshot = await getDocs(collection(db, 'sellerRequests'));
+            sellerRequests = [];
+            requestsSnapshot.forEach(doc => { sellerRequests.push({ id: doc.id, ...doc.data() }); });
+            renderRequestsList();
+        } catch(e) {
+            console.log("No requests collection yet, creating sample or empty");
+            sellerRequests = [];
+            renderRequestsList();
+        }
+    }
+
+    function renderRequestsList() {
+        const container = document.getElementById('requestsList');
+        if(!container) return;
+        
+        if(sellerRequests.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-gray-400 py-12">
+                    <iconify-icon icon="mdi:inbox-outline" width="48" class="mx-auto mb-3"></iconify-icon>
+                    <p>No seller requests yet</p>
+                    <p class="text-xs mt-1">When sellers submit their accounts for review, they will appear here</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = sellerRequests.map(req => `
+            <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                <div class="flex flex-wrap justify-between items-start gap-3">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="font-semibold text-gray-800">${escapeHtml(req.sellerName || req.sellerEmail || 'Anonymous')}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full ${req.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : req.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${req.status || 'pending'}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Account:</span> ${escapeHtml(req.accountName || req.nickname || 'N/A')}</p>
+                        <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Platform:</span> ${escapeHtml(req.platform || req.socialMedia || 'N/A')}</p>
+                        <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Followers:</span> ${req.followers?.toLocaleString() || 'N/A'}</p>
+                        <p class="text-sm text-gray-600"><span class="font-medium">Asking Price:</span> $${(req.price || req.askingPrice || 0).toLocaleString()}</p>
+                        ${req.message ? `<p class="text-sm text-gray-500 mt-2 italic">"${escapeHtml(req.message)}"</p>` : ''}
+                    </div>
+                    <div class="flex gap-2">
+                        ${req.status !== 'approved' ? `<button class="approve-request bg-green-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-green-700 transition" data-id="${req.id}"><iconify-icon icon="mdi:check" width="16" class="inline mr-1"></iconify-icon> Approve</button>` : ''}
+                        ${req.status !== 'rejected' ? `<button class="reject-request bg-red-500 text-white px-4 py-2 rounded-xl text-sm hover:bg-red-600 transition" data-id="${req.id}"><iconify-icon icon="mdi:close" width="16" class="inline mr-1"></iconify-icon> Reject</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.approve-request').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = btn.getAttribute('data-id');
+                await updateDoc(doc(db, 'sellerRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
+                await loadSellerRequests();
+            });
+        });
+        
+        document.querySelectorAll('.reject-request').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = btn.getAttribute('data-id');
+                await updateDoc(doc(db, 'sellerRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
+                await loadSellerRequests();
+            });
+        });
+    }
+
     function updateDashboardStats() {
         const total = allAccounts.length;
         const sold = allAccounts.filter(a => a.status === 'sold').length;
@@ -230,13 +290,6 @@
         document.getElementById('soldAccounts').innerText = sold;
         document.getElementById('activeAccounts').innerText = active;
         document.getElementById('totalValue').innerText = '$' + totalValue.toLocaleString();
-        
-        const activeAccounts = allAccounts.filter(a => a.status !== 'sold');
-        const avgPrice = activeAccounts.length ? activeAccounts.reduce((s, a) => s + (a.finalPrice || a.originalPrice || 0), 0) / activeAccounts.length : 0;
-        
-        const conversionRate = total ? ((sold / total) * 100).toFixed(1) : 0;
-        
-        const uniquePlatforms = new Set(allAccounts.map(a => a.socialMedia).filter(Boolean));
     }
 
     function updatePayoutAnalytics() {
@@ -251,17 +304,6 @@
         document.getElementById('payoutFeeAmount').innerText = '$' + platformFee.toLocaleString();
         document.getElementById('payoutSoldCount').innerText = soldAccounts.length;
         
-        // Additional money metrics for dashboard
-        const totalRevenue = totalSoldValue;
-        const avgSoldPrice = soldAccounts.length ? totalSoldValue / soldAccounts.length : 0;
-        const highestSale = soldAccounts.length ? Math.max(...soldAccounts.map(a => a.finalPrice || a.originalPrice || 0)) : 0;
-        
-        document.getElementById('totalRevenue').innerText = '$' + totalRevenue.toLocaleString();
-        document.getElementById('avgSoldPrice').innerText = '$' + Math.round(avgSoldPrice).toLocaleString();
-        document.getElementById('highestSale').innerText = '$' + highestSale.toLocaleString();
-        document.getElementById('platformFee').innerText = '$' + (totalRevenue * 0.10).toLocaleString();
-        
-        // Render sold accounts list
         const soldList = document.getElementById('soldAccountsList');
         if(soldList) {
             if(soldAccounts.length === 0) {
@@ -278,7 +320,6 @@
     }
 
     function updateAnalytics() {
-        // Platform distribution
         const platformMap = new Map();
         allAccounts.forEach(acc => { const platform = acc.socialMedia || 'Other'; platformMap.set(platform, (platformMap.get(platform) || 0) + 1); });
         const platforms = Array.from(platformMap.keys());
@@ -288,7 +329,6 @@
         const platformCtx = document.getElementById('platformChart').getContext('2d');
         platformChart = new Chart(platformCtx, { type: 'doughnut', data: { labels: platforms, datasets: [{ data: platformCounts, backgroundColor: ['#000000', '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } } });
         
-        // Price distribution (buckets)
         const activeAccounts = allAccounts.filter(a => a.status !== 'sold');
         const priceRanges = [{ min: 0, max: 500, label: '$0-500' }, { min: 500, max: 1000, label: '$500-1k' }, { min: 1000, max: 2000, label: '$1k-2k' }, { min: 2000, max: 5000, label: '$2k-5k' }, { min: 5000, max: Infinity, label: '$5k+' }];
         const rangeCounts = priceRanges.map(range => activeAccounts.filter(a => { const price = a.finalPrice || a.originalPrice || 0; return price >= range.min && price < range.max; }).length);
@@ -296,12 +336,10 @@
         const priceCtx = document.getElementById('priceChart').getContext('2d');
         priceChart = new Chart(priceCtx, { type: 'bar', data: { labels: priceRanges.map(r => r.label), datasets: [{ label: 'Number of Accounts', data: rangeCounts, backgroundColor: '#000000', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
         
-        // Top 5 most valuable accounts
         const topAccounts = [...activeAccounts].sort((a,b) => (b.finalPrice || b.originalPrice || 0) - (a.finalPrice || a.originalPrice || 0)).slice(0,5);
         const topList = document.getElementById('topAccountsList');
         if(topList) topList.innerHTML = topAccounts.map((acc, idx) => `<div class="flex justify-between items-center p-2 bg-gray-50 rounded-xl"><div class="flex items-center gap-2"><span class="font-bold text-gray-400 w-6">${idx+1}</span><span class="font-medium">${escapeHtml(acc.nickname)}</span><span class="text-xs text-gray-400">${acc.socialMedia || ''}</span></div><span class="font-bold">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</span></div>`).join('') || '<div class="text-gray-400 text-center py-4">No active accounts</div>';
         
-        // Recent activity (last 5 created)
         const recent = [...allAccounts].sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0,5);
         const recentList = document.getElementById('recentActivityList');
         if(recentList) recentList.innerHTML = recent.map(acc => `<div class="flex justify-between items-center p-2 border-b border-gray-50"><div><span class="font-medium text-sm">${escapeHtml(acc.nickname)}</span><p class="text-xs text-gray-400">${acc.createdAt ? new Date(acc.createdAt).toLocaleDateString() : 'Recently'}</p></div><span class="text-xs ${acc.status === 'sold' ? 'text-red-500' : 'text-green-500'}">${acc.status === 'sold' ? 'SOLD' : 'Active'}</span></div>`).join('') || '<div class="text-gray-400 text-center py-4">No recent activity</div>';
@@ -414,6 +452,7 @@
         if(tabId === 'accounts') renderAccountsGrid();
         if(tabId === 'accountId') document.getElementById('quickSearchInput').value = '';
         if(tabId === 'payout') updatePayoutAnalytics();
+        if(tabId === 'requests') loadSellerRequests();
     }
     document.getElementById('tab-dashboard')?.addEventListener('click', () => switchTab('dashboard'));
     document.getElementById('tab-accounts')?.addEventListener('click', () => switchTab('accounts'));
@@ -423,7 +462,6 @@
     document.getElementById('tab-settings')?.addEventListener('click', () => { switchTab('settings'); fetchSettings(); });
     document.getElementById('tab-payout')?.addEventListener('click', () => { switchTab('payout'); updatePayoutAnalytics(); });
     document.getElementById('redirectAddBtn')?.addEventListener('click', () => { window.location.href = 'add.html'; });
-    document.getElementById('redirectRequestsBtn')?.addEventListener('click', () => { window.location.href = 'request.html'; });
 
     const menuToggle = document.getElementById('menuToggle'), mobileSidebar = document.getElementById('mobileSidebar'), overlayBg = document.getElementById('overlayBg'), closeSidebar = document.getElementById('closeSidebarBtn');
     function openSidebar() { mobileSidebar.classList.add('open'); overlayBg.classList.add('active'); }
