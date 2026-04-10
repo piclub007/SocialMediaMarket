@@ -27,7 +27,7 @@
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        /* Suggestions Carousel */
+        /* Suggestions Carousel - Speed 1.2x (faster) */
         .suggestions-container {
             overflow: hidden;
             position: relative;
@@ -36,7 +36,7 @@
         .suggestions-track {
             display: flex;
             width: fit-content;
-            animation: scrollSuggestions 180s linear infinite;
+            animation: scrollSuggestions 100s linear infinite;
         }
         .suggestions-track:hover {
             animation-play-state: paused;
@@ -59,6 +59,31 @@
         .suggestion-item:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12);
+        }
+        
+        /* Buy Modal */
+        .buy-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            padding: 16px;
+        }
+        .buy-modal-content {
+            background: white;
+            border-radius: 32px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @media (max-width: 640px) {
+            .buy-modal-content { border-radius: 24px; margin: 16px; }
+            .suggestion-item { width: 220px; }
         }
     </style>
 </head>
@@ -147,10 +172,10 @@
                 <div id="pricingBadges" class="flex flex-wrap gap-2 mb-3"></div>
             </div>
 
-            <!-- Action Buttons: Buy & Share -->
+            <!-- Action Buttons: BUY & Share -->
             <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
-                <button id="buyBtn" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition">
-                    <iconify-icon icon="mdi:whatsapp" width="18"></iconify-icon> Buy on WhatsApp
+                <button id="buyBtn" class="flex-1 bg-black text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition">
+                    <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon> BUY NOW
                 </button>
                 <button id="shareBtn" class="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition flex items-center gap-2">
                     <iconify-icon icon="mdi:share-variant" width="18"></iconify-icon> Share
@@ -224,7 +249,6 @@
     function renderSuggestions() {
         if (allAccounts.length === 0) return;
         
-        // Random selection for suggestions
         const shuffled = [...allAccounts];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -279,7 +303,7 @@
         
         track.style.animation = 'none';
         track.offsetHeight;
-        track.style.animation = 'scrollSuggestions 180s linear infinite';
+        track.style.animation = 'scrollSuggestions 100s linear infinite';
     }
     
     async function loadAccount() {
@@ -294,7 +318,6 @@
             currentAccount = { id: docSnap.id, ...docSnap.data() };
             displayAccount(currentAccount);
             
-            // Update user profile for recommendations
             updateUserProfile(currentAccount);
             
         } catch (error) {
@@ -320,7 +343,6 @@
     function displayAccount(account) {
         const isSold = account.status === 'sold';
         
-        // Basic Info
         document.getElementById('accountNickname').innerText = account.nickname || 'Unnamed';
         document.getElementById('accountPlatform').innerHTML = `<iconify-icon icon="mdi:earth" width="14"></iconify-icon> ${account.socialMedia || 'Unknown'}`;
         
@@ -329,7 +351,6 @@
             '<span class="status-badge status-available"><iconify-icon icon="mdi:check-circle" width="14"></iconify-icon> AVAILABLE</span>';
         document.getElementById('accountStatusBadge').innerHTML = statusBadge;
         
-        // Pricing - Simplified (only final price, original price shown small above if exists)
         const finalPrice = account.finalPrice || account.originalPrice || 0;
         const originalPrice = account.originalPrice || 0;
         
@@ -341,14 +362,12 @@
         }
         document.getElementById('finalPriceDisplay').innerHTML = `$${finalPrice.toLocaleString()}`;
         
-        // Detail fields (without document ID)
         document.getElementById('detailNickname').innerText = account.nickname || '-';
         document.getElementById('detailFollowers').innerText = account.followers?.toLocaleString() || '0';
         document.getElementById('detailSocialMedia').innerText = account.socialMedia || '-';
         document.getElementById('detailCategory').innerText = account.category || '-';
         document.getElementById('detailCountry').innerText = account.country || '-';
         
-        // Pricing Badges
         const badgesContainer = document.getElementById('pricingBadges');
         badgesContainer.innerHTML = '';
         if (account.bargaining) {
@@ -364,7 +383,6 @@
             badgesContainer.innerHTML += '<span class="feature-badge bg-red-50 text-red-600"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> Sold Out</span>';
         }
         
-        // Features
         const featuresList = document.getElementById('featuresList');
         const noFeaturesMsg = document.getElementById('noFeaturesMsg');
         if (account.features && account.features.length > 0) {
@@ -375,7 +393,6 @@
             noFeaturesMsg.classList.remove('hidden');
         }
         
-        // Image Gallery
         const gallery = document.getElementById('imageGallery');
         const noImagesMsg = document.getElementById('noImagesMsg');
         const allImages = [];
@@ -399,7 +416,6 @@
             noImagesMsg.classList.remove('hidden');
         }
         
-        // Show content, hide loading
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('contentState').classList.remove('hidden');
     }
@@ -425,7 +441,7 @@
         });
     }
     
-    // Share button - copies link and opens share dialog
+    // Share button
     document.getElementById('shareBtn')?.addEventListener('click', async () => {
         const shareUrl = window.location.href;
         try {
@@ -440,13 +456,12 @@
                 alert('Link copied to clipboard!');
             }
         } catch (err) {
-            // Fallback
             await navigator.clipboard.writeText(shareUrl);
             alert('Link copied to clipboard!');
         }
     });
     
-    // Buy button - WhatsApp with product details
+    // BUY button - Opens WhatsApp with complete details
     document.getElementById('buyBtn')?.addEventListener('click', () => {
         if (!currentAccount) return;
         
@@ -455,15 +470,19 @@
         const followers = currentAccount.followers?.toLocaleString() || 'N/A';
         const platform = currentAccount.socialMedia || 'Unknown';
         const price = currentAccount.finalPrice || currentAccount.originalPrice || 0;
-        const docIdShort = currentAccount.id.substring(0, 8);
+        const fullReferenceId = currentAccount.id;
+        const category = currentAccount.category || 'Not specified';
+        const country = currentAccount.country || 'Not specified';
         
         const message = `Hello! I'm interested in buying this account from Social Market.%0A%0A` +
-            `📱 *Account Details:*%0A` +
+            `📱 *ACCOUNT DETAILS:*%0A` +
             `• Nickname: ${productName}%0A` +
             `• Platform: ${platform}%0A` +
             `• Followers: ${followers}%0A` +
+            `• Category: ${category}%0A` +
+            `• Country: ${country}%0A` +
             `• Price: $${price.toLocaleString()}%0A` +
-            `• Reference ID: ${docIdShort}...%0A%0A` +
+            `• Reference ID: ${fullReferenceId}%0A%0A` +
             `I found this on Social Market and would like to proceed with the purchase. Please let me know the next steps.%0A%0A` +
             `Thank you! 🙏`;
         
