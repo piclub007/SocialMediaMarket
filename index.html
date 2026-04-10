@@ -58,70 +58,11 @@
         .pagination-btn { transition: all 0.2s; }
         .pagination-btn:hover:not(:disabled) { background: #111111; color: white; }
         .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        
-        /* Splash Screen */
-        .splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #ffffff;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease-out;
-        }
-        .splash-content {
-            text-align: center;
-            animation: fadeInUp 0.6s ease-out;
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .main-content {
-            opacity: 0;
-            transition: opacity 0.6s ease-in;
-        }
-        .main-content.visible {
-            opacity: 1;
-        }
-        .greeting-text {
-            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+        .greeting-text { background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     </style>
 </head>
 <body>
 
-<!-- Splash Screen -->
-<div id="splashScreen" class="splash-screen">
-    <div class="splash-content">
-        <div class="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <iconify-icon icon="ri:exchange-dollar-line" width="48" class="text-white"></iconify-icon>
-        </div>
-        <h2 id="greetingMessage" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Good Day!</h2>
-        <p class="text-gray-400 text-sm">Loading your marketplace experience...</p>
-        <div class="mt-6 flex justify-center gap-2">
-            <div class="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-            <div class="w-2 h-2 bg-black rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
-            <div class="w-2 h-2 bg-black rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
-        </div>
-    </div>
-</div>
-
-<!-- Main Content (initially hidden) -->
-<div id="mainContent" class="main-content" style="opacity: 0;">
 <div class="max-w-7xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
     <!-- HEADER with Greeting on left side -->
     <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
@@ -256,7 +197,6 @@
         </div>
     </div>
 </footer>
-</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -294,7 +234,10 @@
     }
     
     const greeting = getTimeBasedGreeting();
-    document.getElementById('greetingMessage').innerText = greeting;
+    const headerGreeting = document.getElementById('headerGreeting');
+    if (headerGreeting) {
+        headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
+    }
     
     // AI Recommendation Engine using localStorage
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
@@ -614,31 +557,8 @@
     document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     
-    // Start loading data and show splash screen for minimum 3 seconds
-    const splashScreen = document.getElementById('splashScreen');
-    const mainContent = document.getElementById('mainContent');
-    const headerGreeting = document.getElementById('headerGreeting');
-    
-    // Set header greeting
-    headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
-    
-    // Start loading data in background
-    const loadPromise = loadAccounts();
-    
-    // Minimum 3 seconds splash display
-    const startTime = Date.now();
-    const minSplashTime = 3000;
-    
-    Promise.all([
-        loadPromise,
-        new Promise(resolve => setTimeout(resolve, minSplashTime))
-    ]).then(() => {
-        splashScreen.style.opacity = '0';
-        setTimeout(() => {
-            splashScreen.style.display = 'none';
-            mainContent.classList.add('visible');
-        }, 800);
-    });
+    // Load everything immediately
+    loadAccounts();
 </script>
 </body>
 </html>
