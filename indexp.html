@@ -786,12 +786,13 @@
                     </div>
                     <img src="${frontImg}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1a1a/666?text=No+Image'">
                     <div class="movie-overlay">
-                        <div class="movie-followers">
-                            <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
-                            <span>${acc.followers?.toLocaleString() || 0}</span>
-                        </div>
-                        <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
-                    </div>
+    <div class="movie-followers">
+        <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
+        <span>${acc.followers?.toLocaleString() || 0}</span>
+    </div>
+    <div class="font-medium text-white text-sm my-1">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</div>
+    <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
+</div>
                 </div>
             `;
         }).join('');
