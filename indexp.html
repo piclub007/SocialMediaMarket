@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Social Market — Buy & Sell Social Media Accounts</title>
+    <title>Imbuga Store — Gura & Gurisha Konti za Social Media</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <!-- Open Graph / Social Media Meta Tags -->
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Imbuga Store - Buy & Sell Social Media Accounts" />
-<meta property="og:description" content="The trusted marketplace to buy and sell Instagram, TikTok, YouTube, LinkedIn, and X accounts. Secure escrow, verified sellers, instant transactions." />
-<meta property="og:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://imbuga.vercel.app/" />
-<meta property="og:site_name" content="Imbuga Store" />
-<meta property="og:locale" content="en_US" />
-
-<!-- Twitter Card (for better Twitter sharing) -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Imbuga Store - Buy & Sell Social Media Accounts" />
-<meta name="twitter:description" content="The trusted marketplace to buy and sell social media accounts. Secure, fast, and verified." />
-<meta name="twitter:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
-
-<!-- Additional SEO / Social -->
-<meta name="description" content="Imbuga Store - Buy and sell social media accounts safely. Instagram, TikTok, YouTube, LinkedIn, X. Best prices, verified sellers, escrow protection." />
-<link rel="canonical" href="https://imbuga.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Imbuga Store - Gura & Gurisha Konti za Social Media" />
+    <meta property="og:description" content="Isoko ryizewe kugura no kugurisha konti za Instagram, TikTok, YouTube, LinkedIn, na X. Ibizamini byizewe, abagurisha bemejwe." />
+    <meta property="og:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://imbuga.vercel.app/" />
+    <meta property="og:site_name" content="Imbuga Store" />
+    <meta property="og:locale" content="rw_RW" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Imbuga Store - Gura & Gurisha Konti za Social Media" />
+    <meta name="twitter:description" content="Isoko ryizewe kugura no kugurisha konti za social media. Ibyihuse, bifite umutekano." />
+    <meta name="twitter:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
+    <meta name="description" content="Imbuga Store - Gura kandi ugurishe konti za social media mu mutekano. Instagram, TikTok, YouTube, LinkedIn, X. Ibiciro byiza." />
+    <link rel="canonical" href="https://imbuga.vercel.app/" />
     <style>
         * { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #050505; -webkit-tap-highlight-color: transparent; }
@@ -42,299 +38,89 @@
         .status-available { background: #10b981; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         .status-sold { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 20px; }
         
-        /* Featured Carousel - 1 item at a time, sharp edges, smooth slide, 3:5 ratio, smaller width */
-        .featured-carousel {
-            position: relative;
-            width: 100%;
-            max-width: 240px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-        .featured-track {
-            display: flex;
-            transition: transform 0.4s ease-in-out;
-        }
-        .featured-item {
-            flex: 0 0 100%;
-            padding: 0 8px;
-            cursor: pointer;
-        }
-        .featured-image {
-            width: 100%;
-            aspect-ratio: 4 / 6;
-            object-fit: center;
-            background: #1a1a1a;
-            border-radius: 0;
-        }
-        .featured-followers {
-            text-align: center;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #e5e5e5;
-        }
+        /* Featured Carousel */
+        .featured-carousel { position: relative; width: 100%; max-width: 240px; margin: 0 auto; overflow: hidden; }
+        .featured-track { display: flex; transition: transform 0.4s ease-in-out; }
+        .featured-item { flex: 0 0 100%; padding: 0 8px; cursor: pointer; }
+        .featured-image { width: 100%; aspect-ratio: 4 / 6; object-fit: center; background: #1a1a1a; border-radius: 0; }
+        .featured-followers { text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 500; color: #e5e5e5; }
         
-        /* Suggestions carousel - 1.7x speed (60s loop) */
-        .suggestions-wrapper {
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-        }
-        .suggestions-track {
-            display: flex;
-            width: fit-content;
-            animation: scrollSuggestions 60s linear infinite;
-        }
-        .suggestions-track:hover {
-            animation-play-state: paused;
-        }
-        @keyframes scrollSuggestions {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .suggestion-item {
-            flex: 0 0 auto;
-            width: 270px;
-            margin-right: 14px;
-            background: #0f0f0f;
-            border-radius: 16px;
-            padding: 12px;
-            border: 1px solid #222222;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .suggestion-item:active {
-            transform: scale(0.98);
-        }
+        /* Suggestions carousel */
+        .suggestions-wrapper { overflow: hidden; position: relative; width: 100%; }
+        .suggestions-track { display: flex; width: fit-content; animation: scrollSuggestions 60s linear infinite; }
+        .suggestions-track:hover { animation-play-state: paused; }
+        @keyframes scrollSuggestions { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .suggestion-item { flex: 0 0 auto; width: 270px; margin-right: 14px; background: #0f0f0f; border-radius: 16px; padding: 12px; border: 1px solid #222222; transition: all 0.2s; cursor: pointer; }
+        .suggestion-item:active { transform: scale(0.98); }
         
-        .filter-scroll {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            white-space: nowrap;
-            scrollbar-width: none;
-        }
-        .filter-scroll::-webkit-scrollbar {
-            display: none;
-        }
+        .filter-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; scrollbar-width: none; }
+        .filter-scroll::-webkit-scrollbar { display: none; }
         
-        .btn-explore, .btn-sell {
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-        .btn-explore:active, .btn-sell:active {
-            transform: scale(0.97);
-        }
+        .btn-explore, .btn-sell { transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; }
+        .btn-explore:active, .btn-sell:active { transform: scale(0.97); }
         
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        html { scroll-behavior: smooth; }
 
         /* Custom black theme overrides */
-        input, select, .bg-white, .border-gray-200, .border-gray-300 {
-            background-color: #0f0f0f !important;
-            border-color: #2a2a2a !important;
-            color: #e5e5e5 !important;
-        }
-        input::placeholder, select {
-            color: #6b6b6b !important;
-        }
-        .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600 {
-            color: #f0f0f0 !important;
-        }
-        .text-gray-500, .text-gray-400, .text-gray-300 {
-            color: #a0a0a0 !important;
-        }
-        .bg-black {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
-        .bg-black.text-white, .bg-black .text-white {
-            color: #000000 !important;
-        }
-        button.bg-black {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
-        .btn-sell.border.border-gray-300 {
-            border-color: #333333 !important;
-            background-color: #0f0f0f !important;
-            color: #e5e5e5 !important;
-        }
-        .btn-sell.border.border-gray-300:hover {
-            background-color: #1a1a1a !important;
-        }
-        .border-t.border-gray-200 {
-            border-top-color: #222222 !important;
-        }
-        .bg-gray-100 {
-            background-color: #1a1a1a !important;
-        }
-        .bg-white\/70 {
-            background-color: rgba(15, 15, 15, 0.7) !important;
-        }
-        .glass-card .border-t.border-gray-50 {
-            border-top-color: #1e1e1e !important;
-        }
-        .glass-card .text-gray-600 {
-            color: #c0c0c0 !important;
-        }
-        footer .text-gray-400, footer .text-gray-300 {
-            color: #6b6b6b !important;
-        }
-        footer a:hover {
-            color: #ffffff !important;
-        }
-        .bg-gradient-to-r.from-gray-900.to-gray-600 {
-            background-image: linear-gradient(to right, #ffffff, #aaaaaa) !important;
-        }
-        .bg-clip-text.text-transparent {
-            color: transparent !important;
-        }
-        .bg-white.rounded-xl.border.border-gray-200, .bg-white.rounded-xl {
-            background-color: #0f0f0f !important;
-            border-color: #2a2a2a !important;
-        }
-        select option {
-            background-color: #0f0f0f;
-            color: #e5e5e5;
-        }
-        .glass-card .font-semibold.text-gray-800 {
-            color: #f0f0f0 !important;
-        }
-        .glass-card .text-gray-400, .glass-card .text-gray-500 {
-            color: #9a9a9a !important;
-        }
-        .text-amber-500 {
-            color: #fbbf24 !important;
-        }
-        .iconify-icon.text-gray-400, .iconify-icon.text-gray-500, .iconify-icon.text-gray-600 {
-            color: #8a8a8a !important;
-        }
-        .bg-black.rounded-xl {
-            background-color: #ffffff !important;
-        }
-        .bg-black.rounded-xl iconify-icon {
-            color: #000000 !important;
-        }
-        .btn-explore.bg-black {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
-        button#prevPageM, button#nextPageM {
-            background-color: #0f0f0f !important;
-            border-color: #2a2a2a !important;
-            color: #e5e5e5 !important;
-        }
-        button#prevPageM:disabled, button#nextPageM:disabled {
-            opacity: 0.4;
-        }
-        .bg-white.rounded-xl.border.border-gray-200.px-3.py-2 {
-            background-color: #0f0f0f !important;
-        }
-        input:focus, select:focus {
-            border-color: #ffffff !important;
-            outline: none;
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
-        }
-        .w-10.h-10.bg-black.rounded-xl {
-            background-color: #ffffff !important;
-        }
-        .w-10.h-10.bg-black.rounded-xl iconify-icon {
-            color: #000000 !important;
-        }
-        .view-details-btn-m.bg-black {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
-        .suggestion-item .font-semibold.text-sm {
-            color: #f0f0f0 !important;
-        }
-        .suggestion-item .text-xs.text-gray-400 {
-            color: #aaa !important;
-        }
-        .suggestion-item .font-bold.text-sm {
-            color: #ffffff !important;
-        }
+        input, select, .bg-white, .border-gray-200, .border-gray-300 { background-color: #0f0f0f !important; border-color: #2a2a2a !important; color: #e5e5e5 !important; }
+        input::placeholder, select { color: #6b6b6b !important; }
+        .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600 { color: #f0f0f0 !important; }
+        .text-gray-500, .text-gray-400, .text-gray-300 { color: #a0a0a0 !important; }
+        .bg-black { background-color: #ffffff !important; color: #000000 !important; }
+        .bg-black.text-white, .bg-black .text-white { color: #000000 !important; }
+        button.bg-black { background-color: #ffffff !important; color: #000000 !important; }
+        .btn-sell.border.border-gray-300 { border-color: #333333 !important; background-color: #0f0f0f !important; color: #e5e5e5 !important; }
+        .btn-sell.border.border-gray-300:hover { background-color: #1a1a1a !important; }
+        .border-t.border-gray-200 { border-top-color: #222222 !important; }
+        .bg-gray-100 { background-color: #1a1a1a !important; }
+        .bg-white\/70 { background-color: rgba(15, 15, 15, 0.7) !important; }
+        footer .text-gray-400, footer .text-gray-300 { color: #6b6b6b !important; }
+        footer a:hover { color: #ffffff !important; }
+        .bg-gradient-to-r.from-gray-900.to-gray-600 { background-image: linear-gradient(to right, #ffffff, #aaaaaa) !important; }
+        .bg-clip-text.text-transparent { color: transparent !important; }
+        .bg-white.rounded-xl.border.border-gray-200, .bg-white.rounded-xl { background-color: #0f0f0f !important; border-color: #2a2a2a !important; }
+        select option { background-color: #0f0f0f; color: #e5e5e5; }
+        .glass-card .font-semibold.text-gray-800 { color: #f0f0f0 !important; }
+        .glass-card .text-gray-400, .glass-card .text-gray-500 { color: #9a9a9a !important; }
+        .text-amber-500 { color: #fbbf24 !important; }
+        .iconify-icon.text-gray-400, .iconify-icon.text-gray-500, .iconify-icon.text-gray-600 { color: #8a8a8a !important; }
+        .bg-black.rounded-xl { background-color: #ffffff !important; }
+        .bg-black.rounded-xl iconify-icon { color: #000000 !important; }
+        .btn-explore.bg-black { background-color: #ffffff !important; color: #000000 !important; }
+        button#prevPageM, button#nextPageM { background-color: #0f0f0f !important; border-color: #2a2a2a !important; color: #e5e5e5 !important; }
+        button#prevPageM:disabled, button#nextPageM:disabled { opacity: 0.4; }
+        input:focus, select:focus { border-color: #ffffff !important; outline: none; box-shadow: 0 0 0 1px rgba(255,255,255,0.2); }
+        .w-10.h-10.bg-black.rounded-xl { background-color: #ffffff !important; }
+        .w-10.h-10.bg-black.rounded-xl iconify-icon { color: #000000 !important; }
+        .suggestion-item .font-semibold.text-sm { color: #f0f0f0 !important; }
+        .suggestion-item .text-xs.text-gray-400 { color: #aaa !important; }
+        .suggestion-item .font-bold.text-sm { color: #ffffff !important; }
 
-        /* NEW: Movie-poster style grid cards */
-       .movie-card {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    background: #0f0f0f;
-    aspect-ratio: 2 / 3;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.movie-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;   /* ← was 'cover' */
-    background: #1a1a1a;   /* fills empty areas */
-}
-        .movie-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            pointer-events: none;
-        }
-        .movie-status {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 2;
-            pointer-events: none;
-        }
-        .movie-followers {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            color: white;
-            margin-bottom: 4px;
-        }
-        .movie-platform {
-            font-size: 11px;
-            color: #ccc;
-            font-weight: 400;
-        }
-        .grid-2cols {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        /* Movie-poster style grid cards */
+        .movie-card { position: relative; border-radius: 16px; overflow: hidden; background: #0f0f0f; aspect-ratio: 2 / 3; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .movie-card img { width: 100%; height: 100%; object-fit: contain; background: #1a1a1a; }
+        .movie-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; }
+        .movie-status { position: absolute; top: 10px; left: 10px; z-index: 2; pointer-events: none; }
+        .movie-followers { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: white; margin-bottom: 4px; }
+        .movie-platform { font-size: 11px; color: #ccc; font-weight: 400; }
+        .grid-2cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        
+        /* Compact Language Modal with Flags */
+        .language-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .language-card { background: #0f0f0f; border-radius: 28px; padding: 14px 16px; width: 250px; text-align: center; border: 1px solid #333; box-shadow: 0 20px 35px -10px black; }
+        .language-card h3 { font-size: 0.9rem; margin-bottom: 10px; color: white; font-weight: 600; }
+        .lang-option { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 5px 0; background: #1a1a1a; border-radius: 50px; cursor: pointer; transition: 0.2s; border: 1px solid #2a2a2a; }
+        .lang-option:active { transform: scale(0.97); background: #2a2a2a; }
+        .flag-icon { font-size: 22px; width: 30px; text-align: center; }
+        .lang-name { font-size: 14px; font-weight: 500; color: #eee; }
     </style>
 </head>
 <body class="pb-20" style="overflow-x: hidden; background: #050505;">
 
 <div class="px-4 py-5 max-w-md mx-auto">
-    <!-- HEADER -->
+    <!-- HEADER with language switcher emoji button -->
     <header class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
@@ -342,32 +128,38 @@
             </div>
             <div id="mobileGreeting" class="text-sm font-medium text-gray-300"></div>
         </div>
-        <button id="startSellingBtnM" class="bg-white text-black px-5 py-2 rounded-full text-sm font-medium btn-sleek flex items-center gap-1 shadow-md">
-            <iconify-icon icon="mdi:storefront-outline" width="16"></iconify-icon>
-            Sell
-        </button>
+        <div class="flex items-center gap-2">
+            <!-- Language switcher button with globe emoji -->
+            <button id="langSwitchBtnHeader" class="text-xl bg-black/30 p-2 rounded-full w-9 h-9 flex items-center justify-center hover:bg-gray-800 transition" title="Hindura Ururimi / Change Language">
+                🌎
+            </button>
+            <button id="startSellingBtnM" class="bg-white text-black px-5 py-2 rounded-full text-sm font-medium btn-sleek flex items-center gap-1 shadow-md">
+                <iconify-icon icon="mdi:storefront-outline" width="16"></iconify-icon>
+                <span id="sellBtnText">Gurisha</span>
+            </button>
+        </div>
     </header>
 
     <!-- HERO SECTION -->
     <div class="mb-7">
         <div class="inline-flex items-center gap-1 bg-black/40 px-3 py-1 rounded-full border border-gray-700 mb-3">
             <iconify-icon icon="solar:graph-new-up-linear" width="12" class="text-emerald-400"></iconify-icon>
-            <span class="text-[10px] font-medium text-gray-300">TRUSTED MARKETPLACE</span>
+            <span id="trustBadgeText" class="text-[10px] font-medium text-gray-300">ISOKO RYIZEWE</span>
         </div>
         <h1 class="text-3xl font-bold tracking-tight text-white leading-tight">
-            Swap & scale<br>
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">social empires.</span>
+            <span id="heroLine1">Hindura & wongere</span><br>
+            <span id="heroLine2" class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Imbuga</span>
         </h1>
-        <p class="text-gray-400 text-sm mt-3 leading-relaxed">Buy or sell Instagram, TikTok, YouTube, LinkedIn & X accounts instantly.</p>
+        <p id="heroDesc" class="text-gray-400 text-sm mt-3 leading-relaxed">Gura cyangwa ugurishe konti za Instagram, TikTok, YouTube, LinkedIn na X ako kanya.</p>
         
         <div class="flex gap-3 mt-6">
             <button id="exploreBtnM" class="btn-explore bg-white text-black flex-1 py-3 rounded-full text-sm shadow-md">
                 <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon>
-                Buy
+                <span id="buyBtnText">Gura</span>
             </button>
             <button id="startSellingBtnM2" class="btn-sell border border-gray-700 bg-black/40 text-gray-200 flex-1 py-3 rounded-full text-sm hover:bg-gray-900">
                 <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
-                Sell
+                <span id="sellBtnText2">Gurisha</span>
             </button>
         </div>
     </div>
@@ -381,18 +173,18 @@
         <iconify-icon icon="logos:linkedin-icon" width="24" class="text-gray-500"></iconify-icon>
     </div>
 
-    <!-- Featured Accounts Carousel (smaller width, 3:5) -->
+    <!-- Featured Accounts Carousel -->
     <div class="mb-6">
         <div class="featured-carousel">
             <div id="featuredTrack" class="featured-track"></div>
         </div>
     </div>
 
-    <!-- Suggested for you Carousel (1.7x Speed) -->
+    <!-- Suggested for you Carousel -->
     <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
             <iconify-icon icon="mdi:lightbulb" width="16" class="text-amber-400"></iconify-icon>
-            <h3 class="text-sm font-semibold text-gray-200">Suggested for you</h3>
+            <h3 id="suggestedTitle" class="text-sm font-semibold text-gray-200">Izo tukugiramo inama</h3>
         </div>
         <div class="suggestions-wrapper">
             <div id="suggestionsTrackM" class="suggestions-track"></div>
@@ -403,14 +195,14 @@
     <div class="mb-5">
         <div class="relative">
             <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" width="18"></iconify-icon>
-            <input type="text" id="searchInputM" placeholder="Search by nickname or platform..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-800 focus:border-white focus:outline-none text-sm bg-black/40 text-white">
+            <input type="text" id="searchInputM" placeholder="Shakisha izina cyangwa urubuga..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-800 focus:border-white focus:outline-none text-sm bg-black/40 text-white">
         </div>
     </div>
 
     <!-- Platform Filters -->
     <div class="filter-scroll mb-4">
         <div class="flex gap-2 pb-1">
-            <button data-platform="all" class="platform-chip-m category-active px-4 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">All</button>
+            <button data-platform="all" class="platform-chip-m category-active px-4 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">Byose</button>
             <button data-platform="Instagram" class="platform-chip-m category-inactive px-4 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">Instagram</button>
             <button data-platform="Tiktok" class="platform-chip-m category-inactive px-4 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">TikTok</button>
             <button data-platform="Youtube" class="platform-chip-m category-inactive px-4 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap">YouTube</button>
@@ -423,15 +215,15 @@
     <div class="flex flex-wrap gap-3 mb-5">
         <div class="flex items-center gap-2 flex-1 bg-black/40 rounded-xl border border-gray-800 px-3 py-2">
             <span class="text-xs text-gray-400 font-medium">$</span>
-            <input type="number" id="minPriceM" placeholder="Min" class="w-full text-sm bg-transparent focus:outline-none text-white">
+            <input type="number" id="minPriceM" placeholder="Ubuke" class="w-full text-sm bg-transparent focus:outline-none text-white">
         </div>
         <div class="flex items-center gap-2 flex-1 bg-black/40 rounded-xl border border-gray-800 px-3 py-2">
             <span class="text-xs text-gray-400 font-medium">$</span>
-            <input type="number" id="maxPriceM" placeholder="Max" class="w-full text-sm bg-transparent focus:outline-none text-white">
+            <input type="number" id="maxPriceM" placeholder="Ubusumbwe" class="w-full text-sm bg-transparent focus:outline-none text-white">
         </div>
         <div class="flex-1 bg-black/40 rounded-xl border border-gray-800 px-3 py-2">
             <select id="categoryFilterM" class="w-full text-sm bg-transparent focus:outline-none text-white">
-                <option value="all">All Categories</option>
+                <option value="all">Ibyiciro Byose</option>
             </select>
         </div>
     </div>
@@ -440,25 +232,25 @@
     <div class="flex justify-between items-center mb-4">
         <div id="paginationInfoM" class="text-xs text-gray-400"></div>
         <div class="flex gap-2">
-            <button id="prevPageM" class="px-3 py-1.5 border border-gray-700 rounded-lg text-xs bg-black/40 disabled:opacity-40 text-gray-200">← Prev</button>
-            <button id="nextPageM" class="px-3 py-1.5 border border-gray-700 rounded-lg text-xs bg-black/40 disabled:opacity-40 text-gray-200">Next →</button>
+            <button id="prevPageM" class="px-3 py-1.5 border border-gray-700 rounded-lg text-xs bg-black/40 disabled:opacity-40 text-gray-200">← Ibibanzwe</button>
+            <button id="nextPageM" class="px-3 py-1.5 border border-gray-700 rounded-lg text-xs bg-black/40 disabled:opacity-40 text-gray-200">Ibikurikira →</button>
         </div>
     </div>
 
-    <!-- Products Grid (Movie-poster style, 2 columns) -->
+    <!-- Products Grid -->
     <div id="listings-grid-mobile" class="grid-2cols pb-16">
-        <div class="col-span-2 text-center py-10 text-gray-500 text-sm">Loading accounts...</div>
+        <div class="col-span-2 text-center py-10 text-gray-500 text-sm">Yego konti ziri gukurikirwa...</div>
     </div>
 
     <!-- Footer -->
     <footer class="pt-6 pb-4 border-t border-gray-800 mt-4">
         <div class="flex flex-wrap justify-center gap-5 text-gray-500 text-xs">
-            <a href="#" id="trustLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="14"></iconify-icon> Trust</a>
-            <a href="#" id="guidelinesLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="14"></iconify-icon> Guidelines</a>
-            <a href="#" id="supportLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="14"></iconify-icon> Support</a>
+            <a href="#" id="trustLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="14"></iconify-icon> <span id="footerTrust">Umutekano</span></a>
+            <a href="#" id="guidelinesLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="14"></iconify-icon> <span id="footerGuidelines">Amabwiriza</span></a>
+            <a href="#" id="supportLinkM" class="hover:text-white flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="14"></iconify-icon> <span id="footerSupport">Ubufasha</span></a>
         </div>
         <div class="text-center text-gray-600 text-[10px] mt-4">
-            <iconify-icon icon="ph:copyright" width="10" class="inline"></iconify-icon> 2026 Social Market
+            <iconify-icon icon="ph:copyright" width="10" class="inline"></iconify-icon> 2026 Imbuga Store
         </div>
     </footer>
 </div>
@@ -497,15 +289,138 @@
     let currentFeaturedIndex = 0;
     const ITEMS_PER_PAGE = 10;
     
-    function getTimeBasedGreeting() {
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 12) return "Good Morning!";
-        if (hour >= 12 && hour < 17) return "Good Afternoon!";
-        if (hour >= 17 && hour < 22) return "Good Evening!";
-        return "Good Night!";
-    }
-    document.getElementById('mobileGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="14" class="inline mr-1"></iconify-icon> ${getTimeBasedGreeting()}`;
+    // ==================== LANGUAGE SYSTEM (Kinyarwanda, English, French) ====================
+    const translations = {
+        rw: {
+            sell: "Gurisha", buy: "Gura", trustBadge: "ISOKO RYIZEWE", heroLine1: "Hindura & wongere",
+            heroLine2: "Imbuga", heroDesc: "Gura cyangwa ugurishe konti za Instagram, TikTok, YouTube, LinkedIn na X ako kanya.",
+            suggested: "Izo tukugiramo inama", searchPlaceholder: "Shakisha izina cyangwa urubuga...",
+            prev: "← Ibibanzwe", next: "Ibikurikira →", footerTrust: "Umutekano", footerGuidelines: "Amabwiriza", footerSupport: "Ubufasha",
+            greetingMorning: "Mwaramutse!", greetingAfternoon: "Mwiriwe!", greetingEvening: "Muraho!", greetingNight: "Ijoro ryiza!",
+            statusAvailable: "BIHARI", statusSold: "BYAGURISHIJWE", loadingText: "Yego konti ziri gukurikirwa...", noResults: "Nta konti zihuye n'ibyo washakishije",
+            all: "Byose", minPlace: "Ubuke", maxPlace: "Ubusumbwe", categoryAll: "Ibyiciro Byose", of: "kuri"
+        },
+        en: {
+            sell: "Sell", buy: "Buy", trustBadge: "TRUSTED MARKETPLACE", heroLine1: "Swap & scale",
+            heroLine2: "social empires.", heroDesc: "Buy or sell Instagram, TikTok, YouTube, LinkedIn & X accounts instantly.",
+            suggested: "Suggested for you", searchPlaceholder: "Search by nickname or platform...",
+            prev: "← Prev", next: "Next →", footerTrust: "Trust", footerGuidelines: "Guidelines", footerSupport: "Support",
+            greetingMorning: "Good Morning!", greetingAfternoon: "Good Afternoon!", greetingEvening: "Good Evening!", greetingNight: "Good Night!",
+            statusAvailable: "AVAILABLE", statusSold: "SOLD", loadingText: "Loading accounts...", noResults: "No accounts match your filters",
+            all: "All", minPlace: "Min", maxPlace: "Max", categoryAll: "All Categories", of: "of"
+        },
+        fr: {
+            sell: "Vendre", buy: "Acheter", trustBadge: "PLATEFORME DE CONFIANCE", heroLine1: "Échangez & évoluez",
+            heroLine2: "empires sociaux.", heroDesc: "Achetez ou vendez des comptes Instagram, TikTok, YouTube, LinkedIn et X instantanément.",
+            suggested: "Suggestions pour vous", searchPlaceholder: "Rechercher par pseudo ou plateforme...",
+            prev: "← Préc", next: "Suiv →", footerTrust: "Confiance", footerGuidelines: "Règles", footerSupport: "Aide",
+            greetingMorning: "Bonjour !", greetingAfternoon: "Bon après-midi !", greetingEvening: "Bonsoir !", greetingNight: "Bonne nuit !",
+            statusAvailable: "DISPONIBLE", statusSold: "VENDU", loadingText: "Chargement des comptes...", noResults: "Aucun compte ne correspond",
+            all: "Tous", minPlace: "Min", maxPlace: "Max", categoryAll: "Toutes catégories", of: "de"
+        }
+    };
     
+    let currentLang = localStorage.getItem('socialMarketLang') || null;
+    
+    function applyLanguage(lang) {
+        if (!translations[lang]) lang = 'rw';
+        currentLang = lang;
+        localStorage.setItem('socialMarketLang', lang);
+        const t = translations[lang];
+        document.getElementById('sellBtnText') && (document.getElementById('sellBtnText').innerText = t.sell);
+        document.getElementById('sellBtnText2') && (document.getElementById('sellBtnText2').innerText = t.sell);
+        document.getElementById('buyBtnText') && (document.getElementById('buyBtnText').innerText = t.buy);
+        document.getElementById('trustBadgeText') && (document.getElementById('trustBadgeText').innerText = t.trustBadge);
+        document.getElementById('heroLine1') && (document.getElementById('heroLine1').innerText = t.heroLine1);
+        document.getElementById('heroLine2') && (document.getElementById('heroLine2').innerText = t.heroLine2);
+        document.getElementById('heroDesc') && (document.getElementById('heroDesc').innerText = t.heroDesc);
+        document.getElementById('suggestedTitle') && (document.getElementById('suggestedTitle').innerText = t.suggested);
+        const searchInput = document.getElementById('searchInputM');
+        if(searchInput) searchInput.placeholder = t.searchPlaceholder;
+        document.getElementById('prevPageM') && (document.getElementById('prevPageM').innerHTML = t.prev);
+        document.getElementById('nextPageM') && (document.getElementById('nextPageM').innerHTML = t.next);
+        document.getElementById('footerTrust') && (document.getElementById('footerTrust').innerText = t.footerTrust);
+        document.getElementById('footerGuidelines') && (document.getElementById('footerGuidelines').innerText = t.footerGuidelines);
+        document.getElementById('footerSupport') && (document.getElementById('footerSupport').innerText = t.footerSupport);
+        const minInput = document.getElementById('minPriceM');
+        const maxInput = document.getElementById('maxPriceM');
+        if(minInput) minInput.placeholder = t.minPlace;
+        if(maxInput) maxInput.placeholder = t.maxPlace;
+        const allChip = document.querySelector('[data-platform="all"]');
+        if(allChip) allChip.innerText = t.all;
+        const categorySelect = document.getElementById('categoryFilterM');
+        if(categorySelect && categorySelect.options[0]) categorySelect.options[0].text = t.categoryAll;
+        
+        // Update greeting based on time
+        const hour = new Date().getHours();
+        let greeting = "";
+        if (hour >= 5 && hour < 12) greeting = t.greetingMorning;
+        else if (hour >= 12 && hour < 17) greeting = t.greetingAfternoon;
+        else if (hour >= 17 && hour < 22) greeting = t.greetingEvening;
+        else greeting = t.greetingNight;
+        document.getElementById('mobileGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="14" class="inline mr-1"></iconify-icon> ${greeting}`;
+        
+        // Re-render dynamic content
+        if(typeof renderAccounts === 'function') renderAccounts();
+        if(typeof renderSuggestions === 'function') renderSuggestions();
+        if(typeof renderFeatured === 'function') renderFeatured();
+    }
+    
+    // Compact language modal with country flags
+    function showLanguageModal() {
+        const existing = document.querySelector('.language-modal');
+        if(existing) existing.remove();
+        const modal = document.createElement('div');
+        modal.className = 'language-modal';
+        modal.innerHTML = `
+            <div class="language-card">
+                <h3>🌍 Hitamo Ururimi</h3>
+                <div class="lang-option" data-lang="rw">
+                    <span class="flag-icon">🇷🇼</span>
+                    <span class="lang-name">Kinyarwanda</span>
+                </div>
+                <div class="lang-option" data-lang="en">
+                    <span class="flag-icon">🇬🇧</span>
+                    <span class="lang-name">English</span>
+                </div>
+                <div class="lang-option" data-lang="fr">
+                    <span class="flag-icon">🇫🇷</span>
+                    <span class="lang-name">Français</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                const lang = opt.dataset.lang;
+                applyLanguage(lang);
+                modal.remove();
+                // Refresh category dropdown after language change
+                if(categoriesArray.length && document.getElementById('categoryFilterM')) {
+                    const currentVal = document.getElementById('categoryFilterM').value;
+                    const t = translations[currentLang];
+                    let options = `<option value="all">${t.categoryAll}</option>`;
+                    categoriesArray.forEach(c => options += `<option value="${c}">${c}</option>`);
+                    document.getElementById('categoryFilterM').innerHTML = options;
+                    if(currentVal !== 'all') document.getElementById('categoryFilterM').value = currentVal;
+                }
+                applyFilters();
+            });
+        });
+    }
+    
+    // First time visit: show language modal immediately
+    if(!localStorage.getItem('socialMarketLang')) {
+        setTimeout(() => showLanguageModal(), 100);
+    } else {
+        applyLanguage(localStorage.getItem('socialMarketLang'));
+    }
+    
+    // Language switcher button on header (emoji)
+    const langBtn = document.getElementById('langSwitchBtnHeader');
+    if(langBtn) langBtn.addEventListener('click', () => showLanguageModal());
+    
+    // ==================== ORIGINAL APP LOGIC (unchanged functionality) ====================
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile_mobile')) || {
         viewedPlatforms: {},
         viewedCategories: {},
@@ -525,7 +440,6 @@
         }
         userProfile.clickedAccounts.push({ id: acc.id, timestamp: Date.now() });
         if (userProfile.clickedAccounts.length > 20) userProfile.clickedAccounts.shift();
-        
         let maxViews = 0;
         for (const [platform, count] of Object.entries(userProfile.viewedPlatforms)) {
             if (count > maxViews) { maxViews = count; userProfile.interestedPlatform = platform; }
@@ -543,7 +457,6 @@
         return accounts[0];
     }
     
-    // Featured selection: NO ALGORITHM, only available + recent + random
     function getFeaturedAccounts(accounts, count = 12) {
         if (!accounts.length) return [];
         let eligible = accounts.filter(a => a.status !== 'sold' && a.images?.front);
@@ -599,7 +512,6 @@
         if (slideWidth) track.style.transform = `translateX(-${currentFeaturedIndex * slideWidth}px)`;
     }
     
-    // ---------- SUGGESTIONS (Full AI algorithm) ----------
     function generateSuggestions(accounts, count = 25) {
         if (!accounts.length) return [];
         const pool = [...accounts.filter(a => a.status !== 'sold'), ...accounts.filter(a => a.status === 'sold')];
@@ -631,7 +543,7 @@
         const batch = generateSuggestions(allAccounts, 22);
         const track = document.getElementById('suggestionsTrackM');
         if (!track) return;
-        
+        const t = translations[currentLang] || translations.rw;
         const createItemHtml = (acc) => {
             let icon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
@@ -639,7 +551,7 @@
             else if (acc.socialMedia?.toLowerCase() === 'youtube') icon = "logos:youtube-icon";
             else if (acc.socialMedia?.toLowerCase() === 'linkedin') icon = "logos:linkedin-icon";
             else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
-            const soldBadge = acc.status === 'sold' ? '<span class="status-sold">SOLD</span>' : '<span class="status-available">AVAIL</span>';
+            const soldBadge = acc.status === 'sold' ? `<span class="status-sold">${t.statusSold}</span>` : `<span class="status-available">${t.statusAvailable}</span>`;
             return `
                 <div class="suggestion-item" data-id="${acc.id}">
                     <div class="flex items-center gap-2">
@@ -664,13 +576,11 @@
                 </div>
             `;
         };
-        
         let itemsHtml = '';
         for (let i = 0; i < 2; i++) {
             batch.forEach(acc => { itemsHtml += createItemHtml(acc); });
         }
         track.innerHTML = itemsHtml;
-        
         track.querySelectorAll('.suggestion-item').forEach(el => {
             el.addEventListener('click', () => {
                 const id = el.dataset.id;
@@ -679,7 +589,6 @@
                 window.location.href = `view.html?id=${id}`;
             });
         });
-        
         track.style.animation = 'none';
         track.offsetHeight;
         track.style.animation = 'scrollSuggestions 60s linear infinite';
@@ -693,11 +602,10 @@
                 const data = doc.data();
                 allAccounts.push({ id: doc.id, ...data });
             });
-            
             const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
             categoriesArray = settingsDoc.exists() ? (settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle']) : ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
-            document.getElementById('categoryFilterM').innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
-            
+            const t = translations[currentLang] || translations.rw;
+            document.getElementById('categoryFilterM').innerHTML = `<option value="all">${t.categoryAll}</option>` + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
             renderFeatured();
             applyFilters();
             renderSuggestions();
@@ -751,34 +659,23 @@
         const end = start + ITEMS_PER_PAGE;
         const pageAccounts = filteredAccounts.slice(start, end);
         const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE);
+        const t = translations[currentLang] || translations.rw;
         
-        document.getElementById('paginationInfoM').innerHTML = `${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length}`;
+        document.getElementById('paginationInfoM').innerHTML = `${start+1}-${Math.min(end, filteredAccounts.length)} ${t.of} ${filteredAccounts.length}`;
         document.getElementById('prevPageM').disabled = currentPage === 1;
         document.getElementById('nextPageM').disabled = currentPage === totalPages || totalPages === 0;
         
         const container = document.getElementById('listings-grid-mobile');
         if (!pageAccounts.length) {
-            container.innerHTML = '<div class="col-span-2 text-center py-10 text-gray-500 text-sm">No accounts match your filters</div>';
+            container.innerHTML = `<div class="col-span-2 text-center py-10 text-gray-500 text-sm">${t.noResults}</div>`;
             return;
         }
         
         container.innerHTML = pageAccounts.map(acc => {
-            const displayPrice = acc.finalPrice || acc.originalPrice;
-            const hasDiscount = acc.hasDiscount || (acc.discountPrice && !acc.bargaining);
-            const acceptDiscount = acc.acceptDiscount === true;
             const isSold = acc.status === 'sold';
-            
-            let discountBadge = '';
-            if (acceptDiscount && !isSold) discountBadge = '<span class="discount-badge ml-1">✔ Discount</span>';
-            
-            // For movie-poster style, we don't show price on the card (only on click)
-            // But we keep the discount badge if needed (optional)
-            const statusText = isSold ? 'SOLD' : 'AVAILABLE';
             const statusClass = isSold ? 'status-sold' : 'status-available';
-            
-            // Front image (required) or fallback
+            const statusText = isSold ? t.statusSold : t.statusAvailable;
             const frontImg = acc.images?.front || 'https://placehold.co/400x600/1a1a1a/666?text=No+Image';
-            
             return `
                 <div class="movie-card" data-id="${acc.id}">
                     <div class="movie-status">
@@ -786,18 +683,17 @@
                     </div>
                     <img src="${frontImg}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1a1a/666?text=No+Image'">
                     <div class="movie-overlay">
-    <div class="movie-followers">
-        <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
-        <span>${acc.followers?.toLocaleString() || 0}</span>
-    </div>
-    <div class="font-medium text-white text-sm my-1">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</div>
-    <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
-</div>
+                        <div class="movie-followers">
+                            <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
+                            <span>${acc.followers?.toLocaleString() || 0}</span>
+                        </div>
+                        <div class="font-medium text-white text-sm my-1">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</div>
+                        <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
+                    </div>
                 </div>
             `;
         }).join('');
         
-        // Attach click handlers to movie cards
         document.querySelectorAll('.movie-card').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
