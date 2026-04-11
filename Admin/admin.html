@@ -38,6 +38,7 @@
         .fade-in { animation: fadeIn 0.2s ease-out; }
         .chart-container { max-height: 280px; }
         .payout-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .request-stat-card { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); }
     </style>
 </head>
 <body>
@@ -69,13 +70,14 @@
                 <button id="menuToggle" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100"><iconify-icon icon="mdi:menu" width="26"></iconify-icon></button>
             </div>
 
-            <!-- DASHBOARD PANEL with Analytics -->
+            <!-- DASHBOARD PANEL with Analytics & Total Requests -->
             <div id="dashboardPanel" class="max-w-7xl mx-auto fade-in">
-                <!-- Stats Grid -->
+                <!-- Stats Grid: Total Accounts, Sold Accounts, Total Requests, Total Value -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:account-group" width="28" class="text-black"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Accounts</p><p id="totalAccounts" class="text-2xl font-bold">0</p></div></div></div>
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:sale" width="28" class="text-green-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Sold</p><p id="soldAccounts" class="text-2xl font-bold">0</p></div></div></div>
-                    <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:currency-usd" width="28" class="text-amber-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Active Listings</p><p id="activeAccounts" class="text-2xl font-bold">0</p></div></div></div>
+                    <!-- NEW: Total Requests Card (replaces Active Listings) -->
+                    <div class="stat-card p-5 request-stat-card" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); border: none;"><div class="flex items-center gap-3"><iconify-icon icon="mdi:message-text" width="28" class="text-white"></iconify-icon><div><p class="text-white/70 text-xs uppercase tracking-wide">Total Requests</p><p id="totalRequestsCount" class="text-2xl font-bold text-white">0</p></div></div></div>
                     <div class="stat-card p-5"><div class="flex items-center gap-3"><iconify-icon icon="mdi:trending-up" width="28" class="text-blue-600"></iconify-icon><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Value</p><p id="totalValue" class="text-2xl font-bold">$0</p></div></div></div>
                 </div>
 
@@ -192,15 +194,24 @@
     const db = getFirestore(app);
 
     let allAccounts = [];
+    let allRequestsList = [];     // Store seller requests for dashboard count
     let searchTimeout = null;
     let quickSearchTimeout = null;
     let categoriesArray = [], countriesArray = [], premadeFeaturesArray = [];
     let platformChart = null, priceChart = null;
 
-    async function loadAccounts() {
-        const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
+    // Load both accounts AND seller requests (for dashboard total requests)
+    async function loadAccountsAndRequests() {
+        // Load accounts
+        const accountsSnap = await getDocs(collection(db, 'marketplaceAccounts'));
         allAccounts = [];
-        querySnapshot.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
+        accountsSnap.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
+        
+        // Load seller requests
+        const requestsSnap = await getDocs(collection(db, 'sellerRequests'));
+        allRequestsList = [];
+        requestsSnap.forEach(doc => { allRequestsList.push({ id: doc.id, ...doc.data() }); });
+        
         updateDashboardStats();
         updateAnalytics();
         updatePayoutAnalytics();
@@ -210,11 +221,12 @@
     function updateDashboardStats() {
         const total = allAccounts.length;
         const sold = allAccounts.filter(a => a.status === 'sold').length;
-        const active = allAccounts.filter(a => a.status !== 'sold').length;
         const totalValue = allAccounts.filter(a => a.status !== 'sold').reduce((sum, a) => sum + (a.finalPrice || a.originalPrice || 0), 0);
+        const totalRequests = allRequestsList.length;   // total requests from sellerRequests collection
+        
         document.getElementById('totalAccounts').innerText = total;
         document.getElementById('soldAccounts').innerText = sold;
-        document.getElementById('activeAccounts').innerText = active;
+        document.getElementById('totalRequestsCount').innerText = totalRequests;
         document.getElementById('totalValue').innerText = '$' + totalValue.toLocaleString();
     }
 
@@ -324,7 +336,7 @@
         modalDiv.querySelector('#modalConfirm').onclick = async () => {
             await updateDoc(doc(db, 'marketplaceAccounts', docId), { status: 'sold', soldAt: new Date().toISOString() });
             modalDiv.remove();
-            await loadAccounts();
+            await loadAccountsAndRequests();  // refresh both accounts & requests
             performQuickSearch(document.getElementById('quickSearchInput')?.value || '');
             const msg = document.createElement('div'); msg.className = 'fixed bottom-5 right-5 bg-green-600 text-white px-5 py-2 rounded-full text-sm z-[400]'; msg.innerText = '✅ Account marked as sold'; document.body.appendChild(msg); setTimeout(() => msg.remove(), 2000);
         };
@@ -376,8 +388,12 @@
         if(tabId === 'settings') document.getElementById('tab-settings').classList.add('active');
         if(tabId === 'payout') document.getElementById('tab-payout').classList.add('active');
         if(tabId === 'accounts') renderAccountsGrid();
-        if(tabId === 'accountId') document.getElementById('quickSearchInput').value = '';
+        if(tabId === 'accountId') if(document.getElementById('quickSearchInput')) document.getElementById('quickSearchInput').value = '';
         if(tabId === 'payout') updatePayoutAnalytics();
+        if(tabId === 'dashboard') { 
+            // ensure latest requests count on dashboard refresh
+            updateDashboardStats(); 
+        }
     }
     document.getElementById('tab-dashboard')?.addEventListener('click', () => switchTab('dashboard'));
     document.getElementById('tab-accounts')?.addEventListener('click', () => switchTab('accounts'));
@@ -394,7 +410,8 @@
     function closeSidebarFunc() { mobileSidebar.classList.remove('open'); overlayBg.classList.remove('active'); }
     menuToggle?.addEventListener('click', openSidebar); closeSidebar?.addEventListener('click', closeSidebarFunc); overlayBg?.addEventListener('click', closeSidebarFunc);
 
-    loadAccounts(); 
+    // Initial load: accounts + requests, then start dashboard
+    loadAccountsAndRequests(); 
     fetchSettings(); 
     switchTab('dashboard');
 </script>
