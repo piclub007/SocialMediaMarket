@@ -98,12 +98,13 @@
         .suggestion-item .text-xs.text-gray-400 { color: #aaa !important; }
         .suggestion-item .font-bold.text-sm { color: #ffffff !important; }
 
-        /* Movie-poster style grid cards */
+        /* Movie-poster style grid cards - 2 columns */
         .movie-card { position: relative; border-radius: 16px; overflow: hidden; background: #0f0f0f; aspect-ratio: 2 / 3; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .movie-card img { width: 100%; height: 100%; object-fit: contain; background: #1a1a1a; }
         .movie-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; }
         .movie-status { position: absolute; top: 10px; left: 10px; z-index: 2; pointer-events: none; }
-        .movie-followers { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: white; margin-bottom: 4px; }
+        /* Price big text */
+        .movie-price { font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         .movie-platform { font-size: 11px; color: #ccc; font-weight: 400; }
         .grid-2cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         
@@ -237,7 +238,7 @@
         </div>
     </div>
 
-    <!-- Products Grid -->
+    <!-- Products Grid - 2 columns -->
     <div id="listings-grid-mobile" class="grid-2cols pb-16">
         <div class="col-span-2 text-center py-10 text-gray-500 text-sm">Yego konti ziri gukurikirwa...</div>
     </div>
@@ -280,6 +281,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
+    // Expose db globally for analytics
+    window.db = db;
+    
     let allAccounts = [];
     let categoriesArray = [];
     let currentPage = 1;
@@ -287,7 +291,7 @@
     let featuredAccounts = [];
     let featuredInterval = null;
     let currentFeaturedIndex = 0;
-    const ITEMS_PER_PAGE = 10;
+    const ITEMS_PER_PAGE = 20; // CHANGED: 10 rows x 2 columns = 20 items per page
     
     // ==================== LANGUAGE SYSTEM (Kinyarwanda, English, French) ====================
     const translations = {
@@ -671,11 +675,13 @@
             return;
         }
         
+        // UPDATED: Movie card shows price in big text instead of followers
         container.innerHTML = pageAccounts.map(acc => {
             const isSold = acc.status === 'sold';
             const statusClass = isSold ? 'status-sold' : 'status-available';
             const statusText = isSold ? t.statusSold : t.statusAvailable;
             const frontImg = acc.images?.front || 'https://placehold.co/400x600/1a1a1a/666?text=No+Image';
+            const price = (acc.finalPrice || acc.originalPrice || 0).toLocaleString();
             return `
                 <div class="movie-card" data-id="${acc.id}">
                     <div class="movie-status">
@@ -683,11 +689,7 @@
                     </div>
                     <img src="${frontImg}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1a1a/666?text=No+Image'">
                     <div class="movie-overlay">
-                        <div class="movie-followers">
-                            <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
-                            <span>${acc.followers?.toLocaleString() || 0}</span>
-                        </div>
-                        <div class="font-medium text-white text-sm my-1">$${(acc.finalPrice || acc.originalPrice || 0).toLocaleString()}</div>
+                        <div class="movie-price">$${price}</div>
                         <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
                     </div>
                 </div>
@@ -765,16 +767,14 @@
     
     loadAccounts();
 </script>
-    <!-- Analytics tracking script (add this right after, still in module) -->
+    <!-- Analytics tracking script -->
 <script type="module">
     import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
-    // Use the db instance that was exposed globally
     const db = window.db;
     
     if (!db) {
         console.warn('Firebase not initialized yet, waiting...');
-        // Wait for db to be available
         const waitForDb = setInterval(() => {
             if (window.db) {
                 clearInterval(waitForDb);
@@ -786,11 +786,9 @@
     }
     
     function initAnalytics() {
-        // Generate or get session ID
         const sessionId = localStorage.getItem('analytics_session_id') || 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
         localStorage.setItem('analytics_session_id', sessionId);
         
-        // Detect device and browser
         const ua = navigator.userAgent;
         let device = 'Desktop';
         if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) device = 'Tablet';
@@ -803,7 +801,6 @@
         else if (ua.includes('Edg')) browser = 'Edge';
         else if (ua.includes('Opera')) browser = 'Opera';
         
-        // Track page view (don't await - fire and forget)
         addDoc(collection(db, 'analytics_pageViews'), {
             page: window.location.pathname,
             pageName: document.title || window.location.pathname,
@@ -815,7 +812,6 @@
             referrer: document.referrer || 'direct'
         }).catch(err => console.warn('Page view tracking error:', err));
         
-        // Track clicks on elements with data-track-click attribute
         document.addEventListener('click', (e) => {
             const el = e.target.closest('[data-track-click]');
             if (el) {
