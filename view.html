@@ -55,7 +55,6 @@
 </script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
-        /* FULL SLEEK BLACK THEME - MAXIMUM VISIBILITY */
         body { background: #050505; }
         .detail-card { background: #0f0f0f; border-radius: 32px; border: 1px solid #2a2a2a; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
         .feature-badge { background: #1e1e1e; border-radius: 40px; padding: 6px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; color: #e0e0e0; border: 1px solid #3a3a3a; }
@@ -80,39 +79,12 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
         /* Suggestions Carousel */
-        .suggestions-container {
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-        }
-        .suggestions-track {
-            display: flex;
-            width: fit-content;
-            animation: scrollSuggestions 70s linear infinite;
-        }
-        .suggestions-track:hover {
-            animation-play-state: paused;
-        }
-        @keyframes scrollSuggestions {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .suggestion-item {
-            flex: 0 0 auto;
-            width: 260px;
-            margin-right: 16px;
-            transition: all 0.2s;
-            background: #0f0f0f;
-            border-radius: 16px;
-            padding: 12px;
-            border: 1px solid #2a2a2a;
-            cursor: pointer;
-        }
-        .suggestion-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.5);
-            border-color: #444;
-        }
+        .suggestions-container { overflow: hidden; position: relative; width: 100%; }
+        .suggestions-track { display: flex; width: fit-content; animation: scrollSuggestions 70s linear infinite; }
+        .suggestions-track:hover { animation-play-state: paused; }
+        @keyframes scrollSuggestions { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .suggestion-item { flex: 0 0 auto; width: 260px; margin-right: 16px; transition: all 0.2s; background: #0f0f0f; border-radius: 16px; padding: 12px; border: 1px solid #2a2a2a; cursor: pointer; }
+        .suggestion-item:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.5); border-color: #444; }
         
         /* High Visibility Text Colors */
         .text-white-high { color: #ffffff !important; }
@@ -122,81 +94,53 @@
         .bg-dark-card { background-color: #0f0f0f !important; }
         .bg-dark-elevated { background-color: #1a1a1a !important; }
         
-        /* Ensure all text is visible */
-        .detail-card h1, .detail-card h2, .detail-card h3, .detail-card p, .detail-card span, .detail-card div:not(.currency-active *) {
-            color: #e5e5e5;
-        }
-        .currency-card .currency-amount, .currency-card .currency-symbol, .currency-card .currency-label {
-            color: #c0c0c0;
-        }
-        .currency-active .currency-amount, .currency-active .currency-symbol, .currency-active .currency-label {
-            color: #000000 !important;
-        }
-        .feature-badge iconify-icon {
-            color: #4ade80;
-        }
-        .bg-gray-900, .bg-gray-800 {
-            background-color: #0f0f0f !important;
-        }
-        .border-gray-700, .border-gray-800 {
-            border-color: #2a2a2a !important;
-        }
-        .text-gray-200, .text-gray-300 {
-            color: #e0e0e0 !important;
-        }
-        .text-gray-400, .text-gray-500 {
-            color: #a0a0a0 !important;
-        }
-        .text-white {
-            color: #ffffff !important;
-        }
-        .text-black {
-            color: #000000 !important;
-        }
-        .bg-white {
-            background-color: #ffffff !important;
-        }
-        button.bg-white {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
-        button.bg-white:hover {
-            background-color: #e8e8e8 !important;
-        }
-        .suggestion-item .text-white, .suggestion-item .font-semibold {
-            color: #ffffff !important;
-        }
-        .suggestion-item .text-gray-400 {
-            color: #9ca3af !important;
-        }
-        .text-green-500, .text-green-400 {
-            color: #4ade80 !important;
-        }
-        .text-red-400, .text-red-500 {
-            color: #fca5a5 !important;
-        }
-        .hover\:text-white:hover {
-            color: #ffffff !important;
-        }
-        a.text-gray-400 {
-            color: #a0a0a0 !important;
-        }
-        a.text-gray-400:hover {
-            color: #ffffff !important;
-        }
-        .original-price-small {
-            color: #9ca3af !important;
-        }
+        .detail-card h1, .detail-card h2, .detail-card h3, .detail-card p, .detail-card span, .detail-card div:not(.currency-active *) { color: #e5e5e5; }
+        .currency-card .currency-amount, .currency-card .currency-symbol, .currency-card .currency-label { color: #c0c0c0; }
+        .currency-active .currency-amount, .currency-active .currency-symbol, .currency-active .currency-label { color: #000000 !important; }
+        .feature-badge iconify-icon { color: #4ade80; }
+        .bg-gray-900, .bg-gray-800 { background-color: #0f0f0f !important; }
+        .border-gray-700, .border-gray-800 { border-color: #2a2a2a !important; }
+        .text-gray-200, .text-gray-300 { color: #e0e0e0 !important; }
+        .text-gray-400, .text-gray-500 { color: #a0a0a0 !important; }
+        .text-white { color: #ffffff !important; }
+        .text-black { color: #000000 !important; }
+        .bg-white { background-color: #ffffff !important; }
+        button.bg-white { background-color: #ffffff !important; color: #000000 !important; }
+        button.bg-white:hover { background-color: #e8e8e8 !important; }
+        .suggestion-item .text-white, .suggestion-item .font-semibold { color: #ffffff !important; }
+        .suggestion-item .text-gray-400 { color: #9ca3af !important; }
+        .text-green-500, .text-green-400 { color: #4ade80 !important; }
+        .text-red-400, .text-red-500 { color: #fca5a5 !important; }
+        .hover\:text-white:hover { color: #ffffff !important; }
+        a.text-gray-400 { color: #a0a0a0 !important; }
+        a.text-gray-400:hover { color: #ffffff !important; }
+        .original-price-small { color: #9ca3af !important; }
+        
+        /* Language Switcher Button */
+        .lang-switch-btn { background: #1a1a1a; border: 1px solid #333; transition: all 0.2s; }
+        .lang-switch-btn:hover { background: #2a2a2a; transform: scale(1.02); }
+        .language-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1001; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .language-card { background: #0f0f0f; border-radius: 28px; padding: 14px 16px; width: 250px; text-align: center; border: 1px solid #333; box-shadow: 0 20px 35px -10px black; }
+        .language-card h3 { font-size: 0.9rem; margin-bottom: 10px; color: white; font-weight: 600; }
+        .lang-option { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 5px 0; background: #1a1a1a; border-radius: 50px; cursor: pointer; transition: 0.2s; border: 1px solid #2a2a2a; }
+        .lang-option:active { transform: scale(0.97); background: #2a2a2a; }
+        .flag-icon { font-size: 22px; width: 30px; text-align: center; }
+        .lang-name { font-size: 14px; font-weight: 500; color: #eee; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8" style="background: #050505;">
 
 <div class="max-w-6xl mx-auto">
-    <!-- Back Button -->
-    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition mb-6 group">
-        <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
-        <span class="text-sm font-medium">Back</span>
-    </a>
+    <!-- Top Bar with Back Button and Language Switcher -->
+    <div class="flex justify-between items-center mb-6">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition group">
+            <iconify-icon icon="mdi:arrow-left" width="20" class="group-hover:-translate-x-1 transition"></iconify-icon>
+            <span id="backBtnText" class="text-sm font-medium">Back</span>
+        </a>
+        <button id="langSwitchBtn" class="lang-switch-btn text-xl p-2 rounded-full w-9 h-9 flex items-center justify-center" title="Change Language">
+            🌐
+        </button>
+    </div>
 
     <!-- Loading State -->
     <div id="loadingState" class="detail-card p-6 md:p-8">
@@ -228,7 +172,7 @@
 
             <!-- Image Gallery -->
             <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:image-multiple" width="20"></iconify-icon> Gallery</h2>
+                <h2 id="galleryTitle" class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:image-multiple" width="20"></iconify-icon> Gallery</h2>
                 <div id="imageGallery" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
                 <p id="noImagesMsg" class="text-gray-500 text-sm hidden">No images available for this account</p>
             </div>
@@ -237,25 +181,25 @@
             <div class="grid md:grid-cols-2 gap-8 mb-6">
                 <div class="space-y-4">
                     <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Nickname</p>
+                        <p id="nicknameLabel" class="text-xs text-gray-400 uppercase tracking-wide mb-1">Nickname</p>
                         <p id="detailNickname" class="text-lg font-medium text-white">-</p>
                     </div>
                     <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Social Media</p>
+                        <p id="socialMediaLabel" class="text-xs text-gray-400 uppercase tracking-wide mb-1">Social Media</p>
                         <p id="detailSocialMedia" class="text-lg font-medium text-white">-</p>
                     </div>
                     <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Category</p>
+                        <p id="categoryLabel" class="text-xs text-gray-400 uppercase tracking-wide mb-1">Category</p>
                         <p id="detailCategory" class="text-lg font-medium text-white">-</p>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Followers</p>
+                        <p id="followersLabel" class="text-xs text-gray-400 uppercase tracking-wide mb-1">Followers</p>
                         <p id="detailFollowers" class="text-2xl font-bold text-white">-</p>
                     </div>
                     <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Country</p>
+                        <p id="countryLabel" class="text-xs text-gray-400 uppercase tracking-wide mb-1">Country</p>
                         <p id="detailCountry" class="text-lg font-medium text-white">-</p>
                     </div>
                 </div>
@@ -263,7 +207,7 @@
 
             <!-- Key Features -->
             <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
+                <h2 id="featuresTitle" class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> Key Features</h2>
                 <div id="featuresList" class="flex flex-wrap gap-2"></div>
                 <p id="noFeaturesMsg" class="text-gray-500 text-sm hidden">No features listed</p>
             </div>
@@ -271,8 +215,8 @@
             <!-- Pricing with Currency Converter -->
             <div class="mb-8 p-5 bg-gray-900 rounded-2xl border border-gray-800">
                 <div class="flex flex-wrap justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold text-gray-200 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
-                    <div class="text-xs text-gray-400">Click any currency to convert</div>
+                    <h2 id="pricingTitle" class="text-lg font-semibold text-gray-200 flex items-center gap-2"><iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> Pricing</h2>
+                    <div id="clickHint" class="text-xs text-gray-400">Click any currency to convert</div>
                 </div>
                 
                 <!-- Currency Converter Grid -->
@@ -310,17 +254,17 @@
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-800">
                 <button id="buyBtn" class="flex-1 bg-white text-black py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition shadow-md">
-                    <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon> BUY NOW
+                    <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon> <span id="buyBtnText">BUY NOW</span>
                 </button>
                 <button id="shareBtn" class="px-6 py-3 border border-gray-700 rounded-xl font-medium text-gray-300 hover:bg-gray-900 hover:text-white transition flex items-center gap-2">
-                    <iconify-icon icon="mdi:share-variant" width="18"></iconify-icon> Share
+                    <iconify-icon icon="mdi:share-variant" width="18"></iconify-icon> <span id="shareBtnText">Share</span>
                 </button>
             </div>
         </div>
 
         <!-- Suggestions Section -->
         <div class="mt-10">
-            <h3 class="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="20"></iconify-icon> You May Also Like</h3>
+            <h3 id="suggestionsTitle" class="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="20"></iconify-icon> You May Also Like</h3>
             <div class="suggestions-container">
                 <div id="suggestionsTrack" class="suggestions-track"></div>
             </div>
@@ -330,9 +274,9 @@
     <!-- Error State -->
     <div id="errorState" class="detail-card p-8 text-center hidden">
         <iconify-icon icon="mdi:alert-circle-outline" width="64" class="text-red-400 mx-auto mb-4"></iconify-icon>
-        <h3 class="text-xl font-semibold text-gray-200 mb-2">Account Not Found</h3>
-        <p class="text-gray-400 mb-6">The account you're looking for doesn't exist or has been removed.</p>
-        <a href="index.html" class="inline-block bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition">Return to Home</a>
+        <h3 id="errorTitle" class="text-xl font-semibold text-gray-200 mb-2">Account Not Found</h3>
+        <p id="errorDesc" class="text-gray-400 mb-6">The account you're looking for doesn't exist or has been removed.</p>
+        <a href="index.html" id="homeLink" class="inline-block bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition">Return to Home</a>
     </div>
 </div>
 
@@ -352,42 +296,169 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
+    // ==================== LANGUAGE SYSTEM ====================
+    const translations = {
+        en: {
+            back: "Back", gallery: "Gallery", nickname: "Nickname", socialMedia: "Social Media",
+            category: "Category", followers: "Followers", country: "Country", keyFeatures: "Key Features",
+            pricing: "Pricing", clickHint: "Click any currency to convert", buyNow: "BUY NOW",
+            share: "Share", youMayAlsoLike: "You May Also Like", errorTitle: "Account Not Found",
+            errorDesc: "The account you're looking for doesn't exist or has been removed.",
+            homeLink: "Return to Home", negotiable: "Negotiable", discountApplied: "Discount Applied",
+            acceptDiscount: "Accept Discount", soldOut: "Sold Out", noImages: "No images available for this account",
+            noFeatures: "No features listed", statusAvailable: "AVAILABLE", statusSold: "SOLD"
+        },
+        fr: {
+            back: "Retour", gallery: "Galerie", nickname: "Pseudo", socialMedia: "Réseau social",
+            category: "Catégorie", followers: "Abonnés", country: "Pays", keyFeatures: "Caractéristiques",
+            pricing: "Tarification", clickHint: "Cliquez sur une devise", buyNow: "ACHETER",
+            share: "Partager", youMayAlsoLike: "Vous aimerez aussi", errorTitle: "Compte introuvable",
+            errorDesc: "Le compte que vous recherchez n'existe pas ou a été supprimé.",
+            homeLink: "Retour à l'accueil", negotiable: "Négociable", discountApplied: "Réduction appliquée",
+            acceptDiscount: "Accepte réduction", soldOut: "Épuisé", noImages: "Aucune image disponible",
+            noFeatures: "Aucune caractéristique", statusAvailable: "DISPONIBLE", statusSold: "VENDU"
+        },
+        rw: {
+            back: "Inyuma", gallery: "Amashusho", nickname: "Izina", socialMedia: "Uru rubuga",
+            category: "Icyiciro", followers: "Abayikurikira", country: "Igihugu", keyFeatures: "Ibintu by'ingenzi",
+            pricing: "Igiciro", clickHint: "Kanda kuri currency", buyNow: "GURA NONEAHA",
+            share: "Sangiza", youMayAlsoLike: "Ubishobora no gukunda", errorTitle: "Konti ntaboneka",
+            errorDesc: "Konti ushaka ntaboneka cyangwa yakuweho.",
+            homeLink: "Garuka ku rupapuro rukuru", negotiable: "Birashoboka gushyiraho igiciro",
+            discountApplied: "Igiciro cyagabanutse", acceptDiscount: "Urakirwa igabanuka",
+            soldOut: "Byashize", noImages: "Nta mashusho aboneka", noFeatures: "Nta by'ingenzi byanditse",
+            statusAvailable: "BIHARI", statusSold: "BYAGURISHIJWE"
+        }
+    };
+    
+    let currentLang = localStorage.getItem('socialMarketLang') || 'en';
+    if (!translations[currentLang]) currentLang = 'en';
+    
+    function applyLanguage(lang) {
+        if (!translations[lang]) lang = 'en';
+        currentLang = lang;
+        localStorage.setItem('socialMarketLang', lang);
+        const t = translations[lang];
+        
+        document.getElementById('backBtnText') && (document.getElementById('backBtnText').innerText = t.back);
+        document.getElementById('galleryTitle') && (document.getElementById('galleryTitle').innerHTML = `<iconify-icon icon="mdi:image-multiple" width="20"></iconify-icon> ${t.gallery}`);
+        document.getElementById('nicknameLabel') && (document.getElementById('nicknameLabel').innerText = t.nickname);
+        document.getElementById('socialMediaLabel') && (document.getElementById('socialMediaLabel').innerText = t.socialMedia);
+        document.getElementById('categoryLabel') && (document.getElementById('categoryLabel').innerText = t.category);
+        document.getElementById('followersLabel') && (document.getElementById('followersLabel').innerText = t.followers);
+        document.getElementById('countryLabel') && (document.getElementById('countryLabel').innerText = t.country);
+        document.getElementById('featuresTitle') && (document.getElementById('featuresTitle').innerHTML = `<iconify-icon icon="mdi:format-list-bulleted" width="20"></iconify-icon> ${t.keyFeatures}`);
+        document.getElementById('pricingTitle') && (document.getElementById('pricingTitle').innerHTML = `<iconify-icon icon="mdi:cash-multiple" width="20"></iconify-icon> ${t.pricing}`);
+        document.getElementById('clickHint') && (document.getElementById('clickHint').innerText = t.clickHint);
+        document.getElementById('buyBtnText') && (document.getElementById('buyBtnText').innerText = t.buyNow);
+        document.getElementById('shareBtnText') && (document.getElementById('shareBtnText').innerText = t.share);
+        document.getElementById('suggestionsTitle') && (document.getElementById('suggestionsTitle').innerHTML = `<iconify-icon icon="mdi:lightbulb" width="20"></iconify-icon> ${t.youMayAlsoLike}`);
+        document.getElementById('errorTitle') && (document.getElementById('errorTitle').innerText = t.errorTitle);
+        document.getElementById('errorDesc') && (document.getElementById('errorDesc').innerText = t.errorDesc);
+        document.getElementById('homeLink') && (document.getElementById('homeLink').innerText = t.homeLink);
+        document.getElementById('noImagesMsg') && (document.getElementById('noImagesMsg').innerText = t.noImages);
+        document.getElementById('noFeaturesMsg') && (document.getElementById('noFeaturesMsg').innerText = t.noFeatures);
+        
+        // Update status badges and any dynamic content
+        if (window.currentAccount) {
+            updateStatusBadgeText(window.currentAccount, t);
+            updatePricingBadgesText(window.currentAccount, t);
+        }
+    }
+    
+    function showLanguageModal() {
+        const existing = document.querySelector('.language-modal');
+        if(existing) existing.remove();
+        const modal = document.createElement('div');
+        modal.className = 'language-modal';
+        modal.innerHTML = `
+            <div class="language-card">
+                <h3>🌍 Hitamo Ururimi / Choose Language</h3>
+                <div class="lang-option" data-lang="rw">
+                    <span class="flag-icon">🇷🇼</span>
+                    <span class="lang-name">Kinyarwanda</span>
+                </div>
+                <div class="lang-option" data-lang="en">
+                    <span class="flag-icon">🇬🇧</span>
+                    <span class="lang-name">English</span>
+                </div>
+                <div class="lang-option" data-lang="fr">
+                    <span class="flag-icon">🇫🇷</span>
+                    <span class="lang-name">Français</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                const lang = opt.dataset.lang;
+                applyLanguage(lang);
+                modal.remove();
+                // Refresh suggestions display
+                if (typeof renderSuggestions === 'function') renderSuggestions();
+                // Refresh status badges
+                if (window.currentAccount) {
+                    const t = translations[currentLang];
+                    updateStatusBadgeText(window.currentAccount, t);
+                    updatePricingBadgesText(window.currentAccount, t);
+                }
+            });
+        });
+    }
+    
+    function updateStatusBadgeText(account, t) {
+        const isSold = account.status === 'sold';
+        const statusBadge = isSold ? 
+            `<span class="status-badge status-sold"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon> ${t.statusSold}</span>` : 
+            `<span class="status-badge status-available"><iconify-icon icon="mdi:check-circle" width="14"></iconify-icon> ${t.statusAvailable}</span>`;
+        const badgeEl = document.getElementById('accountStatusBadge');
+        if (badgeEl) badgeEl.innerHTML = statusBadge;
+    }
+    
+    function updatePricingBadgesText(account, t) {
+        const badgesContainer = document.getElementById('pricingBadges');
+        if (!badgesContainer) return;
+        badgesContainer.innerHTML = '';
+        if (account.bargaining) {
+            badgesContainer.innerHTML += `<span class="feature-badge"><iconify-icon icon="mdi:handshake" width="14"></iconify-icon> ${t.negotiable}</span>`;
+        }
+        if (account.hasDiscount || (account.discountPrice && !account.bargaining)) {
+            badgesContainer.innerHTML += `<span class="feature-badge"><iconify-icon icon="mdi:sale" width="14"></iconify-icon> ${t.discountApplied}</span>`;
+        }
+        if (account.acceptDiscount) {
+            badgesContainer.innerHTML += `<span class="feature-badge"><iconify-icon icon="mdi:check-decagram" width="14"></iconify-icon> ${t.acceptDiscount}</span>`;
+        }
+        if (account.status === 'sold') {
+            badgesContainer.innerHTML += `<span class="feature-badge bg-red-950 text-red-400 border-red-800"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> ${t.soldOut}</span>`;
+        }
+    }
+    
+    document.getElementById('langSwitchBtn')?.addEventListener('click', showLanguageModal);
+    
+    // Apply initial language
+    applyLanguage(currentLang);
+    
+    // ==================== ORIGINAL APP LOGIC (unchanged) ====================
     const urlParams = new URLSearchParams(window.location.search);
     const accountId = urlParams.get('id');
     let currentAccount = null;
     let allAccounts = [];
     let currentUSDPrice = 0;
-    let exchangeRates = {
-        USD: 1,
-        RWF: 1450,
-        EUR: 0.92,
-        UGX: 3700,
-        NGN: 1550
-    };
+    let exchangeRates = { USD: 1, RWF: 1450, EUR: 0.92, UGX: 3700, NGN: 1550 };
     
-    // Fetch real exchange rates from API
     async function fetchExchangeRates() {
         try {
             const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
             const data = await response.json();
             if (data && data.rates) {
-                exchangeRates = {
-                    USD: 1,
-                    RWF: data.rates.RWF || 1450,
-                    EUR: data.rates.EUR || 0.92,
-                    UGX: data.rates.UGX || 3700,
-                    NGN: data.rates.NGN || 1550
-                };
+                exchangeRates = { USD: 1, RWF: data.rates.RWF || 1450, EUR: data.rates.EUR || 0.92, UGX: data.rates.UGX || 3700, NGN: data.rates.NGN || 1550 };
             }
-        } catch (error) {
-            console.log("Using fallback exchange rates");
-        }
+        } catch (error) { console.log("Using fallback exchange rates"); }
         updateAllCurrencies();
     }
     
     function updateAllCurrencies() {
         if (!currentUSDPrice) return;
-        
         const currencies = [
             { code: 'USD', symbol: '$', suffix: '', rate: 1, format: (v) => `$${v.toLocaleString()}` },
             { code: 'RWF', symbol: '', suffix: ' Frw', rate: exchangeRates.RWF, format: (v) => `${Math.round(v).toLocaleString()} Frw` },
@@ -395,25 +466,20 @@
             { code: 'UGX', symbol: '', suffix: ' USh', rate: exchangeRates.UGX, format: (v) => `${Math.round(v).toLocaleString()} USh` },
             { code: 'NGN', symbol: '₦', suffix: '', rate: exchangeRates.NGN, format: (v) => `₦${Math.round(v).toLocaleString()}` }
         ];
-        
         currencies.forEach(currency => {
             const convertedValue = currentUSDPrice * currency.rate;
             const element = document.querySelector(`[data-currency="${currency.code}"] .currency-amount`);
             if (element) {
-                if (currency.code === 'RWF' || currency.code === 'UGX') {
-                    element.textContent = `${Math.round(convertedValue).toLocaleString()}${currency.suffix}`;
-                } else {
-                    element.textContent = currency.format(convertedValue);
-                }
+                if (currency.code === 'RWF' || currency.code === 'UGX') element.textContent = `${Math.round(convertedValue).toLocaleString()}${currency.suffix}`;
+                else element.textContent = currency.format(convertedValue);
             }
         });
     }
     
     function setupCurrencySelector() {
-        const currencyCards = document.querySelectorAll('.currency-card');
-        currencyCards.forEach(card => {
+        document.querySelectorAll('.currency-card').forEach(card => {
             card.addEventListener('click', () => {
-                currencyCards.forEach(c => c.classList.remove('currency-active'));
+                document.querySelectorAll('.currency-card').forEach(c => c.classList.remove('currency-active'));
                 card.classList.add('currency-active');
             });
         });
@@ -434,29 +500,20 @@
             allAccounts = [];
             querySnapshot.forEach(doc => {
                 const data = doc.data();
-                if (data && doc.id !== accountId) {
-                    allAccounts.push({ id: doc.id, ...data });
-                }
+                if (data && doc.id !== accountId) allAccounts.push({ id: doc.id, ...data });
             });
             renderSuggestions();
-        } catch(e) {
-            console.error("Error loading suggestions:", e);
-        }
+        } catch(e) { console.error("Error loading suggestions:", e); }
     }
     
     function renderSuggestions() {
         if (allAccounts.length === 0) return;
-        
         const shuffled = [...allAccounts];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
+        for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
         const suggestions = shuffled.slice(0, 20);
-        
         const track = document.getElementById('suggestionsTrack');
         if (!track) return;
-        
+        const t = translations[currentLang];
         const suggestionItems = suggestions.map(acc => {
             let platformIcon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') platformIcon = "skill-icons:instagram";
@@ -464,62 +521,31 @@
             else if (acc.socialMedia?.toLowerCase() === 'youtube') platformIcon = "logos:youtube-icon";
             else if (acc.socialMedia?.toLowerCase() === 'linkedin') platformIcon = "logos:linkedin-icon";
             else if (acc.socialMedia?.toLowerCase() === 'x') platformIcon = "logos:twitter";
-            
             const isSold = acc.status === 'sold';
-            const statusBadge = isSold ? '<span class="text-[10px] text-red-400">SOLD</span>' : '<span class="text-[10px] text-green-400">AVAIL</span>';
+            const statusBadge = isSold ? `<span class="text-[10px] text-red-400">${t.statusSold}</span>` : `<span class="text-[10px] text-green-400">${t.statusAvailable}</span>`;
             const price = acc.finalPrice || acc.originalPrice || 0;
-            
-            return `
-                <div class="suggestion-item" data-id="${acc.id}">
-                    <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <iconify-icon icon="${platformIcon}" width="24"></iconify-icon>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-sm truncate text-white">${escapeHtml(acc.nickname || 'Unknown')}</p>
-                            <div class="flex items-center justify-between">
-                                <p class="text-xs text-gray-400">${acc.socialMedia || ''}</p>
-                                ${statusBadge}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-2 flex justify-between items-center">
-                        <span class="font-bold text-sm text-white">$${price.toLocaleString()}</span>
-                        <span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span>
-                    </div>
-                </div>
-            `;
+            return `<div class="suggestion-item" data-id="${acc.id}"><div class="flex items-center gap-2"><div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0"><iconify-icon icon="${platformIcon}" width="24"></iconify-icon></div><div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate text-white">${escapeHtml(acc.nickname || 'Unknown')}</p><div class="flex items-center justify-between"><p class="text-xs text-gray-400">${acc.socialMedia || ''}</p>${statusBadge}</div></div></div><div class="mt-2 flex justify-between items-center"><span class="font-bold text-sm text-white">$${price.toLocaleString()}</span><span class="text-xs text-gray-400">${acc.followers?.toLocaleString() || 0} followers</span></div></div>`;
         }).join('');
-        
         track.innerHTML = suggestionItems + suggestionItems;
-        track.querySelectorAll('.suggestion-item').forEach(el => {
-            el.addEventListener('click', () => {
-                const id = el.getAttribute('data-id');
-                if (id) window.location.href = `view.html?id=${id}`;
-            });
-        });
-        
-        track.style.animation = 'none';
-        track.offsetHeight;
-        track.style.animation = 'scrollSuggestions 70s linear infinite';
+        track.querySelectorAll('.suggestion-item').forEach(el => { el.addEventListener('click', () => { const id = el.getAttribute('data-id'); if (id) window.location.href = `view.html?id=${id}`; }); });
+        track.style.animation = 'none'; track.offsetHeight; track.style.animation = 'scrollSuggestions 70s linear infinite';
     }
     
     async function loadAccount() {
         try {
             const docRef = doc(db, 'marketplaceAccounts', accountId);
             const docSnap = await getDoc(docRef);
-            
-            if (!docSnap.exists()) {
-                throw new Error('Account not found');
-            }
-            
+            if (!docSnap.exists()) throw new Error('Account not found');
             currentAccount = { id: docSnap.id, ...docSnap.data() };
+            window.currentAccount = currentAccount;
             currentUSDPrice = currentAccount.finalPrice || currentAccount.originalPrice || 0;
             displayAccount(currentAccount);
             updateAllCurrencies();
             setupCurrencySelector();
             updateUserProfile(currentAccount);
-            
+            const t = translations[currentLang];
+            updateStatusBadgeText(currentAccount, t);
+            updatePricingBadgesText(currentAccount, t);
         } catch (error) {
             console.error('Error loading account:', error);
             document.getElementById('loadingState').classList.add('hidden');
@@ -528,11 +554,7 @@
     }
     
     function updateUserProfile(account) {
-        let profile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
-            viewedPlatforms: {},
-            viewedCategories: {},
-            clickedAccounts: []
-        };
+        let profile = JSON.parse(localStorage.getItem('socialMarketProfile')) || { viewedPlatforms: {}, viewedCategories: {}, clickedAccounts: [] };
         profile.viewedPlatforms[account.socialMedia] = (profile.viewedPlatforms[account.socialMedia] || 0) + 1;
         if (account.category) profile.viewedCategories[account.category] = (profile.viewedCategories[account.category] || 0) + 1;
         profile.clickedAccounts.push({ id: account.id, timestamp: Date.now() });
@@ -542,29 +564,18 @@
     
     function displayAccount(account) {
         const isSold = account.status === 'sold';
-        
+        const t = translations[currentLang];
         document.getElementById('accountNickname').innerText = account.nickname || 'Unnamed';
         document.getElementById('accountPlatform').innerHTML = `<iconify-icon icon="mdi:earth" width="14"></iconify-icon> ${account.socialMedia || 'Unknown'}`;
-        
-        const statusBadge = isSold ? 
-            '<span class="status-badge status-sold"><iconify-icon icon="mdi:close-circle" width="14"></iconify-icon> SOLD</span>' : 
-            '<span class="status-badge status-available"><iconify-icon icon="mdi:check-circle" width="14"></iconify-icon> AVAILABLE</span>';
-        document.getElementById('accountStatusBadge').innerHTML = statusBadge;
-        
         const finalPrice = account.finalPrice || account.originalPrice || 0;
         const originalPrice = account.originalPrice || 0;
-        
         if (account.hasDiscount || (account.discountPrice && !account.bargaining) || (originalPrice > finalPrice)) {
             document.getElementById('originalPriceSmall').innerHTML = `$${originalPrice.toLocaleString()}`;
             document.getElementById('originalPriceSmall').classList.remove('hidden');
-        } else {
-            document.getElementById('originalPriceSmall').classList.add('hidden');
-        }
+        } else { document.getElementById('originalPriceSmall').classList.add('hidden'); }
         document.getElementById('finalPriceDisplay').innerHTML = `$${finalPrice.toLocaleString()}`;
-        
         const usdElement = document.querySelector('[data-currency="USD"] .currency-amount');
         if (usdElement) usdElement.textContent = `$${finalPrice.toLocaleString()}`;
-        
         document.getElementById('detailNickname').innerText = account.nickname || '-';
         document.getElementById('detailFollowers').innerText = account.followers?.toLocaleString() || '0';
         document.getElementById('detailSocialMedia').innerText = account.socialMedia || '-';
@@ -573,28 +584,17 @@
         
         const badgesContainer = document.getElementById('pricingBadges');
         badgesContainer.innerHTML = '';
-        if (account.bargaining) {
-            badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:handshake" width="14"></iconify-icon> Negotiable</span>';
-        }
-        if (account.hasDiscount || (account.discountPrice && !account.bargaining)) {
-            badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:sale" width="14"></iconify-icon> Discount Applied</span>';
-        }
-        if (account.acceptDiscount) {
-            badgesContainer.innerHTML += '<span class="feature-badge"><iconify-icon icon="mdi:check-decagram" width="14"></iconify-icon> Accept Discount</span>';
-        }
-        if (isSold) {
-            badgesContainer.innerHTML += '<span class="feature-badge bg-red-950 text-red-400 border-red-800"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> Sold Out</span>';
-        }
+        if (account.bargaining) badgesContainer.innerHTML += `<span class="feature-badge"><iconify-icon icon="mdi:handshake" width="14"></iconify-icon> ${t.negotiable}</span>`;
+        if (account.hasDiscount || (account.discountPrice && !account.bargaining)) badgesContainer.innerHTML += `<span class="feature-badge"><iconify-icon icon="mdi:sale" width="14"></iconify-icon> ${t.discountApplied}</span>`;
+        if (account.acceptDiscount) badgesContainer.innerHTML += `<span class="feature-badge"><iconify-icon icon="mdi:check-decagram" width="14"></iconify-icon> ${t.acceptDiscount}</span>`;
+        if (isSold) badgesContainer.innerHTML += `<span class="feature-badge bg-red-950 text-red-400 border-red-800"><iconify-icon icon="mdi:sold" width="14"></iconify-icon> ${t.soldOut}</span>`;
         
         const featuresList = document.getElementById('featuresList');
         const noFeaturesMsg = document.getElementById('noFeaturesMsg');
         if (account.features && account.features.length > 0) {
             featuresList.innerHTML = account.features.map(f => `<span class="feature-badge"><iconify-icon icon="mdi:check-circle" width="14" class="text-green-500"></iconify-icon> ${escapeHtml(f)}</span>`).join('');
             noFeaturesMsg.classList.add('hidden');
-        } else {
-            featuresList.innerHTML = '';
-            noFeaturesMsg.classList.remove('hidden');
-        }
+        } else { featuresList.innerHTML = ''; noFeaturesMsg.classList.remove('hidden'); }
         
         const gallery = document.getElementById('imageGallery');
         const noImagesMsg = document.getElementById('noImagesMsg');
@@ -603,21 +603,10 @@
         if (account.images?.front) allImages.push({ url: account.images.front, type: 'front' });
         if (account.images?.dashboard) allImages.push(...account.images.dashboard.map(url => ({ url, type: 'dashboard' })));
         if (account.images?.other) allImages.push(...account.images.other.map(url => ({ url, type: 'other' })));
-        
         if (allImages.length > 0) {
-            gallery.innerHTML = allImages.map(img => `
-                <div class="relative group cursor-pointer" onclick="openImageModal('${img.url.replace(/'/g, "\\'")}')">
-                    <img src="${img.url}" class="image-gallery-img w-full h-40 md:h-48 object-cover rounded-xl border border-gray-800" loading="lazy" onerror="this.src='https://placehold.co/400x300/1a1a1a/666?text=Image+Error'">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <iconify-icon icon="mdi:magnify-plus" width="28" class="text-white drop-shadow-lg"></iconify-icon>
-                    </div>
-                </div>
-            `).join('');
+            gallery.innerHTML = allImages.map(img => `<div class="relative group cursor-pointer" onclick="openImageModal('${img.url.replace(/'/g, "\\'")}')"><img src="${img.url}" class="image-gallery-img w-full h-40 md:h-48 object-cover rounded-xl border border-gray-800" loading="lazy" onerror="this.src='https://placehold.co/400x300/1a1a1a/666?text=Image+Error'"><div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100"><iconify-icon icon="mdi:magnify-plus" width="28" class="text-white drop-shadow-lg"></iconify-icon></div></div>`).join('');
             noImagesMsg.classList.add('hidden');
-        } else {
-            gallery.innerHTML = '';
-            noImagesMsg.classList.remove('hidden');
-        }
+        } else { gallery.innerHTML = ''; noImagesMsg.classList.remove('hidden'); }
         
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('contentState').classList.remove('hidden');
@@ -627,47 +616,23 @@
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.innerHTML = `<img src="${url}" alt="Full size image" onerror="this.src='https://placehold.co/800x600/1a1a1a/666?text=Image+Error'"><div class="absolute top-4 right-4 text-white text-2xl cursor-pointer bg-black/60 rounded-full p-2 hover:bg-black/80 transition">&times;</div>`;
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
         modal.querySelector('.absolute')?.addEventListener('click', () => modal.remove());
         document.body.appendChild(modal);
     };
     
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
     
-    // Share button
     document.getElementById('shareBtn')?.addEventListener('click', async () => {
         const shareUrl = window.location.href;
         try {
-            if (navigator.share) {
-                await navigator.share({
-                    title: currentAccount?.nickname || 'Social Media Account',
-                    text: `Check out this ${currentAccount?.socialMedia || 'social media'} account: ${currentAccount?.nickname || ''}`,
-                    url: shareUrl
-                });
-            } else {
-                await navigator.clipboard.writeText(shareUrl);
-                alert('Link copied to clipboard!');
-            }
-        } catch (err) {
-            await navigator.clipboard.writeText(shareUrl);
-            alert('Link copied to clipboard!');
-        }
+            if (navigator.share) await navigator.share({ title: currentAccount?.nickname || 'Social Media Account', text: `Check out this ${currentAccount?.socialMedia || 'social media'} account: ${currentAccount?.nickname || ''}`, url: shareUrl });
+            else { await navigator.clipboard.writeText(shareUrl); alert('Link copied to clipboard!'); }
+        } catch (err) { await navigator.clipboard.writeText(shareUrl); alert('Link copied to clipboard!'); }
     });
     
-    // BUY button - Opens WhatsApp with complete details
     document.getElementById('buyBtn')?.addEventListener('click', () => {
         if (!currentAccount) return;
-        
         const phoneNumber = "250734248701";
         const productName = currentAccount.nickname || 'Social Media Account';
         const followers = currentAccount.followers?.toLocaleString() || 'N/A';
@@ -677,21 +642,8 @@
         const fullReferenceId = currentAccount.id;
         const category = currentAccount.category || 'Not specified';
         const country = currentAccount.country || 'Not specified';
-        
-        const message = `Hello! I'm interested in buying this account from Social Market.%0A%0A` +
-            `📱 *ACCOUNT DETAILS:*%0A` +
-            `• Nickname: ${productName}%0A` +
-            `• Platform: ${platform}%0A` +
-            `• Followers: ${followers}%0A` +
-            `• Category: ${category}%0A` +
-            `• Country: ${country}%0A` +
-            `• Price: $${priceUSD.toLocaleString()} USD / ${priceRWF.toLocaleString()} RWF%0A` +
-            `• Reference ID: ${fullReferenceId}%0A%0A` +
-            `I found this on Social Market and would like to proceed with the purchase. Please let me know the next steps.%0A%0A` +
-            `Thank you! 🙏`;
-        
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-        window.open(whatsappUrl, '_blank');
+        const message = `Hello! I'm interested in buying this account from Imbuga Store.%0A%0A📱 *ACCOUNT DETAILS:*%0A• Nickname: ${productName}%0A• Platform: ${platform}%0A• Followers: ${followers}%0A• Category: ${category}%0A• Country: ${country}%0A• Price: $${priceUSD.toLocaleString()} USD / ${priceRWF.toLocaleString()} RWF%0A• Reference ID: ${fullReferenceId}%0A%0AI found this on Imbuga Store and would like to proceed with the purchase. Please let me know the next steps.%0A%0AThank you! 🙏`;
+        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     });
 </script>
 </body>
