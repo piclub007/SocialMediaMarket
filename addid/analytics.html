@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Analytics Dashboard — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #f7f7f9; }
+        .stat-card { background: white; border-radius: 24px; border: 1px solid #efeff1; transition: all 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .input-modern { border: 1px solid #e5e7eb; border-radius: 12px; padding: 8px 16px; outline: none; transition: all 0.2s; }
+        .input-modern:focus { border-color: #3b82f6; ring: 2px solid rgba(59,130,246,0.1); }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <a href="admin.html" class="text-gray-500 hover:text-black transition p-2 rounded-full bg-white shadow-sm">
+                <iconify-icon icon="mdi:arrow-left" width="24"></iconify-icon>
+            </a>
+            <h1 class="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
+        </div>
+        <div class="flex gap-3">
+            <select id="dateRange" class="input-modern bg-white text-sm">
+                <option value="today">Today</option>
+                <option value="week" selected>Last 7 Days</option>
+                <option value="month">Last 30 Days</option>
+                <option value="year">Last Year</option>
+                <option value="all">All Time</option>
+            </select>
+            <button id="refreshBtn" class="bg-black text-white px-4 py-2 rounded-xl text-sm flex items-center gap-2 hover:bg-gray-800 transition">
+                <iconify-icon icon="mdi:refresh"></iconify-icon> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card p-6">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">Total Page Views</span>
+                <iconify-icon icon="mdi:eye" width="28" class="text-blue-500"></iconify-icon>
+            </div>
+            <div class="text-3xl font-bold" id="totalViews">0</div>
+            <div class="text-xs mt-2" id="viewsTrend">Loading...</div>
+        </div>
+        
+        <div class="stat-card p-6">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">Unique Visitors</span>
+                <iconify-icon icon="mdi:account-group" width="28" class="text-purple-500"></iconify-icon>
+            </div>
+            <div class="text-3xl font-bold" id="uniqueVisitors">0</div>
+            <div class="text-xs text-gray-500 mt-2">Anonymous sessions</div>
+        </div>
+        
+        <div class="stat-card p-6">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">Total Clicks</span>
+                <iconify-icon icon="mdi:cursor-pointer" width="28" class="text-green-500"></iconify-icon>
+            </div>
+            <div class="text-3xl font-bold" id="totalClicks">0</div>
+            <div class="text-xs mt-2" id="clicksTrend">Loading...</div>
+        </div>
+        
+        <div class="stat-card p-6">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">CTR (Click-Through Rate)</span>
+                <iconify-icon icon="mdi:chart-line" width="28" class="text-orange-500"></iconify-icon>
+            </div>
+            <div class="text-3xl font-bold" id="ctr">0%</div>
+            <div class="text-xs text-gray-500 mt-2">Clicks ÷ Views × 100</div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="stat-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Page Views Over Time</h3>
+            <canvas id="viewsChart" height="250"></canvas>
+        </div>
+        
+        <div class="stat-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Top Pages</h3>
+            <div id="topPagesList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Detailed Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="stat-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Most Clicked Elements</h3>
+            <div id="topClicksList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+        </div>
+        
+        <div class="stat-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+            <div id="recentActivity" class="space-y-3 max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Device & Browser Stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="stat-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Device Type Distribution</h3>
+            <canvas id="deviceChart" height="200"></canvas>
+        </div>
+        
+        <div class="stat-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Browser Distribution</h3>
+            <canvas id="browserChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
+        authDomain: "project-k21n.firebaseapp.com",
+        projectId: "project-k21n",
+        storageBucket: "project-k21n.firebasestorage.app",
+        messagingSenderId: "266081318769",
+        appId: "1:266081318769:web:a7893c55b5b30a8dd768d0"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    let viewsChart, deviceChart, browserChart;
+    let currentData = { pageViews: [], clicks: [] };
+    
+    // Helper: Get date range based on selection
+    function getDateRange(range) {
+        const now = new Date();
+        const startDate = new Date();
+        
+        switch(range) {
+            case 'today':
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            case 'week':
+                startDate.setDate(now.getDate() - 7);
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            case 'month':
+                startDate.setDate(now.getDate() - 30);
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            case 'year':
+                startDate.setFullYear(now.getFullYear() - 1);
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            default:
+                startDate.setFullYear(2000);
+        }
+        
+        return { start: Timestamp.fromDate(startDate), end: Timestamp.fromDate(now) };
+    }
+    
+    // Calculate trend percentage
+    function calculateTrend(current, previous) {
+        if (previous === 0) return current > 0 ? 100 : 0;
+        return ((current - previous) / previous) * 100;
+    }
+    
+    // Fetch and display analytics
+    async function loadAnalytics() {
+        const range = document.getElementById('dateRange').value;
+        const { start, end } = getDateRange(range);
+        
+        // Calculate previous period for trends
+        const duration = end.toDate() - start.toDate();
+        const previousStart = Timestamp.fromDate(new Date(start.toDate().getTime() - duration));
+        const previousEnd = start;
+        
+        // Show loading
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading-overlay';
+        loadingDiv.innerHTML = '<div class="bg-white rounded-2xl p-4 shadow-xl flex items-center gap-3"><iconify-icon icon="line-md:loading-loop" width="28" class="text-black"></iconify-icon><span class="text-gray-700">Loading analytics...</span></div>';
+        document.body.appendChild(loadingDiv);
+        
+        try {
+            // Query current period
+            const pageViewsQuery = query(
+                collection(db, 'analytics_pageViews'),
+                where('timestamp', '>=', start),
+                where('timestamp', '<=', end),
+                orderBy('timestamp', 'desc')
+            );
+            
+            const clicksQuery = query(
+                collection(db, 'analytics_clicks'),
+                where('timestamp', '>=', start),
+                where('timestamp', '<=', end),
+                orderBy('timestamp', 'desc')
+            );
+            
+            // Query previous period for trends
+            const previousViewsQuery = query(
+                collection(db, 'analytics_pageViews'),
+                where('timestamp', '>=', previousStart),
+                where('timestamp', '<=', previousEnd)
+            );
+            
+            const previousClicksQuery = query(
+                collection(db, 'analytics_clicks'),
+                where('timestamp', '>=', previousStart),
+                where('timestamp', '<=', previousEnd)
+            );
+            
+            const [pageViewsSnap, clicksSnap, prevViewsSnap, prevClicksSnap] = await Promise.all([
+                getDocs(pageViewsQuery),
+                getDocs(clicksQuery),
+                getDocs(previousViewsQuery),
+                getDocs(previousClicksQuery)
+            ]);
+            
+            const pageViews = pageViewsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const clicks = clicksSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const prevViewsCount = prevViewsSnap.size;
+            const prevClicksCount = prevClicksSnap.size;
+            
+            currentData = { pageViews, clicks };
+            
+            // Calculate statistics
+            const totalViews = pageViews.length;
+            const totalClicksVal = clicks.length;
+            const uniqueVisitors = new Set(pageViews.map(v => v.sessionId).filter(Boolean)).size;
+            const ctr = totalViews > 0 ? ((totalClicksVal / totalViews) * 100).toFixed(2) : 0;
+            
+            // Calculate trends
+            const viewsTrend = calculateTrend(totalViews, prevViewsCount);
+            const clicksTrend = calculateTrend(totalClicksVal, prevClicksCount);
+            
+            // Update stats
+            document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+            document.getElementById('uniqueVisitors').textContent = uniqueVisitors.toLocaleString();
+            document.getElementById('totalClicks').textContent = totalClicksVal.toLocaleString();
+            document.getElementById('ctr').textContent = `${ctr}%`;
+            
+            // Update trend displays
+            const viewsTrendEl = document.getElementById('viewsTrend');
+            viewsTrendEl.innerHTML = viewsTrend !== 0 ? `${viewsTrend > 0 ? '↑' : '↓'} ${Math.abs(viewsTrend).toFixed(1)}% from previous period` : 'No change from previous period';
+            viewsTrendEl.className = `text-xs mt-2 ${viewsTrend > 0 ? 'text-green-600' : viewsTrend < 0 ? 'text-red-600' : 'text-gray-500'}`;
+            
+            const clicksTrendEl = document.getElementById('clicksTrend');
+            clicksTrendEl.innerHTML = clicksTrend !== 0 ? `${clicksTrend > 0 ? '↑' : '↓'} ${Math.abs(clicksTrend).toFixed(1)}% from previous period` : 'No change from previous period';
+            clicksTrendEl.className = `text-xs mt-2 ${clicksTrend > 0 ? 'text-green-600' : clicksTrend < 0 ? 'text-red-600' : 'text-gray-500'}`;
+            
+            // Process data for charts
+            const viewsByDate = {};
+            pageViews.forEach(view => {
+                const date = view.timestamp?.toDate().toLocaleDateString() || new Date().toLocaleDateString();
+                viewsByDate[date] = (viewsByDate[date] || 0) + 1;
+            });
+            
+            // Sort dates chronologically
+            const sortedDates = Object.keys(viewsByDate).sort((a,b) => new Date(a) - new Date(b));
+            const viewsData = sortedDates.map(date => viewsByDate[date]);
+            
+            // Update views chart
+            if (viewsChart) viewsChart.destroy();
+            const ctx = document.getElementById('viewsChart').getContext('2d');
+            viewsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates,
+                    datasets: [{
+                        label: 'Page Views',
+                        data: viewsData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e5e7eb' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+            
+            // Top pages
+            const pageCounts = {};
+            pageViews.forEach(view => {
+                const page = view.pageName || view.page || 'Unknown';
+                pageCounts[page] = (pageCounts[page] || 0) + 1;
+            });
+            const topPages = Object.entries(pageCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            
+            const topPagesHtml = topPages.length > 0 ? topPages.map(([page, count], index) => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-gray-400 w-6">#${index + 1}</span>
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="mdi:file-document" width="20" class="text-gray-500"></iconify-icon>
+                            <span class="text-sm font-medium truncate max-w-xs">${page}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold">${count}</span>
+                        <span class="text-xs text-gray-500">views</span>
+                    </div>
+                </div>
+            `).join('') : '<div class="text-gray-500 text-center py-8">No page view data yet. Start tracking your pages!</div>';
+            document.getElementById('topPagesList').innerHTML = topPagesHtml;
+            
+            // Most clicked elements
+            const clickCounts = {};
+            clicks.forEach(click => {
+                const element = click.element || click.elementId || 'Unknown';
+                clickCounts[element] = (clickCounts[element] || 0) + 1;
+            });
+            const topClicks = Object.entries(clickCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            
+            const topClicksHtml = topClicks.length > 0 ? topClicks.map(([element, count], index) => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-gray-400 w-6">#${index + 1}</span>
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="mdi:cursor-pointer" width="20" class="text-green-500"></iconify-icon>
+                            <span class="text-sm font-medium truncate max-w-xs">${element.substring(0, 50)}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold">${count}</span>
+                        <span class="text-xs text-gray-500">clicks</span>
+                    </div>
+                </div>
+            `).join('') : '<div class="text-gray-500 text-center py-8">No click data yet. Add data-track-click to your buttons!</div>';
+            document.getElementById('topClicksList').innerHTML = topClicksHtml;
+            
+            // Recent activity
+            const allEvents = [
+                ...pageViews.slice(0, 50).map(v => ({ ...v, type: 'page_view', time: v.timestamp?.toDate() || new Date() })),
+                ...clicks.slice(0, 50).map(c => ({ ...c, type: 'click', time: c.timestamp?.toDate() || new Date() }))
+            ];
+            allEvents.sort((a,b) => b.time - a.time);
+            const recentEvents = allEvents.slice(0, 20);
+            
+            const recentHtml = recentEvents.length > 0 ? recentEvents.map(event => {
+                const time = event.time.toLocaleString();
+                const icon = event.type === 'page_view' ? 'mdi:eye' : 'mdi:cursor-pointer';
+                const color = event.type === 'page_view' ? 'text-blue-500' : 'text-green-500';
+                const detail = event.type === 'page_view' ? `Viewed ${event.pageName || event.page || 'page'}` : `Clicked "${(event.element || event.elementId || 'element').substring(0, 40)}"`;
+                return `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="${icon}" width="20" class="${color}"></iconify-icon>
+                            <div>
+                                <div class="text-sm font-medium">${detail}</div>
+                                <div class="text-xs text-gray-500">${time}</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400 px-2 py-1 bg-white rounded-full">${event.device || 'Unknown'}</div>
+                    </div>
+                `;
+            }).join('') : '<div class="text-gray-500 text-center py-8">No recent activity. Your visitors will appear here!</div>';
+            document.getElementById('recentActivity').innerHTML = recentHtml;
+            
+            // Device distribution
+            const deviceCounts = {};
+            allEvents.forEach(event => {
+                const device = event.device || 'Unknown';
+                deviceCounts[device] = (deviceCounts[device] || 0) + 1;
+            });
+            
+            if (deviceChart) deviceChart.destroy();
+            const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+            deviceChart = new Chart(deviceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(deviceCounts),
+                    datasets: [{
+                        data: Object.values(deviceCounts),
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 15 } }
+                    }
+                }
+            });
+            
+            // Browser distribution
+            const browserCounts = {};
+            allEvents.forEach(event => {
+                const browser = event.browser || 'Unknown';
+                browserCounts[browser] = (browserCounts[browser] || 0) + 1;
+            });
+            
+            if (browserChart) browserChart.destroy();
+            const browserCtx = document.getElementById('browserChart').getContext('2d');
+            browserChart = new Chart(browserCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(browserCounts),
+                    datasets: [{
+                        data: Object.values(browserCounts),
+                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 15 } }
+                    }
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            document.getElementById('topPagesList').innerHTML = '<div class="text-red-500 text-center py-4">⚠️ Error loading data. Make sure visitors have visited your pages first.</div>';
+        } finally {
+            loadingDiv.remove();
+        }
+    }
+    
+    // Load analytics when page loads
+    document.getElementById('refreshBtn').addEventListener('click', loadAnalytics);
+    document.getElementById('dateRange').addEventListener('change', loadAnalytics);
+    
+    // Initial load
+    loadAnalytics();
+</script>
+
+</body>
+</html>
