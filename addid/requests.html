@@ -139,6 +139,8 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
         }
         
         .whatsapp-link:hover {
@@ -321,6 +323,28 @@
     let currentFilter = 'all';
     let searchTerm = '';
     
+    // Function to open WhatsApp with custom message
+    function openWhatsApp(phoneNumber, sellerName, price) {
+        // Clean phone number (remove non-digits)
+        let cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+        // Remove leading zero if present (for international format)
+        if (cleanNumber.startsWith('0') && cleanNumber.length === 10) {
+            cleanNumber = '250' + cleanNumber.substring(1);
+        }
+        // Ensure it starts with country code (assume Rwanda +250 if not present)
+        if (!cleanNumber.startsWith('250') && cleanNumber.length === 9) {
+            cleanNumber = '250' + cleanNumber;
+        }
+        if (!cleanNumber.startsWith('250') && cleanNumber.length === 10) {
+            cleanNumber = '250' + cleanNumber;
+        }
+        // Custom message
+        const message = `Hy, it's Imbuga Store. I'm contacting you regarding your seller request for $${price?.toLocaleString() || 0}.`;
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    }
+    
     // Load requests from Firestore
     async function loadRequests() {
         try {
@@ -392,10 +416,10 @@
                             </div>
                             <div>
                                 <p class="text-xs text-gray-400">WhatsApp Number</p>
-                                <a href="https://wa.me/${request.sellerWhatsap?.replace(/[^0-9]/g, '') || ''}?text=Hello%20${encodeURIComponent(request.sellerName || 'Seller')}%2C%20I%27m%20from%20Imbuga%20Store%20regarding%20your%20seller%20request%20for%20$${request.askingPrice?.toLocaleString() || 0}" target="_blank" class="whatsapp-link">
+                                <button onclick="window.openWhatsAppModal('${escapeHtml(request.sellerWhatsapp || '')}', '${escapeHtml(request.sellerName || 'Seller')}', ${request.askingPrice || 0})" class="whatsapp-link">
                                     <iconify-icon icon="mdi:whatsapp" width="18"></iconify-icon>
                                     ${escapeHtml(request.sellerWhatsapp || 'N/A')}
-                                </a>
+                                </button>
                             </div>
                             <div class="md:col-span-2">
                                 <p class="text-xs text-gray-400">Address</p>
@@ -608,7 +632,6 @@
             const image = images[i];
             const filename = `${sellerName}_${image.label.replace(/\s/g, '_')}.jpg`;
             await downloadImage(image.url, filename);
-            // Small delay between downloads to avoid overwhelming
             await new Promise(resolve => setTimeout(resolve, 500));
         }
     }
@@ -661,7 +684,10 @@
                                 </span>
                             </div>
                             <div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-400">
-                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:whatsapp" width="14"></iconify-icon> ${escapeHtml(req.sellerWhatsapp || 'N/A')}</span>
+                                <button onclick="event.stopPropagation(); window.openWhatsAppFromCard('${escapeHtml(req.sellerWhatsapp || '')}', '${escapeHtml(req.sellerName || 'Seller')}', ${req.askingPrice || 0})" class="flex items-center gap-1 hover:text-green-400 transition cursor-pointer">
+                                    <iconify-icon icon="mdi:whatsapp" width="14"></iconify-icon>
+                                    ${escapeHtml(req.sellerWhatsapp || 'N/A')}
+                                </button>
                                 <span class="flex items-center gap-1"><iconify-icon icon="mdi:map-marker" width="14"></iconify-icon> ${escapeHtml(req.sellerAddress || 'N/A')}</span>
                                 <span class="flex items-center gap-1"><iconify-icon icon="mdi:calendar" width="14"></iconify-icon> ${createdAt}</span>
                             </div>
@@ -701,8 +727,7 @@
             const request = allRequests.find(r => r.id === id);
             if (request) {
                 card.addEventListener('click', (e) => {
-                    // Don't open modal if clicking on buttons (but we don't have buttons inside cards anymore)
-                    if (!e.target.closest('.approve-btn') && !e.target.closest('.reject-btn') && !e.target.closest('.delete-btn')) {
+                    if (!e.target.closest('.whatsapp-link') && !e.target.closest('button') && !e.target.closest('.approve-btn') && !e.target.closest('.reject-btn') && !e.target.closest('.delete-btn')) {
                         openDetailsModal(request);
                     }
                 });
@@ -719,6 +744,41 @@
             return m;
         });
     }
+    
+    // Global WhatsApp functions for onclick handlers
+    window.openWhatsAppModal = function(phoneNumber, sellerName, price) {
+        let cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+        if (cleanNumber.startsWith('0') && cleanNumber.length === 10) {
+            cleanNumber = '250' + cleanNumber.substring(1);
+        }
+        if (!cleanNumber.startsWith('250') && cleanNumber.length === 9) {
+            cleanNumber = '250' + cleanNumber;
+        }
+        if (!cleanNumber.startsWith('250') && cleanNumber.length === 10) {
+            cleanNumber = '250' + cleanNumber;
+        }
+        const message = `Hy, it's Imbuga Store. I'm contacting you regarding your seller request for $${price?.toLocaleString() || 0}.`;
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    };
+    
+    window.openWhatsAppFromCard = function(phoneNumber, sellerName, price) {
+        let cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+        if (cleanNumber.startsWith('0') && cleanNumber.length === 10) {
+            cleanNumber = '250' + cleanNumber.substring(1);
+        }
+        if (!cleanNumber.startsWith('250') && cleanNumber.length === 9) {
+            cleanNumber = '250' + cleanNumber;
+        }
+        if (!cleanNumber.startsWith('250') && cleanNumber.length === 10) {
+            cleanNumber = '250' + cleanNumber;
+        }
+        const message = `Hy, it's Imbuga Store. I'm contacting you regarding your seller request for $${price?.toLocaleString() || 0}.`;
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    };
     
     // Filter event listeners
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -741,20 +801,6 @@
     
     // Load everything
     loadRequests();
-</script>
-    <script type="module">
-    import { logout, protectPage } from './auth.js';
-    
-    // Protect this page - redirects to login if not authenticated
-    protectPage().catch(() => {});
-    
-    // Setup logout button
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            await logout();
-        });
-    }
 </script>
 </body>
 </html>
