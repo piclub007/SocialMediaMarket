@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Secure Access</title>
+<title>Admin Login — Imbuga Store</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 
 <style>
 * { font-family: 'Poppins', sans-serif; }
@@ -38,6 +39,11 @@ body { background: #f7f7f9; }
 .btn-primary:hover {
     background: #2c2c2e;
     transform: translateY(-1px);
+}
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .scene {
@@ -94,58 +100,113 @@ body { background: #f7f7f9; }
     </div>
 
     <h2 class="text-xl font-semibold text-gray-800">Admin Access</h2>
-    <p class="text-gray-400 text-sm mt-1">Enter password</p>
+    <p class="text-gray-400 text-sm mt-1">Sign in with your admin account</p>
 
-    <div class="relative mt-6">
-        <input 
-            type="password" 
-            id="passwordInput"
-            placeholder="Password"
-            class="input-modern w-full px-4 py-3 text-center text-lg tracking-wider pr-12"
-        >
-
-        <button 
-            id="togglePassword"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-        >
-            👁
-        </button>
+    <div class="mt-6 space-y-4">
+        <div>
+            <input 
+                type="email" 
+                id="emailInput"
+                placeholder="Email address"
+                class="input-modern w-full px-4 py-3 text-sm"
+                autocomplete="email"
+            >
+        </div>
+        
+        <div class="relative">
+            <input 
+                type="password" 
+                id="passwordInput"
+                placeholder="Password"
+                class="input-modern w-full px-4 py-3 text-sm pr-12"
+                autocomplete="current-password"
+            >
+            <button 
+                id="togglePassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                type="button"
+            >
+                <iconify-icon icon="mdi:eye" width="18"></iconify-icon>
+            </button>
+        </div>
     </div>
 
     <button 
         id="loginBtn"
-        class="btn-primary w-full mt-5 py-3 text-white font-medium"
+        class="btn-primary w-full mt-6 py-3 text-white font-medium flex items-center justify-center gap-2"
     >
-        Unlock
+        <iconify-icon icon="mdi:login" width="18"></iconify-icon>
+        Sign In
     </button>
 
-    <p id="errorMsg" class="text-red-500 text-xs mt-3 hidden">Wrong password</p>
+    <div id="errorMsg" class="text-red-500 text-xs mt-3 hidden"></div>
 </div>
 
-<script>
-const _p1 = atob("TVJraWRkYUA=");
-const _p2 = (6 * 2).toString();
-const hiddenPassword = _p1 + _p2;
+<script type="module">
+    import { login } from './auth.js';
 
-document.getElementById("loginBtn").addEventListener("click", () => {
-    const input = document.getElementById("passwordInput").value;
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginBtn = document.getElementById("loginBtn");
+    const errorMsg = document.getElementById("errorMsg");
+    const toggleBtn = document.getElementById("togglePassword");
 
-    if (input === hiddenPassword) {
-        sessionStorage.setItem("auth", "true");
-        window.location.href = "admin.html";
-    } else {
-        document.getElementById("errorMsg").classList.remove("hidden");
+    // Toggle password visibility
+    let passwordVisible = false;
+    toggleBtn.addEventListener("click", () => {
+        passwordVisible = !passwordVisible;
+        passwordInput.type = passwordVisible ? "text" : "password";
+        toggleBtn.innerHTML = passwordVisible 
+            ? '<iconify-icon icon="mdi:eye-off" width="18"></iconify-icon>' 
+            : '<iconify-icon icon="mdi:eye" width="18"></iconify-icon>';
+    });
+
+    async function handleLogin() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+            errorMsg.textContent = "Please enter both email and password";
+            errorMsg.classList.remove("hidden");
+            return;
+        }
+
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin" width="18"></iconify-icon> Signing in...';
+        errorMsg.classList.add("hidden");
+
+        const result = await login(email, password);
+
+        if (result.success) {
+            window.location.href = "admin.html";
+        } else {
+            errorMsg.textContent = result.message || "Invalid email or password";
+            errorMsg.classList.remove("hidden");
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<iconify-icon icon="mdi:login" width="18"></iconify-icon> Sign In';
+        }
     }
-});
 
-document.getElementById("passwordInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") document.getElementById("loginBtn").click();
-});
+    loginBtn.addEventListener("click", handleLogin);
+    
+    ["keypress", "keydown"].forEach(eventType => {
+        passwordInput.addEventListener(eventType, (e) => {
+            if (e.key === "Enter") handleLogin();
+        });
+        emailInput.addEventListener(eventType, (e) => {
+            if (e.key === "Enter") handleLogin();
+        });
+    });
 
-document.getElementById("togglePassword").addEventListener("click", () => {
-    const input = document.getElementById("passwordInput");
-    input.type = input.type === "password" ? "text" : "password";
-});
+    // If already logged in, redirect to admin
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+    import { auth, isAuthorizedAdmin } from './auth.js';
+    
+    onAuthStateChanged(auth, (user) => {
+        if (user && isAuthorizedAdmin(user)) {
+            window.location.href = "admin.html";
+        }
+    });
 </script>
 
 </body>
