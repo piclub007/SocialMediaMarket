@@ -112,6 +112,7 @@
             border-radius: 16px;
             padding: 12px;
             border: 1px solid #222;
+            cursor: pointer;
         }
         .suggestion-item:hover {
             transform: translateY(-4px);
@@ -309,12 +310,23 @@
         @media (min-width: 1280px) {
             .grid-movie { grid-template-columns: repeat(5, 1fr); }
         }
+        
+        /* Language Switcher Button */
+        .lang-switch-btn { background: #1a1a1a; border: 1px solid #333; transition: all 0.2s; cursor: pointer; }
+        .lang-switch-btn:hover { background: #2a2a2a; transform: scale(1.02); }
+        .language-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1001; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .language-card { background: #0f0f0f; border-radius: 28px; padding: 14px 16px; width: 250px; text-align: center; border: 1px solid #333; box-shadow: 0 20px 35px -10px black; }
+        .language-card h3 { font-size: 0.9rem; margin-bottom: 10px; color: white; font-weight: 600; }
+        .lang-option { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 5px 0; background: #1a1a1a; border-radius: 50px; cursor: pointer; transition: 0.2s; border: 1px solid #2a2a2a; }
+        .lang-option:active { transform: scale(0.97); background: #2a2a2a; }
+        .flag-icon { font-size: 22px; width: 30px; text-align: center; }
+        .lang-name { font-size: 14px; font-weight: 500; color: #eee; }
     </style>
 </head>
 <body>
 
 <div class="max-w-7xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
-    <!-- HEADER -->
+    <!-- HEADER with Language Switcher -->
     <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-800">
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
@@ -328,10 +340,15 @@
             </div>
             <div id="headerGreeting" class="text-sm font-medium text-gray-400 hidden md:block"></div>
         </div>
-        <button id="startSellingBtn" class="bg-white text-black px-6 py-2.5 rounded-full font-medium text-sm shadow-md btn-sleek flex items-center gap-2">
-            <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
-            Start selling
-        </button>
+        <div class="flex items-center gap-3">
+            <button id="langSwitchBtn" class="lang-switch-btn text-xl p-2 rounded-full w-9 h-9 flex items-center justify-center" title="Change Language">
+                🌎
+            </button>
+            <button id="startSellingBtn" class="bg-white text-black px-6 py-2.5 rounded-full font-medium text-sm shadow-md btn-sleek flex items-center gap-2">
+                <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
+                <span id="sellBtnText">Start selling</span>
+            </button>
+        </div>
     </header>
 
     <!-- HERO SECTION: text left, carousel right -->
@@ -339,23 +356,23 @@
         <div class="max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-700 shadow-sm mb-5">
                 <iconify-icon icon="solar:graph-new-up-linear" width="16" class="text-emerald-400"></iconify-icon>
-                <span class="text-xs font-medium text-gray-300 tracking-wide">TRUSTED MARKETPLACE</span>
+                <span id="trustBadgeText" class="text-xs font-medium text-gray-300 tracking-wide">TRUSTED MARKETPLACE</span>
             </div>
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.2]">
-                Swap & scale<br>
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">social empires.</span>
+                <span id="heroLine1">Swap & scale</span><br>
+                <span id="heroLine2" class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">social empires.</span>
             </h1>
-            <p class="text-gray-400 text-lg mt-5 max-w-lg leading-relaxed">
+            <p id="heroDesc" class="text-gray-400 text-lg mt-5 max-w-lg leading-relaxed">
                 Seamless exchange. Verified accounts. Zero friction — buy or sell Instagram, TikTok, X, and more.
             </p>
             <div class="flex flex-wrap gap-4 mt-8">
                 <button id="exploreBtn" class="bg-white text-black px-7 py-3 rounded-full font-medium text-sm shadow-md btn-sleek flex items-center gap-2">
                     <iconify-icon icon="mdi:cart-outline" width="18"></iconify-icon>
-                    Explore listings
+                    <span id="exploreBtnText">Explore listings</span>
                 </button>
                 <button id="startSellingBtn2" class="border border-gray-700 bg-black/40 text-gray-200 px-7 py-3 rounded-full font-medium text-sm btn-sleek flex items-center gap-2">
                     <iconify-icon icon="mdi:storefront-outline" width="18"></iconify-icon>
-                    SELL YOUR ACCOUNT
+                    <span id="sellBtnText2">SELL YOUR ACCOUNT</span>
                 </button>
             </div>
         </div>
@@ -369,7 +386,7 @@
 
     <!-- Infinite Suggestions Carousel -->
     <div class="mb-10">
-        <h3 class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you</h3>
+        <h3 id="suggestedTitle" class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2"><iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> Suggested for you</h3>
         <div class="suggestions-container">
             <div id="suggestionsTrack" class="suggestions-track"></div>
         </div>
@@ -386,7 +403,7 @@
     <!-- Filter Bar -->
     <div class="flex flex-wrap items-center gap-4 mb-4 pb-3 border-b border-gray-800">
         <div class="flex flex-wrap gap-2 items-center">
-            <span class="text-xs text-gray-500 font-medium mr-1">Platform:</span>
+            <span id="platformLabel" class="text-xs text-gray-500 font-medium mr-1">Platform:</span>
             <button data-platform="all" class="platform-chip category-active px-4 py-1.5 rounded-full text-sm font-medium border transition-all">All</button>
             <button data-platform="Instagram" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border transition-all">Instagram</button>
             <button data-platform="Tiktok" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border transition-all">TikTok</button>
@@ -395,13 +412,13 @@
             <button data-platform="X" class="platform-chip category-inactive px-4 py-1.5 rounded-full text-sm font-medium border transition-all">X (Twitter)</button>
         </div>
         <div class="flex items-center gap-3">
-            <span class="text-xs text-gray-500 font-medium">Price:</span>
+            <span id="priceLabel" class="text-xs text-gray-500 font-medium">Price:</span>
             <input type="number" id="minPrice" placeholder="Min $" class="w-28 px-3 py-1.5 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-white bg-black/40 text-white">
             <span class="text-gray-500">-</span>
             <input type="number" id="maxPrice" placeholder="Max $" class="w-28 px-3 py-1.5 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-white bg-black/40 text-white">
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-500 font-medium">Category:</span>
+            <span id="categoryLabel" class="text-xs text-gray-500 font-medium">Category:</span>
             <select id="categoryFilter" class="px-3 py-1.5 border border-gray-700 rounded-xl text-sm bg-black/40 focus:outline-none focus:border-white text-white">
                 <option value="all">All Categories</option>
             </select>
@@ -412,8 +429,8 @@
     <div class="flex justify-between items-center mb-5">
         <div id="paginationInfo" class="text-sm text-gray-500"></div>
         <div class="flex gap-2">
-            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-700 rounded-xl text-sm disabled:opacity-40">← Previous</button>
-            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-700 rounded-xl text-sm">Next →</button>
+            <button id="prevPage" class="pagination-btn px-4 py-2 border border-gray-700 rounded-xl text-sm disabled:opacity-40"><span id="prevText">← Previous</span></button>
+            <button id="nextPage" class="pagination-btn px-4 py-2 border border-gray-700 rounded-xl text-sm"><span id="nextText">Next →</span></button>
         </div>
     </div>
 
@@ -432,9 +449,9 @@
             </div>
         </div>
         <div class="flex gap-7 text-gray-500 text-sm">
-            <a href="#" id="trustLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18"></iconify-icon> Trust</a>
-            <a href="#" id="guidelinesLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18"></iconify-icon> Guidelines</a>
-            <a href="#" id="supportLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18"></iconify-icon> Support</a>
+            <a href="#" id="trustLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:shield-check-outline" width="18"></iconify-icon> <span id="footerTrust">Trust</span></a>
+            <a href="#" id="guidelinesLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:file-document-outline" width="18"></iconify-icon> <span id="footerGuidelines">Guidelines</span></a>
+            <a href="#" id="supportLink" class="hover:text-white transition flex items-center gap-1"><iconify-icon icon="mdi:help-circle-outline" width="18"></iconify-icon> <span id="footerSupport">Support</span></a>
         </div>
         <div class="text-gray-600 text-xs flex items-center gap-2">
             <iconify-icon icon="ph:copyright" width="12"></iconify-icon> 2026 — all digital rights<br>© Made by PIReactive
@@ -446,10 +463,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
-    // Mobile redirect
-    if (window.innerWidth < 768) window.location.href = "indexp.html";
-    window.addEventListener('resize', () => { if (window.innerWidth < 768) window.location.href = "indexp.html"; });
-    
+    // ==================== FIREBASE CONFIG ====================
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
         authDomain: "project-k21n.firebaseapp.com",
@@ -462,6 +476,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
+    // ==================== GLOBAL VARIABLES (DECLARED FIRST) ====================
     let allAccounts = [];
     let categoriesArray = [];
     let currentPage = 1;
@@ -469,27 +484,123 @@
     let featuredAccounts = [];
     let featuredInterval = null;
     let currentFeaturedIndex = 0;
-    const ITEMS_PER_PAGE = 20; // 5 columns * 4 rows = 20 items per page
+    const ITEMS_PER_PAGE = 20;
     
-    // Greeting
-    function getTimeBasedGreeting() {
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 12) return "Good Morning!";
-        if (hour >= 12 && hour < 17) return "Good Afternoon!";
-        if (hour >= 17 && hour < 22) return "Good Evening!";
-        return "Good Night!";
-    }
-    const greeting = getTimeBasedGreeting();
-    const headerGreeting = document.getElementById('headerGreeting');
-    if (headerGreeting) headerGreeting.innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
-    
-    // AI user profile
+    // User profile for AI suggestions
     let userProfile = JSON.parse(localStorage.getItem('socialMarketProfile')) || {
         viewedPlatforms: {}, viewedCategories: {}, priceRange: { min: 0, max: Infinity },
         clickedAccounts: [], interestedPlatform: null, interestedPrice: null, lastUpdated: Date.now()
     };
     if (!userProfile.priceRange) userProfile.priceRange = { min: 0, max: Infinity };
     
+    // ==================== LANGUAGE SYSTEM ====================
+    const translations = {
+        en: {
+            sell: "Start selling", sellShort: "SELL YOUR ACCOUNT", explore: "Explore listings", trustBadge: "TRUSTED MARKETPLACE",
+            heroLine1: "Swap & scale", heroLine2: "social empires.", heroDesc: "Seamless exchange. Verified accounts. Zero friction — buy or sell Instagram, TikTok, X, and more.",
+            suggested: "Suggested for you", searchPlaceholder: "Search by nickname or platform...",
+            platform: "Platform:", price: "Price:", category: "Category:", allCategories: "All Categories",
+            prev: "← Previous", next: "Next →", footerTrust: "Trust", footerGuidelines: "Guidelines", footerSupport: "Support",
+            greetingMorning: "Good Morning!", greetingAfternoon: "Good Afternoon!", greetingEvening: "Good Evening!", greetingNight: "Good Night!",
+            statusAvailable: "AVAILABLE", statusSold: "SOLD", loadingText: "Loading accounts...", noResults: "No accounts match your filters"
+        },
+        fr: {
+            sell: "Commencer à vendre", sellShort: "VENDRE VOTRE COMPTE", explore: "Explorer", trustBadge: "PLATEFORME DE CONFIANCE",
+            heroLine1: "Échangez & évoluez", heroLine2: "empires sociaux.", heroDesc: "Échange sans friction. Comptes vérifiés — achetez ou vendez Instagram, TikTok, X et plus.",
+            suggested: "Suggestions pour vous", searchPlaceholder: "Rechercher par pseudo ou plateforme...",
+            platform: "Plateforme:", price: "Prix:", category: "Catégorie:", allCategories: "Toutes catégories",
+            prev: "← Précédent", next: "Suivant →", footerTrust: "Confiance", footerGuidelines: "Règles", footerSupport: "Aide",
+            greetingMorning: "Bonjour !", greetingAfternoon: "Bon après-midi !", greetingEvening: "Bonsoir !", greetingNight: "Bonne nuit !",
+            statusAvailable: "DISPONIBLE", statusSold: "VENDU", loadingText: "Chargement...", noResults: "Aucun compte ne correspond"
+        },
+        rw: {
+            sell: "Tangira gurisha", sellShort: "GURISHA KONTI YAWE", explore: "Shakisha", trustBadge: "ISOKO RYIZEWE",
+            heroLine1: "Hindura & wongere", heroLine2: "Imbuga", heroDesc: "Gura cyangwa ugurishe konti za Instagram, TikTok, X n'izindi ako kanya.",
+            suggested: "Izo tukugiramo inama", searchPlaceholder: "Shakisha izina cyangwa urubuga...",
+            platform: "Urubuga:", price: "Igiciro:", category: "Icyiciro:", allCategories: "Ibyiciro Byose",
+            prev: "← Ibibanzwe", next: "Ibikurikira →", footerTrust: "Umutekano", footerGuidelines: "Amabwiriza", footerSupport: "Ubufasha",
+            greetingMorning: "Mwaramutse!", greetingAfternoon: "Mwiriwe!", greetingEvening: "Muraho!", greetingNight: "Ijoro ryiza!",
+            statusAvailable: "BIHARI", statusSold: "BYAGURISHIJWE", loadingText: "Yego konti ziri gukurikirwa...", noResults: "Nta konti zihuye"
+        }
+    };
+    
+    let currentLang = localStorage.getItem('socialMarketLang');
+    if (!currentLang || !translations[currentLang]) currentLang = 'en';
+    
+    function applyLanguage(lang) {
+        if (!translations[lang]) lang = 'en';
+        currentLang = lang;
+        localStorage.setItem('socialMarketLang', lang);
+        const t = translations[lang];
+        
+        document.getElementById('sellBtnText') && (document.getElementById('sellBtnText').innerText = t.sell);
+        document.getElementById('sellBtnText2') && (document.getElementById('sellBtnText2').innerText = t.sellShort);
+        document.getElementById('exploreBtnText') && (document.getElementById('exploreBtnText').innerText = t.explore);
+        document.getElementById('trustBadgeText') && (document.getElementById('trustBadgeText').innerText = t.trustBadge);
+        document.getElementById('heroLine1') && (document.getElementById('heroLine1').innerText = t.heroLine1);
+        document.getElementById('heroLine2') && (document.getElementById('heroLine2').innerText = t.heroLine2);
+        document.getElementById('heroDesc') && (document.getElementById('heroDesc').innerText = t.heroDesc);
+        document.getElementById('suggestedTitle') && (document.getElementById('suggestedTitle').innerHTML = `<iconify-icon icon="mdi:lightbulb" width="18"></iconify-icon> ${t.suggested}`);
+        const searchInput = document.getElementById('searchInput');
+        if(searchInput) searchInput.placeholder = t.searchPlaceholder;
+        document.getElementById('platformLabel') && (document.getElementById('platformLabel').innerText = t.platform);
+        document.getElementById('priceLabel') && (document.getElementById('priceLabel').innerText = t.price);
+        document.getElementById('categoryLabel') && (document.getElementById('categoryLabel').innerText = t.category);
+        document.getElementById('prevText') && (document.getElementById('prevText').innerText = t.prev);
+        document.getElementById('nextText') && (document.getElementById('nextText').innerText = t.next);
+        document.getElementById('footerTrust') && (document.getElementById('footerTrust').innerText = t.footerTrust);
+        document.getElementById('footerGuidelines') && (document.getElementById('footerGuidelines').innerText = t.footerGuidelines);
+        document.getElementById('footerSupport') && (document.getElementById('footerSupport').innerText = t.footerSupport);
+        
+        const catSelect = document.getElementById('categoryFilter');
+        if(catSelect && catSelect.options[0]) catSelect.options[0].text = t.allCategories;
+        
+        const hour = new Date().getHours();
+        let greeting = "";
+        if (hour >= 5 && hour < 12) greeting = t.greetingMorning;
+        else if (hour >= 12 && hour < 17) greeting = t.greetingAfternoon;
+        else if (hour >= 17 && hour < 22) greeting = t.greetingEvening;
+        else greeting = t.greetingNight;
+        document.getElementById('headerGreeting').innerHTML = `<iconify-icon icon="mdi:hand-wave" width="16" class="inline mr-1"></iconify-icon> ${greeting}`;
+        
+        if (typeof renderAccounts === 'function') renderAccounts();
+        if (typeof renderInfiniteSuggestions === 'function') renderInfiniteSuggestions();
+    }
+    
+    function showLanguageModal() {
+        const existing = document.querySelector('.language-modal');
+        if(existing) existing.remove();
+        const modal = document.createElement('div');
+        modal.className = 'language-modal';
+        modal.innerHTML = `
+            <div class="language-card">
+                <h3>🌍 Hitamo Ururimi / Choose Language</h3>
+                <div class="lang-option" data-lang="rw">
+                    <span class="flag-icon">🇷🇼</span>
+                    <span class="lang-name">Kinyarwanda</span>
+                </div>
+                <div class="lang-option" data-lang="en">
+                    <span class="flag-icon">🇬🇧</span>
+                    <span class="lang-name">English</span>
+                </div>
+                <div class="lang-option" data-lang="fr">
+                    <span class="flag-icon">🇫🇷</span>
+                    <span class="lang-name">Français</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                const lang = opt.dataset.lang;
+                applyLanguage(lang);
+                modal.remove();
+                if (typeof applyFiltersAndRender === 'function') applyFiltersAndRender();
+            });
+        });
+    }
+    
+    // ==================== CORE FUNCTIONS ====================
     function updateUserProfile(account) {
         if (!account) return;
         userProfile.viewedPlatforms[account.socialMedia] = (userProfile.viewedPlatforms[account.socialMedia] || 0) + 1;
@@ -516,7 +627,6 @@
         return accounts[0];
     }
     
-    // Featured selection: only available, recent, random (NO algorithm)
     function getFeaturedAccounts(accounts, count = 12) {
         if (!accounts.length) return [];
         let eligible = accounts.filter(a => a.status !== 'sold' && a.images?.front);
@@ -569,7 +679,6 @@
         if (slideWidth) track.style.transform = `translateX(-${currentFeaturedIndex * slideWidth}px)`;
     }
     
-    // Suggestions (AI algorithm)
     function generateInfiniteSuggestions(accounts, count = 50) {
         if (!accounts.length) return [];
         const available = accounts.filter(a => a.status !== 'sold');
@@ -613,6 +722,7 @@
         const batch = generateInfiniteSuggestions(allAccounts, 40);
         const track = document.getElementById('suggestionsTrack');
         if (!track) return;
+        const t = translations[currentLang];
         const items = batch.map(acc => {
             let icon = "skill-icons:instagram";
             if (acc.socialMedia?.toLowerCase() === 'instagram') icon = "skill-icons:instagram";
@@ -620,7 +730,7 @@
             else if (acc.socialMedia?.toLowerCase() === 'youtube') icon = "logos:youtube-icon";
             else if (acc.socialMedia?.toLowerCase() === 'linkedin') icon = "logos:linkedin-icon";
             else if (acc.socialMedia?.toLowerCase() === 'x') icon = "logos:twitter";
-            const soldBadge = acc.status === 'sold' ? '<span class="status-sold text-[8px] px-1.5 py-0.5 ml-1">SOLD</span>' : '<span class="status-available text-[8px] px-1.5 py-0.5 ml-1">AVAIL</span>';
+            const soldBadge = acc.status === 'sold' ? `<span class="status-sold text-[8px] px-1.5 py-0.5 ml-1">${t.statusSold}</span>` : `<span class="status-available text-[8px] px-1.5 py-0.5 ml-1">${t.statusAvailable}</span>`;
             return `
                 <div class="suggestion-item" data-id="${acc.id}">
                     <div class="flex items-center gap-3">
@@ -712,18 +822,19 @@
         const end = start+ITEMS_PER_PAGE;
         const pageAccounts = filteredAccounts.slice(start, end);
         const totalPages = Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE);
+        const t = translations[currentLang];
         document.getElementById('paginationInfo').innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
         document.getElementById('prevPage').disabled = currentPage === 1;
         document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
         const container = document.getElementById('listings-grid');
         if (!pageAccounts.length) {
-            container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-500">No accounts match your filters</div>';
+            container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-500">${t.noResults}</div>`;
             return;
         }
         container.innerHTML = pageAccounts.map(acc => {
             const frontImg = acc.images?.front || 'https://placehold.co/400x600/1a1a1a/666?text=No+Image';
             const isSold = acc.status === 'sold';
-            const statusText = isSold ? 'SOLD' : 'AVAILABLE';
+            const statusText = isSold ? t.statusSold : t.statusAvailable;
             const statusClass = isSold ? 'status-sold' : 'status-available';
             return `
                 <div class="movie-card" data-id="${acc.id}">
@@ -753,13 +864,14 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => { if (m==='&') return '&amp;'; if (m==='<') return '&lt;'; if (m==='>') return '&gt;'; return m; }); }
     
-    // Event listeners
+    // ==================== EVENT LISTENERS ====================
     document.getElementById('searchInput')?.addEventListener('input', () => applyFiltersAndRender());
     document.getElementById('minPrice')?.addEventListener('input', () => applyFiltersAndRender());
     document.getElementById('maxPrice')?.addEventListener('input', () => applyFiltersAndRender());
     document.getElementById('categoryFilter')?.addEventListener('change', () => applyFiltersAndRender());
     document.getElementById('prevPage')?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
     document.getElementById('nextPage')?.addEventListener('click', () => { const totalPages = Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE); if (currentPage < totalPages) { currentPage++; renderAccounts(); window.scrollTo({ top: 400, behavior: 'smooth' }); } });
+    
     document.querySelectorAll('.platform-chip').forEach(chip => {
         chip.addEventListener('click', () => {
             document.querySelectorAll('.platform-chip').forEach(c => { c.classList.remove('category-active'); c.classList.add('category-inactive'); });
@@ -767,13 +879,22 @@
             applyFiltersAndRender();
         });
     });
+    
     document.getElementById('exploreBtn')?.addEventListener('click', () => { document.getElementById('listings-grid').scrollIntoView({ behavior: 'smooth' }); });
+    
     const startSellingBtns = [document.getElementById('startSellingBtn'), document.getElementById('startSellingBtn2')];
     startSellingBtns.forEach(btn => btn?.addEventListener('click', () => { window.location.href = 'sell.html'; }));
+    
     document.getElementById('trustLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('guidelinesLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
     document.getElementById('supportLink')?.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'info.html'; });
+    
+    document.getElementById('langSwitchBtn')?.addEventListener('click', showLanguageModal);
+    
     window.addEventListener('resize', () => updateFeaturedPosition());
+    
+    // ==================== INITIALIZE ====================
+    applyLanguage(currentLang);
     loadAccounts();
 </script>
 </body>
