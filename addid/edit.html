@@ -244,5 +244,19 @@
     await fetchSettings(); 
     await loadAccount();
 </script>
+    <script type="module">
+    import { logout, protectPage } from './auth.js';
+    
+    // Protect this page - redirects to login if not authenticated
+    protectPage().catch(() => {});
+    
+    // Setup logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            await logout();
+        });
+    }
+</script>
 </body>
 </html>
