@@ -16,8 +16,7 @@ const auth = getAuth(app);
 
 // Pre-authorized admin emails (only these can access)
 const ALLOWED_ADMIN_EMAILS = [
-    "admin@imbugastore.com",
-    "your-email@gmail.com"  // ← ADD YOUR EMAIL HERE
+    "admin@imbuga.com"
 ];
 
 // Check if user is authorized admin
