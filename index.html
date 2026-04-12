@@ -897,5 +897,77 @@
     applyLanguage(currentLang);
     loadAccounts();
 </script>
+    <!-- Analytics tracking script (add this right after, still in module) -->
+<script type="module">
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    
+    // Use the db instance that was exposed globally
+    const db = window.db;
+    
+    if (!db) {
+        console.warn('Firebase not initialized yet, waiting...');
+        // Wait for db to be available
+        const waitForDb = setInterval(() => {
+            if (window.db) {
+                clearInterval(waitForDb);
+                initAnalytics();
+            }
+        }, 100);
+    } else {
+        initAnalytics();
+    }
+    
+    function initAnalytics() {
+        // Generate or get session ID
+        const sessionId = localStorage.getItem('analytics_session_id') || 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        localStorage.setItem('analytics_session_id', sessionId);
+        
+        // Detect device and browser
+        const ua = navigator.userAgent;
+        let device = 'Desktop';
+        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) device = 'Tablet';
+        if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua)) device = 'Mobile';
+        
+        let browser = 'Unknown';
+        if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
+        else if (ua.includes('Firefox')) browser = 'Firefox';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+        else if (ua.includes('Edg')) browser = 'Edge';
+        else if (ua.includes('Opera')) browser = 'Opera';
+        
+        // Track page view (don't await - fire and forget)
+        addDoc(collection(db, 'analytics_pageViews'), {
+            page: window.location.pathname,
+            pageName: document.title || window.location.pathname,
+            sessionId: sessionId,
+            device: device,
+            browser: browser,
+            timestamp: serverTimestamp(),
+            url: window.location.href,
+            referrer: document.referrer || 'direct'
+        }).catch(err => console.warn('Page view tracking error:', err));
+        
+        // Track clicks on elements with data-track-click attribute
+        document.addEventListener('click', (e) => {
+            const el = e.target.closest('[data-track-click]');
+            if (el) {
+                addDoc(collection(db, 'analytics_clicks'), {
+                    element: el.innerText?.substring(0, 100) || el.tagName,
+                    elementId: el.id || null,
+                    elementClass: el.className || null,
+                    elementType: el.tagName,
+                    page: window.location.pathname,
+                    sessionId: sessionId,
+                    device: device,
+                    browser: browser,
+                    timestamp: serverTimestamp(),
+                    url: window.location.href
+                }).catch(err => console.warn('Click tracking error:', err));
+            }
+        });
+        
+        console.log('📊 Analytics tracking active for:', window.location.pathname);
+    }
+</script>
 </body>
 </html>
