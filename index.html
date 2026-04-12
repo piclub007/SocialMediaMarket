@@ -8,25 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
     <!-- Open Graph / Social Media Meta Tags -->
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Imbuga Store - Buy & Sell Social Media Accounts" />
-<meta property="og:description" content="The trusted marketplace to buy and sell Instagram, TikTok, YouTube, LinkedIn, and X accounts. Secure escrow, verified sellers, instant transactions." />
-<meta property="og:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://imbuga.vercel.app/" />
-<meta property="og:site_name" content="Imbuga Store" />
-<meta property="og:locale" content="en_US" />
-
-<!-- Twitter Card (for better Twitter sharing) -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Imbuga Store - Buy & Sell Social Media Accounts" />
-<meta name="twitter:description" content="The trusted marketplace to buy and sell social media accounts. Secure, fast, and verified." />
-<meta name="twitter:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
-
-<!-- Additional SEO / Social -->
-<meta name="description" content="Imbuga Store - Buy and sell social media accounts safely. Instagram, TikTok, YouTube, LinkedIn, X. Best prices, verified sellers, escrow protection." />
-<link rel="canonical" href="https://imbuga.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Imbuga Store - Buy & Sell Social Media Accounts" />
+    <meta property="og:description" content="The trusted marketplace to buy and sell Instagram, TikTok, YouTube, LinkedIn, and X accounts. Secure escrow, verified sellers, instant transactions." />
+    <meta property="og:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://imbuga.vercel.app/" />
+    <meta property="og:site_name" content="Imbuga Store" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Imbuga Store - Buy & Sell Social Media Accounts" />
+    <meta name="twitter:description" content="The trusted marketplace to buy and sell social media accounts. Secure, fast, and verified." />
+    <meta name="twitter:image" content="https://imbuga.vercel.app/Image/og-image.jpg" />
+    <meta name="description" content="Imbuga Store - Buy and sell social media accounts safely. Instagram, TikTok, YouTube, LinkedIn, X. Best prices, verified sellers, escrow protection." />
+    <link rel="canonical" href="https://imbuga.vercel.app/" />
     <style>
         * { font-family: 'Poppins', sans-serif; }
         body { background: #050505; scroll-behavior: smooth; }
@@ -285,13 +281,20 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: white;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+        }
+        .movie-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         .movie-platform {
-            font-size: 11px;
+            font-size: 10px;
             color: #ccc;
             font-weight: 400;
         }
@@ -321,6 +324,41 @@
         .lang-option:active { transform: scale(0.97); background: #2a2a2a; }
         .flag-icon { font-size: 22px; width: 30px; text-align: center; }
         .lang-name { font-size: 14px; font-weight: 500; color: #eee; }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Toast notification */
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -436,7 +474,10 @@
 
     <!-- Products Grid (Movie-poster style, responsive 5 columns) -->
     <div id="listings-grid" class="grid-movie pb-20">
-        <div class="col-span-full text-center py-12 text-gray-500">Loading accounts...</div>
+        <div class="col-span-full text-center py-12 text-gray-500">
+            <div class="loading-spinner mb-2"></div>
+            <p>Loading accounts...</p>
+        </div>
     </div>
 </div>
 
@@ -463,6 +504,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
+    // ==================== SMALL SCREEN REDIRECT ====================
+    function checkScreenAndRedirect() {
+        if (window.innerWidth <= 768) {
+            window.location.href = "indexp.html";
+        }
+    }
+    checkScreenAndRedirect();
+    window.addEventListener('resize', checkScreenAndRedirect);
+    
     // ==================== FIREBASE CONFIG ====================
     const firebaseConfig = {
         apiKey: "AIzaSyBAJBge8NM51f7IvwaE5X1fXsC8H-0Tlv0",
@@ -475,8 +525,9 @@
     
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    window.db = db;
     
-    // ==================== GLOBAL VARIABLES (DECLARED FIRST) ====================
+    // ==================== GLOBAL VARIABLES ====================
     let allAccounts = [];
     let categoriesArray = [];
     let currentPage = 1;
@@ -492,6 +543,18 @@
         clickedAccounts: [], interestedPlatform: null, interestedPrice: null, lastUpdated: Date.now()
     };
     if (!userProfile.priceRange) userProfile.priceRange = { min: 0, max: Infinity };
+    
+    function showToast(message, type = 'success') {
+        const existing = document.querySelector('.toast-message');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        const icon = type === 'success' ? 'mdi:check-circle' : (type === 'error' ? 'mdi:alert-circle' : 'mdi:information');
+        const color = type === 'success' ? 'text-green-400' : (type === 'error' ? 'text-red-400' : 'text-blue-400');
+        toast.innerHTML = `<iconify-icon icon="${icon}" width="20" class="${color}"></iconify-icon><span class="text-sm">${message}</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
     
     // ==================== LANGUAGE SYSTEM ====================
     const translations = {
@@ -765,21 +828,32 @@
     }
     
     async function loadAccounts() {
+        const container = document.getElementById('listings-grid');
         try {
             const querySnapshot = await getDocs(collection(db, 'marketplaceAccounts'));
             allAccounts = [];
             querySnapshot.forEach(doc => { allAccounts.push({ id: doc.id, ...doc.data() }); });
+            
+            if (allAccounts.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">No accounts available yet. Check back soon!</div>';
+                return;
+            }
+            
             const settingsDoc = await getDoc(doc(db, 'adminSettings', 'config'));
             categoriesArray = settingsDoc.exists() ? (settingsDoc.data().categories || ['Fashion', 'Tech', 'Gaming', 'Lifestyle']) : ['Fashion', 'Tech', 'Gaming', 'Lifestyle'];
             const categorySelect = document.getElementById('categoryFilter');
             if (categorySelect) categorySelect.innerHTML = '<option value="all">All Categories</option>' + categoriesArray.map(c => `<option value="${c}">${c}</option>`).join('');
+            
             renderFeatured();
             applyFiltersAndRender();
             renderInfiniteSuggestions();
+            
             setInterval(() => { if (allAccounts.length) { renderFeatured(); renderInfiniteSuggestions(); } }, 45000);
+            
         } catch(e) {
             console.error("Firebase error:", e);
-            document.getElementById('listings-grid').innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">Unable to load accounts. Please try again later.</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-red-400">❌ Unable to load accounts. Please check your connection and refresh.</div>';
+            showToast('Failed to load accounts. Please refresh the page.', 'error');
         }
     }
     
@@ -789,8 +863,10 @@
         const minPrice = parseFloat(document.getElementById('minPrice')?.value) || 0;
         const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
         const category = document.getElementById('categoryFilter')?.value || 'all';
+        
         const available = allAccounts.filter(a => a.status !== 'sold');
         const sold = allAccounts.filter(a => a.status === 'sold');
+        
         const filterFn = (acc) => {
             const matchesSearch = !searchTerm || (acc.nickname && acc.nickname.toLowerCase().includes(searchTerm)) || (acc.socialMedia && acc.socialMedia.toLowerCase().includes(searchTerm));
             const matchesPlatform = platform === 'all' || (acc.socialMedia && acc.socialMedia.toLowerCase() === platform.toLowerCase());
@@ -799,19 +875,23 @@
             const matchesCategory = category === 'all' || acc.category === category;
             return matchesSearch && matchesPlatform && matchesPrice && matchesCategory;
         };
+        
         let filteredAvailable = available.filter(filterFn);
         let filteredSold = sold.filter(filterFn);
+        
         const soldToShow = [];
         for (let i=0; i<Math.min(2, filteredSold.length); i++) {
             const idx = Math.floor(Math.random() * filteredSold.length);
             soldToShow.push(filteredSold[idx]);
             filteredSold.splice(idx,1);
         }
+        
         let combined = [...filteredAvailable, ...soldToShow];
         for (let i=combined.length-1; i>0; i--) {
             const j = Math.floor(Math.random()*(i+1));
             [combined[i], combined[j]] = [combined[j], combined[i]];
         }
+        
         filteredAccounts = combined;
         currentPage = 1;
         renderAccounts();
@@ -823,19 +903,29 @@
         const pageAccounts = filteredAccounts.slice(start, end);
         const totalPages = Math.ceil(filteredAccounts.length/ITEMS_PER_PAGE);
         const t = translations[currentLang];
-        document.getElementById('paginationInfo').innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
-        document.getElementById('prevPage').disabled = currentPage === 1;
-        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
+        
+        const infoDiv = document.getElementById('paginationInfo');
+        if (infoDiv) infoDiv.innerHTML = `Showing ${start+1}-${Math.min(end, filteredAccounts.length)} of ${filteredAccounts.length} accounts`;
+        
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        if (prevBtn) prevBtn.disabled = currentPage === 1;
+        if (nextBtn) nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+        
         const container = document.getElementById('listings-grid');
         if (!pageAccounts.length) {
             container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-500">${t.noResults}</div>`;
             return;
         }
+        
         container.innerHTML = pageAccounts.map(acc => {
             const frontImg = acc.images?.front || 'https://placehold.co/400x600/1a1a1a/666?text=No+Image';
             const isSold = acc.status === 'sold';
             const statusText = isSold ? t.statusSold : t.statusAvailable;
             const statusClass = isSold ? 'status-sold' : 'status-available';
+            const price = (acc.finalPrice || acc.originalPrice || 0).toLocaleString();
+            const followers = acc.followers?.toLocaleString() || 0;
+            
             return `
                 <div class="movie-card" data-id="${acc.id}">
                     <div class="movie-status">
@@ -843,15 +933,17 @@
                     </div>
                     <img src="${frontImg}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1a1a/666?text=No+Image'">
                     <div class="movie-overlay">
+                        <div class="movie-price">$${price}</div>
                         <div class="movie-followers">
-                            <iconify-icon icon="mdi:account-group-outline" width="12"></iconify-icon>
-                            <span>${acc.followers?.toLocaleString() || 0}</span>
+                            <iconify-icon icon="mdi:account-group-outline" width="10"></iconify-icon>
+                            <span>${followers}</span>
                         </div>
                         <div class="movie-platform">${acc.socialMedia || 'Social'}</div>
                     </div>
                 </div>
             `;
         }).join('');
+        
         document.querySelectorAll('.movie-card').forEach(el => {
             el.addEventListener('click', () => {
                 const id = el.dataset.id;
@@ -897,16 +989,15 @@
     applyLanguage(currentLang);
     loadAccounts();
 </script>
-    <!-- Analytics tracking script (add this right after, still in module) -->
+
+<!-- Analytics tracking script -->
 <script type="module">
     import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
-    // Use the db instance that was exposed globally
     const db = window.db;
     
     if (!db) {
         console.warn('Firebase not initialized yet, waiting...');
-        // Wait for db to be available
         const waitForDb = setInterval(() => {
             if (window.db) {
                 clearInterval(waitForDb);
@@ -918,11 +1009,9 @@
     }
     
     function initAnalytics() {
-        // Generate or get session ID
         const sessionId = localStorage.getItem('analytics_session_id') || 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
         localStorage.setItem('analytics_session_id', sessionId);
         
-        // Detect device and browser
         const ua = navigator.userAgent;
         let device = 'Desktop';
         if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) device = 'Tablet';
@@ -935,7 +1024,6 @@
         else if (ua.includes('Edg')) browser = 'Edge';
         else if (ua.includes('Opera')) browser = 'Opera';
         
-        // Track page view (don't await - fire and forget)
         addDoc(collection(db, 'analytics_pageViews'), {
             page: window.location.pathname,
             pageName: document.title || window.location.pathname,
@@ -947,7 +1035,6 @@
             referrer: document.referrer || 'direct'
         }).catch(err => console.warn('Page view tracking error:', err));
         
-        // Track clicks on elements with data-track-click attribute
         document.addEventListener('click', (e) => {
             const el = e.target.closest('[data-track-click]');
             if (el) {
