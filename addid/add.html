@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <!-- Cropper.js for image cropping -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif; }
         body { background: #f7f7f9; }
@@ -21,13 +24,37 @@
         .image-preview-rect { width: 80px; height: 80px; object-fit: cover; border-radius: 16px; border: 1px solid #eef2f6; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .preview-img-wrapper { position: relative; display: inline-block; margin: 4px; }
-        .remove-img-btn { position: absolute; top: -6px; right: -6px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .preview-img-wrapper:hover .image-actions { opacity: 1; }
+        .image-actions { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; background: rgba(0,0,0,0.7); padding: 4px 6px; border-radius: 20px; backdrop-filter: blur(4px); }
+        .image-actions button { background: white; border: none; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: #333; transition: all 0.2s; }
+        .image-actions button:hover { background: #e5e7eb; transform: scale(1.1); }
+        .remove-img-btn { position: absolute; top: -6px; right: -6px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 2; }
         .remove-img-btn:hover { background: darkred; }
         .helper-text { font-size: 11px; color: #6b7280; margin-top: 4px; }
         /* Mobile-friendly file trigger label */
         .upload-trigger { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: #374151; transition: all 0.2s; }
         .upload-trigger:hover { background: #f3f4f6; transform: scale(1.02); }
         .hidden-file-input { position: absolute; opacity: 0; width: 0.1px; height: 0.1px; overflow: hidden; }
+        
+        /* Modal styles */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px; }
+        .modal-content { background: white; border-radius: 24px; max-width: 90vw; max-height: 90vh; width: 900px; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 24px; overflow-y: auto; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 12px; }
+        .editor-container { display: flex; flex-direction: column; gap: 16px; }
+        .canvas-container { background: #f3f4f6; border-radius: 12px; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 300px; }
+        .editor-tools { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 12px; background: #f9fafb; border-radius: 12px; }
+        .tool-btn { padding: 8px 16px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .tool-btn:hover { background: #f3f4f6; }
+        .tool-btn.active { background: #000; color: white; border-color: #000; }
+        .color-picker { width: 40px; height: 40px; padding: 0; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; }
+        .size-slider { width: 120px; }
+        #editorCanvas { max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        @media (max-width: 640px) {
+            .modal-content { width: 100%; max-width: 100%; margin: 16px; }
+            .editor-tools { flex-direction: column; align-items: stretch; }
+        }
     </style>
 </head>
 <body class="p-6 md:p-10">
@@ -72,7 +99,7 @@
             <div class="border-t border-gray-100 pt-5">
                 <label class="block text-sm font-medium text-gray-700 mb-3">Account Images</label>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Profile Image Upload (Mobile Optimized Label) -->
+                    <!-- Profile Image Upload -->
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-wide">Profile (Circle)</label>
                         <div class="mt-2">
@@ -83,7 +110,7 @@
                             <div id="profilePreviewContainer" class="mt-2 flex flex-wrap items-center gap-2"></div>
                         </div>
                     </div>
-                    <!-- Front Image Upload (Mobile Optimized Label) -->
+                    <!-- Front Image Upload -->
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-wide">Front Image *</label>
                         <div class="mt-2">
@@ -94,7 +121,7 @@
                             <div id="frontPreviewContainer" class="mt-2 flex flex-wrap items-center gap-2"></div>
                         </div>
                     </div>
-                    <!-- Dashboard Images Upload (Mobile Optimized Label) -->
+                    <!-- Dashboard Images Upload -->
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-wide">Dashboard (max 5)</label>
                         <div class="mt-2">
@@ -106,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Other Images Upload (Mobile Optimized Label) -->
+                <!-- Other Images Upload -->
                 <div class="mt-4">
                     <label class="text-xs font-semibold uppercase tracking-wide">Other Images (max 5)</label>
                     <div class="mt-2">
@@ -127,6 +154,48 @@
     </div>
 </div>
 
+<!-- Image Editor Modal -->
+<div id="editorModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="text-lg font-semibold">Edit Image</h3>
+            <button onclick="closeEditor()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                <iconify-icon icon="mdi:close" width="20"></iconify-icon>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="editor-container">
+                <div class="editor-tools">
+                    <button id="cropModeBtn" class="tool-btn" onclick="setMode('crop')">
+                        <iconify-icon icon="mdi:crop"></iconify-icon> Crop
+                    </button>
+                    <button id="drawModeBtn" class="tool-btn" onclick="setMode('draw')">
+                        <iconify-icon icon="mdi:draw"></iconify-icon> Draw
+                    </button>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="color" id="drawColor" class="color-picker" value="#000000">
+                        <input type="range" id="drawSize" class="size-slider" min="1" max="20" value="3">
+                        <span id="sizeValue" style="font-size: 12px; color: #6b7280;">3px</span>
+                    </div>
+                    <button class="tool-btn" onclick="clearDrawing()">
+                        <iconify-icon icon="mdi:eraser"></iconify-icon> Clear Drawing
+                    </button>
+                    <button class="tool-btn" onclick="undoDrawing()">
+                        <iconify-icon icon="mdi:undo"></iconify-icon> Undo
+                    </button>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="editorCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeEditor()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">Cancel</button>
+            <button onclick="saveEditedImage()" class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">Save Changes</button>
+        </div>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
@@ -143,6 +212,210 @@
     const db = getFirestore(app);
     const IMGBB_KEY = "ba8023ca74166460c442e8e703d2a1b0";
 
+    // Global editor variables
+    let canvas = document.getElementById('editorCanvas');
+    let ctx = canvas.getContext('2d');
+    let currentMode = 'crop';
+    let cropper = null;
+    let currentImage = null;
+    let currentFile = null;
+    let currentInputId = null;
+    let currentWrapper = null;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let drawingHistory = [];
+    let historyStep = -1;
+    let drawColor = '#000000';
+    let drawSize = 3;
+
+    // Initialize editor
+    function initEditor() {
+        document.getElementById('drawColor').addEventListener('change', (e) => drawColor = e.target.value);
+        document.getElementById('drawSize').addEventListener('input', (e) => {
+            drawSize = parseInt(e.target.value);
+            document.getElementById('sizeValue').textContent = drawSize + 'px';
+        });
+    }
+
+    window.setMode = function(mode) {
+        currentMode = mode;
+        document.getElementById('cropModeBtn').classList.toggle('active', mode === 'crop');
+        document.getElementById('drawModeBtn').classList.toggle('active', mode === 'draw');
+        
+        if (mode === 'crop') {
+            if (!cropper) {
+                cropper = new Cropper(canvas, {
+                    aspectRatio: NaN,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true
+                });
+            }
+            canvas.style.cursor = 'crosshair';
+        } else {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            canvas.style.cursor = 'crosshair';
+        }
+    };
+
+    window.clearDrawing = function() {
+        if (currentImage) {
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                saveDrawingState();
+            };
+            img.src = currentImage;
+        }
+    };
+
+    window.undoDrawing = function() {
+        if (historyStep > 0) {
+            historyStep--;
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+            img.src = drawingHistory[historyStep];
+        }
+    };
+
+    function saveDrawingState() {
+        historyStep++;
+        drawingHistory = drawingHistory.slice(0, historyStep);
+        drawingHistory.push(canvas.toDataURL());
+    }
+
+    window.openEditor = function(imgElement, file, inputId, wrapper) {
+        currentFile = file;
+        currentInputId = inputId;
+        currentWrapper = wrapper;
+        
+        const modal = document.getElementById('editorModal');
+        modal.style.display = 'flex';
+        
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            currentImage = img.src;
+            drawingHistory = [img.src];
+            historyStep = 0;
+            
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            setMode('crop');
+        };
+        img.src = imgElement.src;
+    };
+
+    window.closeEditor = function() {
+        document.getElementById('editorModal').style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    };
+
+    window.saveEditedImage = function() {
+        let finalCanvas;
+        
+        if (currentMode === 'crop' && cropper) {
+            finalCanvas = cropper.getCroppedCanvas();
+        } else {
+            finalCanvas = canvas;
+        }
+        
+        finalCanvas.toBlob((blob) => {
+            const editedFile = new File([blob], currentFile.name, { type: currentFile.type });
+            
+            // Update file input
+            const dt = new DataTransfer();
+            dt.items.add(editedFile);
+            document.getElementById(currentInputId).files = dt.files;
+            
+            // Update preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = currentWrapper.querySelector('img');
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(editedFile);
+            
+            closeEditor();
+        }, currentFile.type);
+    };
+
+    // Drawing functionality
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchmove', handleTouch);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    function handleTouch(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    }
+
+    function startDrawing(e) {
+        if (currentMode !== 'draw') return;
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        lastX = (e.clientX - rect.left) * scaleX;
+        lastY = (e.clientY - rect.top) * scaleY;
+    }
+
+    function draw(e) {
+        if (!isDrawing || currentMode !== 'draw') return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        
+        ctx.strokeStyle = drawColor;
+        ctx.lineWidth = drawSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        
+        lastX = x;
+        lastY = y;
+    }
+
+    function stopDrawing() {
+        if (isDrawing) {
+            isDrawing = false;
+            saveDrawingState();
+        }
+    }
+
     async function uploadToImgBB(file) { 
         if(!file) return null; 
         const fd = new FormData(); 
@@ -157,12 +430,11 @@
         }
     }
 
-    // Enhanced preview with remove functionality for multiple images
+    // Enhanced preview with remove and edit functionality
     function setupPreviewWithRemove(inputId, containerId, isCircle = false, multiple = false, maxFiles = 5) {
         const input = document.getElementById(inputId);
         if(!input) return;
         
-        // Store current files for multiple inputs
         let currentFiles = [];
         
         input.addEventListener('change', (e) => {
@@ -171,64 +443,25 @@
             
             const files = Array.from(e.target.files);
             if(!multiple) {
-                // Single file: replace preview
                 if(files[0]) {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                         container.innerHTML = '';
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'preview-img-wrapper';
-                        const img = document.createElement('img');
-                        img.src = ev.target.result;
-                        img.className = isCircle ? 'image-preview-circle' : 'image-preview-rect';
-                        const removeBtn = document.createElement('button');
-                        removeBtn.innerHTML = '×';
-                        removeBtn.className = 'remove-img-btn';
-                        removeBtn.onclick = (e) => {
-                            e.stopPropagation();
-                            wrapper.remove();
-                            input.value = '';
-                            currentFiles = [];
-                        };
-                        wrapper.appendChild(img);
-                        wrapper.appendChild(removeBtn);
-                        container.innerHTML = '';
+                        const wrapper = createPreviewWrapper(ev.target.result, files[0], inputId, isCircle);
                         container.appendChild(wrapper);
-                        // Store file reference
                         currentFiles = [files[0]];
                     };
                     reader.readAsDataURL(files[0]);
                 }
             } else {
-                // Multiple files: append up to maxFiles
                 const newFiles = files.slice(0, maxFiles - currentFiles.length);
                 newFiles.forEach(file => {
                     if(currentFiles.length >= maxFiles) return;
                     const reader = new FileReader();
                     reader.onload = (ev) => {
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'preview-img-wrapper';
-                        const img = document.createElement('img');
-                        img.src = ev.target.result;
-                        img.className = 'image-preview-rect';
-                        const removeBtn = document.createElement('button');
-                        removeBtn.innerHTML = '×';
-                        removeBtn.className = 'remove-img-btn';
-                        const fileIndex = currentFiles.length;
-                        removeBtn.onclick = (e) => {
-                            e.stopPropagation();
-                            wrapper.remove();
-                            currentFiles.splice(fileIndex, 1);
-                            // Update input files list (reconstruct)
-                            const dt = new DataTransfer();
-                            currentFiles.forEach(f => dt.items.add(f));
-                            input.files = dt.files;
-                        };
-                        wrapper.appendChild(img);
-                        wrapper.appendChild(removeBtn);
+                        const wrapper = createPreviewWrapper(ev.target.result, file, inputId, false);
                         container.appendChild(wrapper);
                         currentFiles.push(file);
-                        // Update input files
                         const dt = new DataTransfer();
                         currentFiles.forEach(f => dt.items.add(f));
                         input.files = dt.files;
@@ -237,6 +470,50 @@
                 });
             }
         });
+    }
+    
+    function createPreviewWrapper(imgSrc, file, inputId, isCircle) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-img-wrapper';
+        
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.className = isCircle ? 'image-preview-circle' : 'image-preview-rect';
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '×';
+        removeBtn.className = 'remove-img-btn';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            const input = document.getElementById(inputId);
+            const container = wrapper.parentElement;
+            const index = Array.from(container.children).indexOf(wrapper);
+            
+            wrapper.remove();
+            
+            // Update file input
+            const dt = new DataTransfer();
+            const remainingFiles = Array.from(input.files).filter((f, i) => i !== index);
+            remainingFiles.forEach(f => dt.items.add(f));
+            input.files = dt.files;
+        };
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'image-actions';
+        
+        const editBtn = document.createElement('button');
+        editBtn.innerHTML = '<iconify-icon icon="mdi:pencil" width="14"></iconify-icon>';
+        editBtn.onclick = (e) => {
+            e.stopPropagation();
+            openEditor(img, file, inputId, wrapper);
+        };
+        
+        actionsDiv.appendChild(editBtn);
+        wrapper.appendChild(img);
+        wrapper.appendChild(actionsDiv);
+        wrapper.appendChild(removeBtn);
+        
+        return wrapper;
     }
     
     setupPreviewWithRemove('profileImage', 'profilePreviewContainer', true, false, 1);
@@ -263,7 +540,6 @@
             populateSelects(); 
             renderPremadeFeatures(); 
         } catch(e) { console.error("Settings error:", e); 
-            // Fallback defaults if firebase fails
             countriesArray = ["United States", "United Kingdom", "Canada", "Australia"];
             categoriesArray = ["Fashion", "Tech", "Lifestyle", "Gaming", "Music", "Sports"];
             premadeFeaturesArray = ["High engagement rate", "Verified badge", "Active followers", "Monetized", "Brand deals ready"];
@@ -307,7 +583,6 @@
     document.getElementById('accountForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const nickname = document.getElementById('nickname').value.trim();
-        // IMPORTANT: followers is saved as STRING (allows letters, K, M, etc.)
         const followers = document.getElementById('followers').value.trim();
         const socialMedia = document.getElementById('socialMedia').value;
         const category = document.getElementById('categorySelect').value;
@@ -335,14 +610,11 @@
         document.body.appendChild(loadingDiv);
         
         try {
-            // Get all files from preview containers (since we store them in input.files)
             const profileFile = document.getElementById('profileImage').files[0] || null;
             const frontFileInput = document.getElementById('frontImage').files[0];
             const dashboardFiles = Array.from(document.getElementById('dashboardImages').files || []);
             const otherFiles = Array.from(document.getElementById('otherImages').files || []);
             
-            // Upload all images concurrently
-            const uploadPromises = [];
             let profilePromise = profileFile ? uploadToImgBB(profileFile) : Promise.resolve(null);
             let frontPromise = uploadToImgBB(frontFileInput);
             let dashboardPromises = dashboardFiles.map(f => uploadToImgBB(f));
@@ -353,7 +625,6 @@
             const dashboardUrls = rest.slice(0, dashboardPromises.length);
             const otherUrls = rest.slice(dashboardPromises.length);
             
-            // Calculate final price logic
             let finalPrice = originalPrice;
             let hasDiscount = false;
             if(!bargaining) { 
@@ -368,10 +639,9 @@
             const featuresRaw = document.getElementById('featuresText').value;
             const featuresList = featuresRaw.split('\n').filter(l => l.trim()).map(l => l.replace(/^•\s*/, '').trim());
             
-            // Account data: followers stored as STRING (original user input)
             const accountData = { 
                 nickname, 
-                followers: followers,      // ← SAVED AS STRING (allows "125K", "1.2M", "500", "10k+")
+                followers: followers,
                 socialMedia, 
                 category, 
                 country, 
@@ -395,17 +665,14 @@
             const docRef = await addDoc(collection(db, 'marketplaceAccounts'), accountData);
             document.getElementById('formMessage').innerHTML = `<span class="text-emerald-600 text-sm">✅ Account created successfully! ID: ${docRef.id} <a href="admin.html" class="underline font-medium">Go to Dashboard →</a></span>`;
             document.getElementById('accountForm').reset();
-            // Clear all preview containers
             document.getElementById('profilePreviewContainer').innerHTML = '';
             document.getElementById('frontPreviewContainer').innerHTML = '';
             document.getElementById('dashboardPreviewContainer').innerHTML = '';
             document.getElementById('otherPreviewContainer').innerHTML = '';
-            // Reset file inputs
             document.getElementById('profileImage').value = '';
             document.getElementById('frontImage').value = '';
             document.getElementById('dashboardImages').value = '';
             document.getElementById('otherImages').value = '';
-            // Scroll to message
             document.getElementById('formMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
         } catch(err) { 
             console.error("Creation error:", err);
@@ -417,15 +684,15 @@
         }
     });
     
+    // Initialize editor and fetch settings
+    initEditor();
     fetchSettings();
 </script>
-    <script type="module">
+<script type="module">
     import { logout, protectPage } from './auth.js';
     
-    // Protect this page - redirects to login if not authenticated
     protectPage().catch(() => {});
     
-    // Setup logout button
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
