@@ -24,6 +24,10 @@
         .remove-img-btn { position: absolute; top: -6px; right: -6px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         .remove-img-btn:hover { background: darkred; }
         .helper-text { font-size: 11px; color: #6b7280; margin-top: 4px; }
+        /* Mobile-friendly file trigger label */
+        .upload-trigger { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: #374151; transition: all 0.2s; }
+        .upload-trigger:hover { background: #f3f4f6; transform: scale(1.02); }
+        .hidden-file-input { position: absolute; opacity: 0; width: 0.1px; height: 0.1px; overflow: hidden; }
     </style>
 </head>
 <body class="p-6 md:p-10">
@@ -68,11 +72,51 @@
             <div class="border-t border-gray-100 pt-5">
                 <label class="block text-sm font-medium text-gray-700 mb-3">Account Images</label>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div><label class="text-xs font-semibold uppercase tracking-wide">Profile (Circle)</label><div class="mt-2"><button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1 hover:bg-gray-100" data-target="profileImage"><iconify-icon icon="mdi:cloud-upload"></iconify-icon> Upload</button><input type="file" id="profileImage" accept="image/*" class="hidden-file-input hidden"><div id="profilePreviewContainer" class="mt-2 flex flex-wrap items-center gap-2"></div></div></div>
-                    <div><label class="text-xs font-semibold uppercase tracking-wide">Front Image *</label><div class="mt-2"><button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1 hover:bg-gray-100" data-target="frontImage"><iconify-icon icon="mdi:cloud-upload"></iconify-icon> Upload</button><input type="file" id="frontImage" accept="image/*" class="hidden-file-input hidden"><div id="frontPreviewContainer" class="mt-2 flex flex-wrap items-center gap-2"></div></div></div>
-                    <div><label class="text-xs font-semibold uppercase tracking-wide">Dashboard (max 5)</label><div class="mt-2"><button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1 hover:bg-gray-100" data-target="dashboardImages"><iconify-icon icon="mdi:cloud-upload-multiple"></iconify-icon> Add</button><input type="file" id="dashboardImages" accept="image/*" multiple class="hidden-file-input hidden"><div id="dashboardPreviewContainer" class="flex flex-wrap gap-2 mt-2"></div></div></div>
+                    <!-- Profile Image Upload (Mobile Optimized Label) -->
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wide">Profile (Circle)</label>
+                        <div class="mt-2">
+                            <label for="profileImage" class="upload-trigger">
+                                <iconify-icon icon="mdi:cloud-upload"></iconify-icon> Upload
+                            </label>
+                            <input type="file" id="profileImage" accept="image/*" class="hidden-file-input">
+                            <div id="profilePreviewContainer" class="mt-2 flex flex-wrap items-center gap-2"></div>
+                        </div>
+                    </div>
+                    <!-- Front Image Upload (Mobile Optimized Label) -->
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wide">Front Image *</label>
+                        <div class="mt-2">
+                            <label for="frontImage" class="upload-trigger">
+                                <iconify-icon icon="mdi:cloud-upload"></iconify-icon> Upload
+                            </label>
+                            <input type="file" id="frontImage" accept="image/*" class="hidden-file-input">
+                            <div id="frontPreviewContainer" class="mt-2 flex flex-wrap items-center gap-2"></div>
+                        </div>
+                    </div>
+                    <!-- Dashboard Images Upload (Mobile Optimized Label) -->
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wide">Dashboard (max 5)</label>
+                        <div class="mt-2">
+                            <label for="dashboardImages" class="upload-trigger">
+                                <iconify-icon icon="mdi:cloud-upload-multiple"></iconify-icon> Add
+                            </label>
+                            <input type="file" id="dashboardImages" accept="image/*" multiple class="hidden-file-input">
+                            <div id="dashboardPreviewContainer" class="flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="mt-4"><label class="text-xs font-semibold uppercase tracking-wide">Other Images (max 5)</label><div class="mt-2"><button type="button" class="upload-trigger bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs flex items-center gap-1 hover:bg-gray-100" data-target="otherImages"><iconify-icon icon="mdi:image-plus"></iconify-icon> Add</button><input type="file" id="otherImages" accept="image/*" multiple class="hidden-file-input hidden"><div id="otherPreviewContainer" class="flex flex-wrap gap-2 mt-2"></div></div></div>
+                <!-- Other Images Upload (Mobile Optimized Label) -->
+                <div class="mt-4">
+                    <label class="text-xs font-semibold uppercase tracking-wide">Other Images (max 5)</label>
+                    <div class="mt-2">
+                        <label for="otherImages" class="upload-trigger">
+                            <iconify-icon icon="mdi:image-plus"></iconify-icon> Add
+                        </label>
+                        <input type="file" id="otherImages" accept="image/*" multiple class="hidden-file-input">
+                        <div id="otherPreviewContainer" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                </div>
             </div>
 
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Features (bullet list)</label><textarea id="featuresText" rows="3" class="input-modern w-full px-4 py-2.5 text-sm" placeholder="e.g., High engagement, Verified badge...&#10;• Each bullet on new line"></textarea><div class="mt-2 flex flex-wrap gap-2" id="premadeFeaturesContainer"></div></div>
@@ -112,14 +156,6 @@
             return null;
         }
     }
-
-    // File upload triggers
-    document.querySelectorAll('.upload-trigger').forEach(btn => { 
-        btn.addEventListener('click', () => { 
-            const targetId = btn.getAttribute('data-target'); 
-            document.getElementById(targetId)?.click(); 
-        }); 
-    });
 
     // Enhanced preview with remove functionality for multiple images
     function setupPreviewWithRemove(inputId, containerId, isCircle = false, multiple = false, maxFiles = 5) {
